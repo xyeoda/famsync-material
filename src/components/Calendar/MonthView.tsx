@@ -50,34 +50,34 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[120px] bg-surface p-3",
+                "min-h-[90px] bg-surface p-2",
                 !inCurrentMonth && "bg-surface-variant opacity-60"
               )}
             >
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start mb-1">
                 <span
                   className={cn(
-                    "text-sm font-normal",
-                    today && "bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-medium",
+                    "text-xs font-normal",
+                    today && "bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center font-medium text-xs",
                     !inCurrentMonth && "text-muted-foreground"
                   )}
                 >
                   {format(day, "d")}
                 </span>
                 {dayEvents.length > 0 && (
-                  <span className="text-xs bg-primary-container text-on-primary-container px-2 py-1 rounded-full font-medium">
+                  <span className="text-[10px] bg-primary-container text-on-primary-container px-1.5 py-0.5 rounded-full font-medium">
                     {dayEvents.length}
                   </span>
                 )}
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {dayEvents.slice(0, 3).map(event => (
                   <div
                     key={event.id}
                     onClick={() => onEventClick(event, day)}
                     className={cn(
-                      "text-xs p-2 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer border-l-2 bg-surface-container",
+                      "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer border-l-2 bg-surface-container",
                       `category-${event.category}`,
                       "font-medium"
                     )}
@@ -87,7 +87,7 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
                   </div>
                 ))}
                 {dayEvents.length > 3 && (
-                  <div className="text-xs text-muted-foreground pl-2 font-normal">
+                  <div className="text-[10px] text-muted-foreground pl-1.5 font-normal">
                     +{dayEvents.length - 3} more
                   </div>
                 )}

@@ -51,10 +51,10 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
           const today = isToday(day);
 
           return (
-            <div key={day.toISOString()} className="min-h-[400px] lg:min-h-[600px] bg-surface flex flex-col">
+            <div key={day.toISOString()} className="min-h-[300px] lg:min-h-[500px] bg-surface flex flex-col">
               <div
                 className={cn(
-                  "p-4 lg:p-6 text-center border-b border-border flex-shrink-0",
+                  "p-2 lg:p-3 text-center border-b border-border flex-shrink-0",
                   today && "bg-primary-container"
                 )}
               >
@@ -63,7 +63,7 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                 </div>
                 <div
                   className={cn(
-                    "text-3xl lg:text-2xl font-normal mt-2",
+                    "text-2xl lg:text-xl font-normal mt-1",
                     today ? "text-on-primary-container font-medium" : "text-foreground"
                   )}
                 >
@@ -71,7 +71,7 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                 </div>
               </div>
 
-              <div className="p-4 lg:p-3 space-y-3 lg:space-y-2 flex-1 overflow-y-auto">
+              <div className="p-2 lg:p-2 space-y-2 lg:space-y-1.5 flex-1 overflow-y-auto">
                 {dayEvents.length === 0 ? (
                   <div className="text-center text-sm text-muted-foreground py-8 font-normal">
                     No events

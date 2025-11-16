@@ -62,8 +62,8 @@ export function InstanceDialog({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          <div className="text-sm text-muted-foreground">
-            Changes will only apply to this specific date. The recurring event pattern will remain unchanged.
+          <div className="text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
+            💡 Changes apply only to this date. Default transportation from the event series is pre-filled below—adjust as needed.
           </div>
 
           {/* Transportation */}
