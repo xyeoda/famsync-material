@@ -30,42 +30,42 @@ export function CalendarHeader({
   
   const title = view === "month" 
     ? format(currentDate, "MMMM yyyy")
-    : `Week of ${format(currentDate, "MMM d, yyyy")}`;
+    : format(currentDate, "MMMM yyyy");
 
   return (
     <>
       <div className="surface-elevation-2 rounded-3xl p-3 mb-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-normal text-foreground">{title}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="text"
               size="sm"
               onClick={onToday}
-              className="hidden sm:inline-flex"
+              className="text-sm"
+              title={`Current: ${view === "month" ? format(currentDate, "MMMM yyyy") : `Week of ${format(currentDate, "MMM d, yyyy")}`}`}
             >
-              Today
+              {title}
             </Button>
             <ThemeToggle />
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               <Button
                 variant="text"
                 size="icon"
                 onClick={onPreviousPeriod}
-                className="h-10 w-10 rounded-full"
+                className="h-9 w-9 rounded-full"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4" />
               </Button>
               <Button
                 variant="text"
                 size="icon"
                 onClick={onNextPeriod}
-                className="h-10 w-10 rounded-full"
+                className="h-9 w-9 rounded-full"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
@@ -74,7 +74,7 @@ export function CalendarHeader({
                 variant={view === "week" ? "filled" : "text"}
                 size="sm"
                 onClick={() => onViewChange("week")}
-                className="h-9 px-4"
+                className="h-8 px-3 text-sm"
               >
                 Week
               </Button>
@@ -82,7 +82,7 @@ export function CalendarHeader({
                 variant={view === "month" ? "filled" : "text"}
                 size="sm"
                 onClick={() => onViewChange("month")}
-                className="h-9 px-4"
+                className="h-8 px-3 text-sm"
               >
                 Month
               </Button>
@@ -92,20 +92,21 @@ export function CalendarHeader({
               variant="text"
               size="icon"
               onClick={() => setSettingsOpen(true)}
-              className="h-10 w-10 rounded-full"
+              className="h-9 w-9 rounded-full"
               title="Family Settings"
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="h-4 w-4" />
             </Button>
 
             <Button
               onClick={onNewEvent}
               variant="filled"
-              className="ml-2"
+              size="sm"
+              className="h-9"
             >
-              <Plus className="h-5 w-5 mr-2" />
-              <span className="hidden sm:inline">New Event</span>
-              <span className="sm:hidden">New</span>
+              <Plus className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline text-sm">New Event</span>
+              <span className="sm:hidden text-sm">New</span>
             </Button>
           </div>
         </div>
