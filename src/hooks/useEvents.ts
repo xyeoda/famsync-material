@@ -22,6 +22,7 @@ export function useEvents() {
     addEvent: (event: FamilyEvent) => eventStore.addEvent(event),
     updateEvent: (id: string, updates: Partial<FamilyEvent>) => eventStore.updateEvent(id, updates),
     deleteEvent: (id: string) => eventStore.deleteEvent(id),
+    deleteEventsByTitle: (title: string) => eventStore.deleteEventsByTitle(title),
     getEventById: (id: string) => eventStore.getEventById(id),
   };
 }

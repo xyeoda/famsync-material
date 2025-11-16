@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface MonthViewProps {
   currentDate: Date;
   events: FamilyEvent[];
-  onEventClick: (event: FamilyEvent) => void;
+  onEventClick: (event: FamilyEvent, date: Date) => void;
 }
 
 export function MonthView({ currentDate, events, onEventClick }: MonthViewProps) {
@@ -75,7 +75,7 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
                 {dayEvents.slice(0, 3).map(event => (
                   <div
                     key={event.id}
-                    onClick={() => onEventClick(event)}
+                    onClick={() => onEventClick(event, day)}
                     className={cn(
                       "text-xs p-2 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer border-l-2 bg-surface-container",
                       `category-${event.category}`,

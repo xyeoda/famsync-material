@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface WeekViewProps {
   currentDate: Date;
   events: FamilyEvent[];
-  onEventClick: (event: FamilyEvent) => void;
+  onEventClick: (event: FamilyEvent, date: Date) => void;
 }
 
 interface DayEvent {
@@ -83,7 +83,7 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                       event={event}
                       startTime={slot.startTime}
                       endTime={slot.endTime}
-                      onClick={() => onEventClick(event)}
+                      onClick={() => onEventClick(event, day)}
                     />
                   ))
                 )}

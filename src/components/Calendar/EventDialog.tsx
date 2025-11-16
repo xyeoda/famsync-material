@@ -383,13 +383,29 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="text" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button variant="filled" onClick={handleSave} disabled={!isValid}>
-            {event ? "Update Event" : "Create Event"}
-          </Button>
+        <DialogFooter className="flex-row justify-between items-center">
+          {event && (
+            <Button 
+              variant="text" 
+              onClick={() => {
+                const count = 1; // This will be passed from parent
+                if (window.confirm(`Delete all events named "${event.title}"? This cannot be undone.`)) {
+                  onOpenChange(false);
+                }
+              }}
+              className="text-destructive"
+            >
+              Delete All
+            </Button>
+          )}
+          <div className="flex gap-2 ml-auto">
+            <Button variant="text" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button variant="filled" onClick={handleSave} disabled={!isValid}>
+              {event ? "Update Series" : "Create Event"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
