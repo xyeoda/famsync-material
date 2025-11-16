@@ -7,6 +7,8 @@ export interface FamilySettings {
   kid1Name: string;
   kid2Name: string;
   housekeeperName: string;
+  kid1Color: string; // HSL format: "266 100% 60%"
+  kid2Color: string; // HSL format: "39 100% 50%"
 }
 
 const DEFAULT_SETTINGS: FamilySettings = {
@@ -15,6 +17,8 @@ const DEFAULT_SETTINGS: FamilySettings = {
   kid1Name: "Kid 1",
   kid2Name: "Kid 2",
   housekeeperName: "Housekeeper",
+  kid1Color: "266 100% 60%", // Purple
+  kid2Color: "39 100% 50%", // Orange
 };
 
 const STORAGE_KEY = "family-settings";
@@ -22,12 +26,23 @@ const STORAGE_KEY = "family-settings";
 export function useFamilySettings() {
   const [settings, setSettings] = useState<FamilySettings>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
+    const parsedSettings = stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
+    // Migrate old settings without colors
+    return {
+      ...DEFAULT_SETTINGS,
+      ...parsedSettings,
+    };
   });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
+
+  // Apply colors to CSS custom properties
+  useEffect(() => {
+    document.documentElement.style.setProperty('--kid1-color', settings.kid1Color);
+    document.documentElement.style.setProperty('--kid2-color', settings.kid2Color);
+  }, [settings.kid1Color, settings.kid2Color]);
 
   const updateSettings = (newSettings: Partial<FamilySettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
