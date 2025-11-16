@@ -13,10 +13,13 @@ export const sampleEvents: FamilyEvent[] = [
       { dayOfWeek: 3, startTime: "17:00", endTime: "18:00" }, // Wednesday 5-6pm
       { dayOfWeek: 5, startTime: "12:00", endTime: "13:00" }, // Friday 12-1pm
     ],
-    participants: [
-      { member: "kid1", roles: [] },
-      { member: "parent1", roles: ["driver", "returns"] },
-    ],
+    participants: ["kid1"],
+    transportation: {
+      dropOffPerson: "parent1",
+      dropOffMethod: "car",
+      pickUpPerson: "parent1",
+      pickUpMethod: "car",
+    },
     startDate: new Date(),
     location: "Elite BJJ Academy",
     createdAt: new Date(),
@@ -31,10 +34,13 @@ export const sampleEvents: FamilyEvent[] = [
       { dayOfWeek: 2, startTime: "15:30", endTime: "16:30" }, // Tuesday
       { dayOfWeek: 4, startTime: "15:30", endTime: "16:30" }, // Thursday
     ],
-    participants: [
-      { member: "kid2", roles: [] },
-      { member: "parent2", roles: ["driver", "accompanies"] },
-    ],
+    participants: ["kid2"],
+    transportation: {
+      dropOffPerson: "parent2",
+      dropOffMethod: "car",
+      pickUpPerson: "parent2",
+      pickUpMethod: "car",
+    },
     startDate: new Date(),
     location: "Music School Downtown",
     createdAt: new Date(),
@@ -49,12 +55,13 @@ export const sampleEvents: FamilyEvent[] = [
       { dayOfWeek: 2, startTime: "17:00", endTime: "18:30" }, // Tuesday
       { dayOfWeek: 4, startTime: "17:00", endTime: "18:30" }, // Thursday
     ],
-    participants: [
-      { member: "kid1", roles: [] },
-      { member: "kid2", roles: [] },
-      { member: "parent1", roles: ["driver"] },
-      { member: "parent2", roles: ["returns"] },
-    ],
+    participants: ["kid1", "kid2"],
+    transportation: {
+      dropOffPerson: "parent1",
+      dropOffMethod: "car",
+      pickUpPerson: "parent2",
+      pickUpMethod: "car",
+    },
     startDate: new Date(),
     location: "Community Sports Complex",
     createdAt: new Date(),
@@ -68,9 +75,7 @@ export const sampleEvents: FamilyEvent[] = [
     recurrenceSlots: [
       { dayOfWeek: 3, startTime: "09:00", endTime: "12:00" }, // Wednesday morning
     ],
-    participants: [
-      { member: "housekeeper", roles: [] },
-    ],
+    participants: [],
     startDate: new Date(),
     location: "Home",
     createdAt: new Date(),
@@ -84,12 +89,7 @@ export const sampleEvents: FamilyEvent[] = [
     recurrenceSlots: [
       { dayOfWeek: 6, startTime: "19:00", endTime: "21:00" }, // Saturday evening
     ],
-    participants: [
-      { member: "parent1", roles: [] },
-      { member: "parent2", roles: [] },
-      { member: "kid1", roles: [] },
-      { member: "kid2", roles: [] },
-    ],
+    participants: ["kid1", "kid2"],
     startDate: new Date(),
     location: "Home",
     createdAt: new Date(),
@@ -103,10 +103,13 @@ export const sampleEvents: FamilyEvent[] = [
     recurrenceSlots: [
       { dayOfWeek: 1, startTime: "14:00", endTime: "15:00" }, // Monday
     ],
-    participants: [
-      { member: "kid1", roles: [] },
-      { member: "parent2", roles: ["driver", "accompanies"] },
-    ],
+    participants: ["kid1"],
+    transportation: {
+      dropOffPerson: "parent2",
+      dropOffMethod: "car",
+      pickUpPerson: "parent2",
+      pickUpMethod: "car",
+    },
     startDate: addDays(new Date(), 7),
     endDate: addDays(new Date(), 7),
     location: "Smile Dental Care",

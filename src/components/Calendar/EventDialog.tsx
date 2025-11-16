@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FamilyEvent, FamilyMember, EventRole, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
+import { FamilyEvent, FamilyMember, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
 import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { Plus, X } from "lucide-react";
@@ -29,11 +29,6 @@ const DAYS_OF_WEEK = [
   { value: 6, label: "Saturday" },
 ];
 
-interface ParticipantState {
-  member: FamilyMember;
-  roles: EventRole[];
-}
-
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
   const { getFamilyMemberName } = useFamilySettings();
   const [title, setTitle] = useState(event?.title || "");
@@ -48,7 +43,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const [recurrenceSlots, setRecurrenceSlots] = useState<RecurrenceSlot[]>(
     event?.recurrenceSlots || [{ dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]
   );
-  const [participants, setParticipants] = useState<ParticipantState[]>(
+  const [participants, setParticipants] = useState<FamilyMember[]>(
     event?.participants || []
   );
   const [transportation, setTransportation] = useState<TransportationDetails>(
@@ -70,26 +65,11 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   };
 
   const handleParticipantToggle = (member: FamilyMember) => {
-    const existing = participants.find(p => p.member === member);
-    if (existing) {
-      setParticipants(participants.filter(p => p.member !== member));
+    if (participants.includes(member)) {
+      setParticipants(participants.filter(p => p !== member));
     } else {
-      setParticipants([...participants, { member, roles: [] }]);
+      setParticipants([...participants, member]);
     }
-  };
-
-  const handleRoleToggle = (member: FamilyMember, role: EventRole) => {
-    const updated = participants.map(p => {
-      if (p.member === member) {
-        const hasRole = p.roles.includes(role);
-        return {
-          ...p,
-          roles: hasRole ? p.roles.filter(r => r !== role) : [...p.roles, role]
-        };
-      }
-      return p;
-    });
-    setParticipants(updated);
   };
 
   const handleSave = () => {
@@ -252,10 +232,10 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
           {/* Participants */}
           <div className="space-y-4">
-            <h3 className="font-medium">Participants</h3>
+            <h3 className="font-medium">Which kids are attending?</h3>
             <div className="flex flex-wrap gap-2">
-              {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => {
-                const isSelected = participants.some(p => p.member === member);
+              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
+                const isSelected = participants.includes(member);
 
                 return (
                   <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">

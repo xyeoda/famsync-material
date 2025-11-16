@@ -1,7 +1,5 @@
 export type FamilyMember = "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper";
 
-export type EventRole = "driver" | "accompanies" | "returns";
-
 export type TransportMethod = "car" | "bus" | "walk" | "bike";
 
 export type ActivityCategory = "sports" | "education" | "social" | "chores" | "health" | "other";
@@ -10,11 +8,6 @@ export interface RecurrenceSlot {
   dayOfWeek: number; // 0 = Sunday, 6 = Saturday
   startTime: string; // HH:mm format
   endTime: string; // HH:mm format
-}
-
-export interface EventParticipant {
-  member: FamilyMember;
-  roles: EventRole[];
 }
 
 export interface TransportationDetails {
@@ -30,7 +23,7 @@ export interface FamilyEvent {
   description?: string;
   category: ActivityCategory;
   recurrenceSlots: RecurrenceSlot[]; // Multiple time slots per week
-  participants: EventParticipant[];
+  participants: FamilyMember[]; // Kids attending this event
   transportation?: TransportationDetails;
   startDate: Date; // When the recurring pattern starts
   endDate?: Date; // Optional end date for the pattern
@@ -47,7 +40,7 @@ export interface EventInstance {
   eventId: string; // Reference to parent event
   date: Date; // Specific date this override applies to
   transportation?: TransportationDetails;
-  participants?: EventParticipant[];
+  participants?: FamilyMember[];
   cancelled?: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -59,12 +52,6 @@ export const FAMILY_MEMBERS: Record<FamilyMember, string> = {
   kid1: "Kid 1",
   kid2: "Kid 2",
   housekeeper: "Housekeeper",
-};
-
-export const EVENT_ROLES: Record<EventRole, string> = {
-  driver: "Driver",
-  accompanies: "Accompanies",
-  returns: "Returns",
 };
 
 export const ACTIVITY_CATEGORIES: Record<ActivityCategory, { label: string; icon: string }> = {

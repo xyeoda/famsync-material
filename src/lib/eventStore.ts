@@ -1,4 +1,19 @@
-import { FamilyEvent, EventInstance } from "@/types/event";
+import { FamilyEvent, EventInstance, FamilyMember } from "@/types/event";
+
+// Migration helper to convert old participant format to new format
+function migrateParticipants(participants: any[]): FamilyMember[] {
+  if (!participants || participants.length === 0) return [];
+  
+  // If already in new format (array of strings), filter for kids only
+  if (typeof participants[0] === 'string') {
+    return participants.filter((p: FamilyMember) => p === 'kid1' || p === 'kid2');
+  }
+  
+  // If in old format (array of objects with member and roles), convert
+  return participants
+    .map((p: any) => p.member as FamilyMember)
+    .filter((m: FamilyMember) => m === 'kid1' || m === 'kid2');
+}
 
 // Simple in-memory store for now - will be replaced with proper database
 class EventStore {
@@ -16,11 +31,22 @@ class EventStore {
   }
 
   getEvents(): FamilyEvent[] {
-    return [...this.events];
+    // Migrate participants on read
+    return this.events.map(event => ({
+      ...event,
+      participants: migrateParticipants(event.participants as any)
+    }));
   }
 
   getEventById(id: string): FamilyEvent | undefined {
-    return this.events.find(event => event.id === id);
+    const event = this.events.find(event => event.id === id);
+    if (!event) return undefined;
+    
+    // Migrate participants on read
+    return {
+      ...event,
+      participants: migrateParticipants(event.participants as any)
+    };
   }
 
   addEvent(event: FamilyEvent): void {
