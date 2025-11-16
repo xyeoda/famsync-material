@@ -86,6 +86,10 @@ export default {
           health: "hsl(var(--category-health))",
           other: "hsl(var(--category-other))",
         },
+        kid: {
+          kid1: "hsl(var(--kid1-color))",
+          kid2: "hsl(var(--kid2-color))",
+        },
       },
       boxShadow: {
         'elevation-1': 'var(--elevation-1)',
