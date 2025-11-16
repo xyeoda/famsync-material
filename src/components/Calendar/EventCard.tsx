@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
+import { useFamilySettings } from "@/hooks/useFamilySettings";
 
 interface EventCardProps {
   event: FamilyEvent;
@@ -19,6 +20,8 @@ const transportIcons = {
 };
 
 export function EventCard({ event, startTime, endTime, onClick }: EventCardProps) {
+  const { getFamilyMemberName } = useFamilySettings();
+  
   // Get kids participating in this event
   const kidsInvolved = event.participants
     .filter(p => p.member === "kid1" || p.member === "kid2")
@@ -67,13 +70,13 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
             {event.transportation.dropOffPerson && DropOffIcon && (
               <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
                 <DropOffIcon className="h-3 w-3" />
-                {FAMILY_MEMBERS[event.transportation.dropOffPerson].split(" ")[0]}
+                {getFamilyMemberName(event.transportation.dropOffPerson).split(" ")[0]}
               </Badge>
             )}
             {event.transportation.pickUpPerson && PickUpIcon && (
               <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
                 <PickUpIcon className="h-3 w-3" />
-                {FAMILY_MEMBERS[event.transportation.pickUpPerson].split(" ")[0]}
+                {getFamilyMemberName(event.transportation.pickUpPerson).split(" ")[0]}
               </Badge>
             )}
           </div>
@@ -85,7 +88,7 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
               key={participant.member}
               className="text-xs lg:text-[10px] bg-surface-container px-1.5 py-0.5 rounded-full font-normal"
             >
-              {FAMILY_MEMBERS[participant.member].split(" ")[0]}
+              {getFamilyMemberName(participant.member).split(" ")[0]}
             </span>
           ))}
         </div>

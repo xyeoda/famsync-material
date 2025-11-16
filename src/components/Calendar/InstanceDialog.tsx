@@ -8,6 +8,7 @@ import { FAMILY_MEMBERS } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
+import { useFamilySettings } from "@/hooks/useFamilySettings";
 
 interface InstanceDialogProps {
   open: boolean;
@@ -34,6 +35,7 @@ export function InstanceDialog({
   instance,
   defaultTransportation 
 }: InstanceDialogProps) {
+  const { getFamilyMemberName } = useFamilySettings();
   const [transportation, setTransportation] = useState<TransportationDetails>(
     instance?.transportation || defaultTransportation || {}
   );
@@ -115,7 +117,7 @@ export function InstanceDialog({
                     <SelectContent>
                       {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
                         <SelectItem key={member} value={member}>
-                          {FAMILY_MEMBERS[member]}
+                          {getFamilyMemberName(member)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -167,7 +169,7 @@ export function InstanceDialog({
                     <SelectContent>
                       {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
                         <SelectItem key={member} value={member}>
-                          {FAMILY_MEMBERS[member]}
+                          {getFamilyMemberName(member)}
                         </SelectItem>
                       ))}
                     </SelectContent>

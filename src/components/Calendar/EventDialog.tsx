@@ -10,6 +10,7 @@ import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { useFamilySettings } from "@/hooks/useFamilySettings";
 
 interface EventDialogProps {
   open: boolean;
@@ -34,6 +35,7 @@ interface ParticipantState {
 }
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
+  const { getFamilyMemberName } = useFamilySettings();
   const [title, setTitle] = useState(event?.title || "");
   const [category, setCategory] = useState<ActivityCategory>(event?.category || "other");
   const [location, setLocation] = useState(event?.location || "");
@@ -263,7 +265,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                       onCheckedChange={() => handleParticipantToggle(member)}
                     />
                     <span className="text-sm font-medium">
-                      {FAMILY_MEMBERS[member]}
+                      {getFamilyMemberName(member)}
                     </span>
                   </label>
                 );
@@ -320,7 +322,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                     <SelectContent>
                       {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
                         <SelectItem key={member} value={member}>
-                          {FAMILY_MEMBERS[member]}
+                          {getFamilyMemberName(member)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -372,7 +374,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                     <SelectContent>
                       {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
                         <SelectItem key={member} value={member}>
-                          {FAMILY_MEMBERS[member]}
+                          {getFamilyMemberName(member)}
                         </SelectItem>
                       ))}
                     </SelectContent>
