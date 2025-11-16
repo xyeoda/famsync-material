@@ -19,17 +19,35 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          variant: "hsl(var(--surface-variant))",
+          container: {
+            lowest: "hsl(var(--surface-container-lowest))",
+            low: "hsl(var(--surface-container-low))",
+            DEFAULT: "hsl(var(--surface-container))",
+            high: "hsl(var(--surface-container-high))",
+            highest: "hsl(var(--surface-container-highest))",
+          },
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          light: "hsl(var(--primary-light))",
           container: "hsl(var(--primary-container))",
         },
+        "on-primary-container": "hsl(var(--on-primary-container))",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
           container: "hsl(var(--secondary-container))",
         },
+        "on-secondary-container": "hsl(var(--on-secondary-container))",
+        tertiary: {
+          DEFAULT: "hsl(var(--tertiary))",
+          foreground: "hsl(var(--tertiary-foreground))",
+          container: "hsl(var(--tertiary-container))",
+        },
+        "on-tertiary-container": "hsl(var(--on-tertiary-container))",
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -41,7 +59,6 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
-          container: "hsl(var(--accent-container))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -69,6 +86,13 @@ export default {
           health: "hsl(var(--category-health))",
           other: "hsl(var(--category-other))",
         },
+      },
+      boxShadow: {
+        'elevation-1': 'var(--elevation-1)',
+        'elevation-2': 'var(--elevation-2)',
+        'elevation-3': 'var(--elevation-3)',
+        'elevation-4': 'var(--elevation-4)',
+        'elevation-5': 'var(--elevation-5)',
       },
       borderRadius: {
         lg: "var(--radius)",

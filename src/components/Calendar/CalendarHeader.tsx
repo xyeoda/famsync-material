@@ -26,12 +26,12 @@ export function CalendarHeader({
     : `Week of ${format(currentDate, "MMM d, yyyy")}`;
 
   return (
-    <div className="surface-elevation-1 rounded-2xl p-4 mb-6">
+    <div className="surface-elevation-2 rounded-3xl p-6 mb-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-normal text-foreground">{title}</h1>
           <Button
-            variant="outline"
+            variant="text"
             size="sm"
             onClick={onToday}
             className="hidden sm:inline-flex"
@@ -40,40 +40,40 @@ export function CalendarHeader({
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-1 mr-2">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-1">
             <Button
-              variant="ghost"
+              variant="text"
               size="icon"
               onClick={onPreviousPeriod}
-              className="h-9 w-9"
+              className="h-10 w-10 rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button
-              variant="ghost"
+              variant="text"
               size="icon"
               onClick={onNextPeriod}
-              className="h-9 w-9"
+              className="h-10 w-10 rounded-full"
             >
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
 
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-surface-container rounded-full p-1">
             <Button
-              variant={view === "week" ? "default" : "ghost"}
+              variant={view === "week" ? "filled" : "text"}
               size="sm"
               onClick={() => onViewChange("week")}
-              className="h-8"
+              className="h-9 px-4"
             >
               Week
             </Button>
             <Button
-              variant={view === "month" ? "default" : "ghost"}
+              variant={view === "month" ? "filled" : "text"}
               size="sm"
               onClick={() => onViewChange("month")}
-              className="h-8"
+              className="h-9 px-4"
             >
               Month
             </Button>
@@ -81,7 +81,8 @@ export function CalendarHeader({
 
           <Button
             onClick={onNewEvent}
-            className="ml-2 bg-primary hover:bg-primary-light"
+            variant="filled"
+            className="ml-2"
           >
             <Plus className="h-5 w-5 mr-2" />
             <span className="hidden sm:inline">New Event</span>
