@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FamilyEvent, FamilyMember, EventRole, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
-import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
+import { FamilyEvent, EventRole, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
+import { EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useFamilyMembers } from "@/hooks/useFamilyMembers";
 
 interface EventDialogProps {
   open: boolean;
@@ -30,12 +30,13 @@ const DAYS_OF_WEEK = [
 ];
 
 interface ParticipantState {
-  member: FamilyMember;
+  member: string; // Now stores member ID
   roles: EventRole[];
+  unaccompanied?: boolean;
 }
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
-  const { getFamilyMemberName } = useFamilySettings();
+  const { members, getKids } = useFamilyMembers();
   const [title, setTitle] = useState(event?.title || "");
   const [category, setCategory] = useState<ActivityCategory>(event?.category || "other");
   const [location, setLocation] = useState(event?.location || "");
@@ -69,18 +70,28 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     setRecurrenceSlots(updated);
   };
 
-  const handleParticipantToggle = (member: FamilyMember) => {
-    const existing = participants.find(p => p.member === member);
+  const handleParticipantToggle = (memberId: string) => {
+    const existing = participants.find(p => p.member === memberId);
     if (existing) {
-      setParticipants(participants.filter(p => p.member !== member));
+      setParticipants(participants.filter(p => p.member !== memberId));
     } else {
-      setParticipants([...participants, { member, roles: [] }]);
+      setParticipants([...participants, { member: memberId, roles: [], unaccompanied: false }]);
     }
   };
 
-  const handleRoleToggle = (member: FamilyMember, role: EventRole) => {
+  const handleUnaccompaniedToggle = (memberId: string) => {
     const updated = participants.map(p => {
-      if (p.member === member) {
+      if (p.member === memberId) {
+        return { ...p, unaccompanied: !p.unaccompanied };
+      }
+      return p;
+    });
+    setParticipants(updated);
+  };
+
+  const handleRoleToggle = (memberId: string, role: EventRole) => {
+    const updated = participants.map(p => {
+      if (p.member === memberId) {
         const hasRole = p.roles.includes(role);
         return {
           ...p,
@@ -254,20 +265,33 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
           <div className="space-y-4">
             <h3 className="font-medium">Participants</h3>
             <div className="flex flex-wrap gap-2">
-              {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => {
-                const isSelected = participants.some(p => p.member === member);
+              {members.map((member) => {
+                const isSelected = participants.some(p => p.member === member.id);
+                const participant = participants.find(p => p.member === member.id);
+                const isKid = member.type === "kid";
 
                 return (
-                  <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
-                    <Checkbox
-                      id={member}
-                      checked={isSelected}
-                      onCheckedChange={() => handleParticipantToggle(member)}
-                    />
-                    <span className="text-sm font-medium">
-                      {getFamilyMemberName(member)}
-                    </span>
-                  </label>
+                  <div key={member.id} className="flex flex-col gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
+                      <Checkbox
+                        id={member.id}
+                        checked={isSelected}
+                        onCheckedChange={() => handleParticipantToggle(member.id)}
+                      />
+                      <span className="text-sm font-medium">
+                        {member.name}
+                      </span>
+                    </label>
+                    {isSelected && isKid && (
+                      <label className="flex items-center gap-2 ml-8 text-sm text-muted-foreground cursor-pointer">
+                        <Checkbox
+                          checked={participant?.unaccompanied || false}
+                          onCheckedChange={() => handleUnaccompaniedToggle(member.id)}
+                        />
+                        Goes unaccompanied
+                      </label>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -314,15 +338,15 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                   </Label>
                   <Select
                     value={transportation.dropOffPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value as FamilyMember })}
+                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value })}
                   >
                     <SelectTrigger id="dropOffPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
+                      {members.filter(m => m.canDrive || m.type === "kid").map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -366,15 +390,15 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                   </Label>
                   <Select
                     value={transportation.pickUpPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value as FamilyMember })}
+                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value })}
                   >
                     <SelectTrigger id="pickUpPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
+                      {members.filter(m => m.canDrive || m.type === "kid").map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

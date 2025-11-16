@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Settings, LayoutDashboard } from "lucide-react";
 import { format } from "date-fns";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { FamilySettingsDialog } from "./FamilySettingsDialog";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useNavigate } from "react-router-dom";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -27,6 +28,7 @@ export function CalendarHeader({
 }: CalendarHeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSettings, resetSettings } = useFamilySettings();
+  const navigate = useNavigate();
   
   const title = view === "month" 
     ? format(currentDate, "MMMM yyyy")
@@ -87,6 +89,16 @@ export function CalendarHeader({
                 Month
               </Button>
             </div>
+
+            <Button
+              variant="text"
+              size="icon"
+              onClick={() => navigate("/dashboard")}
+              className="h-10 w-10 rounded-full"
+              title="Dashboard"
+            >
+              <LayoutDashboard className="h-5 w-5" />
+            </Button>
 
             <Button
               variant="text"
