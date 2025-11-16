@@ -43,36 +43,36 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="surface-elevation-1 rounded-2xl overflow-hidden">
+    <div className="surface-elevation-2 rounded-3xl overflow-hidden">
       <div className="grid grid-cols-7 gap-px bg-border">
         {days.map((day) => {
           const dayEvents = getEventsForDay(day);
           const today = isToday(day);
 
           return (
-            <div key={day.toISOString()} className="min-h-[500px] bg-background">
+            <div key={day.toISOString()} className="min-h-[500px] bg-surface">
               <div
                 className={cn(
-                  "p-3 text-center border-b",
-                  today && "bg-primary/10"
+                  "p-4 text-center border-b border-border",
+                  today && "bg-primary-container"
                 )}
               >
-                <div className="text-xs font-medium text-muted-foreground uppercase">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {format(day, "EEE")}
                 </div>
                 <div
                   className={cn(
-                    "text-xl font-semibold mt-1",
-                    today && "text-primary"
+                    "text-2xl font-normal mt-1",
+                    today ? "text-on-primary-container font-medium" : "text-foreground"
                   )}
                 >
                   {format(day, "d")}
                 </div>
               </div>
 
-              <div className="p-2 space-y-2">
+              <div className="p-3 space-y-2">
                 {dayEvents.length === 0 ? (
-                  <div className="text-center text-sm text-muted-foreground py-8">
+                  <div className="text-center text-sm text-muted-foreground py-8 font-normal">
                     No events
                   </div>
                 ) : (

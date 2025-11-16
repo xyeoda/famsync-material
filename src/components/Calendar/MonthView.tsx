@@ -29,11 +29,11 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="surface-elevation-1 rounded-2xl overflow-hidden">
+    <div className="surface-elevation-2 rounded-3xl overflow-hidden">
       <div className="grid grid-cols-7 gap-px bg-border">
         {weekDays.map(day => (
-          <div key={day} className="bg-muted p-3 text-center">
-            <span className="text-xs font-semibold text-muted-foreground uppercase">
+          <div key={day} className="bg-surface-container p-4 text-center">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {day}
             </span>
           </div>
@@ -50,22 +50,22 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[120px] bg-background p-2",
-                !inCurrentMonth && "bg-muted/30"
+                "min-h-[120px] bg-surface p-3",
+                !inCurrentMonth && "bg-surface-variant opacity-60"
               )}
             >
-              <div className="flex justify-between items-start mb-1">
+              <div className="flex justify-between items-start mb-2">
                 <span
                   className={cn(
-                    "text-sm font-medium",
-                    today && "bg-primary text-primary-foreground rounded-full w-7 h-7 flex items-center justify-center",
+                    "text-sm font-normal",
+                    today && "bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-medium",
                     !inCurrentMonth && "text-muted-foreground"
                   )}
                 >
                   {format(day, "d")}
                 </span>
                 {dayEvents.length > 0 && (
-                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                  <span className="text-xs bg-primary-container text-on-primary-container px-2 py-1 rounded-full font-medium">
                     {dayEvents.length}
                   </span>
                 )}
@@ -77,7 +77,7 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
                     key={event.id}
                     onClick={() => onEventClick(event)}
                     className={cn(
-                      "text-xs p-1.5 rounded cursor-pointer hover:opacity-80 transition-smooth truncate",
+                      "text-xs p-2 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer",
                       `category-${event.category}`,
                       "text-white font-medium"
                     )}
@@ -86,7 +86,7 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
                   </div>
                 ))}
                 {dayEvents.length > 3 && (
-                  <div className="text-xs text-muted-foreground pl-1.5">
+                  <div className="text-xs text-muted-foreground pl-2 font-normal">
                     +{dayEvents.length - 3} more
                   </div>
                 )}
