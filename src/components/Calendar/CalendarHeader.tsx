@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Settings, Home } from "lucide-react";
 import { format } from "date-fns";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { FamilySettingsDialog } from "./FamilySettingsDialog";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { Link } from "react-router-dom";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -37,6 +38,17 @@ export function CalendarHeader({
       <div className="surface-elevation-2 rounded-3xl p-3 mb-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
+            <Button
+              variant="text"
+              size="icon"
+              asChild
+              className="h-9 w-9 rounded-full"
+              title="Back to Dashboard"
+            >
+              <Link to="/">
+                <Home className="h-4 w-4" />
+              </Link>
+            </Button>
             <Button
               variant="text"
               size="sm"
