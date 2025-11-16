@@ -149,10 +149,10 @@ const Dashboard = () => {
                   
                   // Determine border color based on participants
                   let borderColor = "border-l-primary";
-                  const participantMembers = event.participants.map(p => p.member);
-                  if (participantMembers.length === 1) {
-                    borderColor = participantMembers.includes("kid1") ? "border-l-kid1" : "border-l-kid2";
-                  } else if (participantMembers.length === 2 && participantMembers.includes("kid1") && participantMembers.includes("kid2")) {
+                  const kidsParticipating = event.participants.filter(p => p === "kid1" || p === "kid2");
+                  if (kidsParticipating.length === 1) {
+                    borderColor = kidsParticipating.includes("kid1") ? "border-l-kid1" : "border-l-kid2";
+                  } else if (kidsParticipating.length === 2) {
                     borderColor = "border-l-kid1";
                   }
 
@@ -177,7 +177,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-2 text-xs">
                           <User className="h-3 w-3 text-muted-foreground" />
                           <span className="text-muted-foreground">
-                            {event.participants.map(p => getFamilyMemberName(p.member)).join(", ")}
+                            {event.participants.map(p => getFamilyMemberName(p)).join(", ")}
                           </span>
                         </div>
                         {dropOffPerson && (

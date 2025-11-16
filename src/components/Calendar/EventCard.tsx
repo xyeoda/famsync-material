@@ -23,9 +23,7 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
   const { getFamilyMemberName } = useFamilySettings();
   
   // Get kids participating in this event
-  const kidsInvolved = event.participants
-    .filter(p => p.member === "kid1" || p.member === "kid2")
-    .map(p => p.member);
+  const kidsInvolved = event.participants.filter(p => p === "kid1" || p === "kid2");
   
   // Determine border color based on kids involved
   const getBorderColor = () => {
@@ -85,10 +83,10 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {event.participants.map((participant) => (
             <span
-              key={participant.member}
+              key={participant}
               className="text-xs lg:text-[10px] bg-surface-container px-1.5 py-0.5 rounded-full font-normal"
             >
-              {getFamilyMemberName(participant.member).split(" ")[0]}
+              {getFamilyMemberName(participant).split(" ")[0]}
             </span>
           ))}
         </div>
