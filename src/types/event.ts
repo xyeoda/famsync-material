@@ -2,6 +2,8 @@ export type FamilyMember = "parent1" | "parent2" | "kid1" | "kid2" | "housekeepe
 
 export type EventRole = "driver" | "accompanies" | "returns";
 
+export type TransportMethod = "car" | "bus" | "walk" | "bike";
+
 export type ActivityCategory = "sports" | "education" | "social" | "chores" | "health" | "other";
 
 export interface RecurrenceSlot {
@@ -15,6 +17,13 @@ export interface EventParticipant {
   roles: EventRole[];
 }
 
+export interface TransportationDetails {
+  dropOffMethod?: TransportMethod;
+  dropOffPerson?: FamilyMember;
+  pickUpMethod?: TransportMethod;
+  pickUpPerson?: FamilyMember;
+}
+
 export interface FamilyEvent {
   id: string;
   title: string;
@@ -22,6 +31,7 @@ export interface FamilyEvent {
   category: ActivityCategory;
   recurrenceSlots: RecurrenceSlot[]; // Multiple time slots per week
   participants: EventParticipant[];
+  transportation?: TransportationDetails;
   startDate: Date; // When the recurring pattern starts
   endDate?: Date; // Optional end date for the pattern
   location?: string;
