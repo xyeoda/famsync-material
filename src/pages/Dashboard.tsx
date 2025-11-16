@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Users, Settings } from "lucide-react";
+import { Calendar, Settings, Car, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEvents } from "@/hooks/useEvents";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useEventInstances } from "@/hooks/useEventInstances";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
-import { format, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
+import { FamilyEvent } from "@/types/event";
 
 const Dashboard = () => {
   const { events } = useEvents();
-  const { settings, updateSettings, resetSettings, getFamilyMembers } = useFamilySettings();
+  const { instances, getInstanceForDate } = useEventInstances();
+  const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
   
   const today = new Date();
@@ -24,10 +27,22 @@ const Dashboard = () => {
     return isWithinInterval(new Date(event.startDate), { start: weekStart, end: weekEnd });
   }).length;
 
-  const familyMembers = getFamilyMembers();
-  const activeFamilyMembers = Object.values(familyMembers).filter(name => 
-    name && !name.startsWith("Parent") && !name.startsWith("Kid") && !name.startsWith("Housekeeper")
-  ).length;
+  // Get today's events
+  const todayEvents = events.filter(event => {
+    if (!event.startDate || !event.recurrenceSlots || event.recurrenceSlots.length === 0) return false;
+    
+    const eventStart = new Date(event.startDate);
+    if (isSameDay(eventStart, today)) return true;
+    
+    // Check if event recurs on today
+    const dayOfWeek = getDay(today);
+    
+    return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
+  }).sort((a, b) => {
+    const timeA = a.recurrenceSlots[0]?.startTime || "00:00";
+    const timeB = b.recurrenceSlots[0]?.startTime || "00:00";
+    return timeA.localeCompare(timeB);
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -61,7 +76,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="surface-elevation-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Events This Week</CardTitle>
@@ -85,20 +100,9 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground">Recurring activities</p>
             </CardContent>
           </Card>
-
-          <Card className="surface-elevation-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Family Members</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeFamilyMembers > 0 ? activeFamilyMembers : 5}</div>
-              <p className="text-xs text-muted-foreground">Configured members</p>
-            </CardContent>
-          </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 mb-8">
           <Card className="surface-elevation-1">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
@@ -121,26 +125,85 @@ const Dashboard = () => {
               </Button>
             </CardContent>
           </Card>
-
-          <Card className="surface-elevation-1">
-            <CardHeader>
-              <CardTitle>Family Members</CardTitle>
-              <CardDescription>Current configuration</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {Object.entries(familyMembers).map(([key, name]) => (
-                  <div key={key} className="flex items-center justify-between py-1">
-                    <span className="text-sm text-muted-foreground capitalize">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}
-                    </span>
-                    <span className="text-sm font-medium">{name}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
+
+        <Card className="surface-elevation-1">
+          <CardHeader>
+            <CardTitle>Today's Schedule</CardTitle>
+            <CardDescription>{format(today, "EEEE, MMMM d")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {todayEvents.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">No events scheduled for today</p>
+            ) : (
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {todayEvents.map((event) => {
+                  const instance = getInstanceForDate(event.id, today);
+                  const transportation = instance?.transportation || event.transportation;
+                  const dropOffPerson = transportation?.dropOffPerson;
+                  const pickUpPerson = transportation?.pickUpPerson;
+                  
+                  // Get today's time slot
+                  const dayOfWeek = getDay(today);
+                  const todaySlot = event.recurrenceSlots.find(slot => slot.dayOfWeek === dayOfWeek);
+                  
+                  // Determine border color based on participants
+                  let borderColor = "border-l-primary";
+                  const participantMembers = event.participants.map(p => p.member);
+                  if (participantMembers.length === 1) {
+                    borderColor = participantMembers.includes("kid1") ? "border-l-kid1" : "border-l-kid2";
+                  } else if (participantMembers.length === 2 && participantMembers.includes("kid1") && participantMembers.includes("kid2")) {
+                    borderColor = "border-l-kid1";
+                  }
+
+                  return (
+                    <Card 
+                      key={event.id} 
+                      className={`min-w-[280px] surface-elevation-2 border-l-4 ${borderColor}`}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <CardTitle className="text-base">{event.title}</CardTitle>
+                            {todaySlot && (
+                              <CardDescription className="text-xs mt-1">
+                                {todaySlot.startTime} - {todaySlot.endTime}
+                              </CardDescription>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs">
+                          <User className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {event.participants.map(p => getFamilyMemberName(p.member)).join(", ")}
+                          </span>
+                        </div>
+                        {dropOffPerson && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <Car className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              Drop: {getFamilyMemberName(dropOffPerson)}
+                            </span>
+                          </div>
+                        )}
+                        {pickUpPerson && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <Car className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              Pick: {getFamilyMemberName(pickUpPerson)}
+                            </span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </main>
 
       <FamilySettingsDialog
