@@ -41,6 +41,18 @@ export interface FamilyEvent {
   updatedAt: Date;
 }
 
+// Event instance override for specific dates
+export interface EventInstance {
+  id: string;
+  eventId: string; // Reference to parent event
+  date: Date; // Specific date this override applies to
+  transportation?: TransportationDetails;
+  participants?: EventParticipant[];
+  cancelled?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const FAMILY_MEMBERS: Record<FamilyMember, string> = {
   parent1: "Parent 1",
   parent2: "Parent 2",
