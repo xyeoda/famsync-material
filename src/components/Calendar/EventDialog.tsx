@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FamilyEvent, FamilyMember, EventRole, ActivityCategory, RecurrenceSlot } from "@/types/event";
+import { FamilyEvent, FamilyMember, EventRole, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
 import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
+import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -47,6 +48,9 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   );
   const [participants, setParticipants] = useState<ParticipantState[]>(
     event?.participants || []
+  );
+  const [transportation, setTransportation] = useState<TransportationDetails>(
+    event?.transportation || {}
   );
 
   const handleAddSlot = () => {
@@ -97,6 +101,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
       endDate: endDate ? new Date(endDate) : undefined,
       recurrenceSlots,
       participants,
+      transportation,
       createdAt: event?.createdAt || now,
       updatedAt: now,
     };
@@ -243,45 +248,137 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
-          {/* Participants & Roles */}
+          {/* Participants */}
           <div className="space-y-4">
-            <h3 className="font-medium">Participants & Roles</h3>
-            <div className="space-y-3">
+            <h3 className="font-medium">Participants</h3>
+            <div className="flex flex-wrap gap-2">
               {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => {
-                const participant = participants.find(p => p.member === member);
-                const isSelected = !!participant;
+                const isSelected = participants.some(p => p.member === member);
 
                 return (
-                  <div key={member} className="p-3 bg-surface-container rounded-lg space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={member}
-                        checked={isSelected}
-                        onCheckedChange={() => handleParticipantToggle(member)}
-                      />
-                      <Label htmlFor={member} className="font-medium cursor-pointer">
-                        {FAMILY_MEMBERS[member]}
-                      </Label>
-                    </div>
-
-                    {isSelected && (
-                      <div className="ml-6 flex flex-wrap gap-2">
-                        {(["driver", "accompanies", "returns"] as EventRole[]).map((role) => (
-                          <label key={role} className="flex items-center gap-1.5 cursor-pointer">
-                            <Checkbox
-                              checked={participant?.roles.includes(role)}
-                              onCheckedChange={() => handleRoleToggle(member, role)}
-                            />
-                            <span className="text-sm">
-                              {role === "driver" ? "🚗 Driver" : role === "accompanies" ? "👥 Accompany" : "🔙 Return"}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
+                    <Checkbox
+                      id={member}
+                      checked={isSelected}
+                      onCheckedChange={() => handleParticipantToggle(member)}
+                    />
+                    <span className="text-sm font-medium">
+                      {FAMILY_MEMBERS[member]}
+                    </span>
+                  </label>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Transportation */}
+          <div className="space-y-4">
+            <h3 className="font-medium">Transportation</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Drop-off */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <span>→</span> Drop-off
+                </Label>
+                
+                <div>
+                  <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "car" as TransportMethod, icon: Car, label: "Car" },
+                      { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
+                      { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
+                      { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
+                    ].map(({ value, icon: Icon, label }) => (
+                      <Button
+                        key={value}
+                        type="button"
+                        variant={transportation.dropOffMethod === value ? "filled" : "outlined"}
+                        size="sm"
+                        onClick={() => setTransportation({ ...transportation, dropOffMethod: value })}
+                        className="justify-start gap-2"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="dropOffPerson" className="text-xs text-on-surface-variant mb-2 block">
+                    Responsible Person
+                  </Label>
+                  <Select
+                    value={transportation.dropOffPerson}
+                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value as FamilyMember })}
+                  >
+                    <SelectTrigger id="dropOffPerson">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
+                        <SelectItem key={member} value={member}>
+                          {FAMILY_MEMBERS[member]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Pick-up */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <span>←</span> Pick-up
+                </Label>
+                
+                <div>
+                  <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "car" as TransportMethod, icon: Car, label: "Car" },
+                      { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
+                      { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
+                      { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
+                    ].map(({ value, icon: Icon, label }) => (
+                      <Button
+                        key={value}
+                        type="button"
+                        variant={transportation.pickUpMethod === value ? "filled" : "outlined"}
+                        size="sm"
+                        onClick={() => setTransportation({ ...transportation, pickUpMethod: value })}
+                        className="justify-start gap-2"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="pickUpPerson" className="text-xs text-on-surface-variant mb-2 block">
+                    Responsible Person
+                  </Label>
+                  <Select
+                    value={transportation.pickUpPerson}
+                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value as FamilyMember })}
+                  >
+                    <SelectTrigger id="pickUpPerson">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
+                        <SelectItem key={member} value={member}>
+                          {FAMILY_MEMBERS[member]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
