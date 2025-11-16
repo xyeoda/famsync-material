@@ -44,16 +44,17 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
 
   return (
     <div className="surface-elevation-2 rounded-3xl overflow-hidden">
-      <div className="grid grid-cols-7 gap-px bg-border">
+      {/* Desktop: 7 columns, Tablet: 4 columns, Mobile: 1 column */}
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-px bg-border">
         {days.map((day) => {
           const dayEvents = getEventsForDay(day);
           const today = isToday(day);
 
           return (
-            <div key={day.toISOString()} className="min-h-[500px] bg-surface">
+            <div key={day.toISOString()} className="min-h-[400px] lg:min-h-[600px] bg-surface flex flex-col">
               <div
                 className={cn(
-                  "p-4 text-center border-b border-border",
+                  "p-4 lg:p-6 text-center border-b border-border flex-shrink-0",
                   today && "bg-primary-container"
                 )}
               >
@@ -62,7 +63,7 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                 </div>
                 <div
                   className={cn(
-                    "text-2xl font-normal mt-1",
+                    "text-3xl lg:text-2xl font-normal mt-2",
                     today ? "text-on-primary-container font-medium" : "text-foreground"
                   )}
                 >
@@ -70,7 +71,7 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                 </div>
               </div>
 
-              <div className="p-3 space-y-2">
+              <div className="p-4 lg:p-3 space-y-3 lg:space-y-2 flex-1 overflow-y-auto">
                 {dayEvents.length === 0 ? (
                   <div className="text-center text-sm text-muted-foreground py-8 font-normal">
                     No events

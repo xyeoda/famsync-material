@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { format } from "date-fns";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -38,6 +39,7 @@ export function CalendarHeader({
           >
             Today
           </Button>
+          <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
