@@ -1,7 +1,8 @@
-import { FamilyEvent, FAMILY_MEMBERS, EVENT_ROLES } from "@/types/event";
+import { FamilyEvent, FAMILY_MEMBERS, FamilyMember } from "@/types/event";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 
 interface EventCardProps {
   event: FamilyEvent;
@@ -10,22 +11,46 @@ interface EventCardProps {
   onClick?: () => void;
 }
 
+const transportIcons = {
+  car: Car,
+  bus: Bus,
+  walk: PersonStanding,
+  bike: Bike,
+};
+
 export function EventCard({ event, startTime, endTime, onClick }: EventCardProps) {
-  const categoryClass = `category-${event.category}`;
+  // Get kids participating in this event
+  const kidsInvolved = event.participants
+    .filter(p => p.member === "kid1" || p.member === "kid2")
+    .map(p => p.member);
   
-  // Get unique drivers
-  const drivers = event.participants
-    .filter(p => p.roles.includes("driver"))
-    .map(p => FAMILY_MEMBERS[p.member]);
+  // Determine border color based on kids involved
+  const getBorderColor = () => {
+    if (kidsInvolved.length === 2) {
+      // Both kids - return gradient string
+      return 'linear-gradient(to bottom, hsl(var(--kid1-color)), hsl(var(--kid2-color)))';
+    } else if (kidsInvolved.length === 1) {
+      // Single kid - show solid color
+      return `hsl(var(--${kidsInvolved[0]}-color))`;
+    }
+    // No kids - fallback to category color
+    return `hsl(var(--category-${event.category}))`;
+  };
+
+  const borderColor = getBorderColor();
+  const isGradient = kidsInvolved.length === 2;
+
+  const DropOffIcon = event.transportation?.dropOffMethod ? transportIcons[event.transportation.dropOffMethod] : null;
+  const PickUpIcon = event.transportation?.pickUpMethod ? transportIcons[event.transportation.pickUpMethod] : null;
 
   return (
     <Card
       onClick={onClick}
       className={cn(
         "p-2 lg:p-2 border-l-4 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer",
-        categoryClass
+        isGradient && "border-l-0 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-kid-kid1 before:to-kid-kid2"
       )}
-      style={{ borderLeftColor: `hsl(var(--category-${event.category}))` }}
+      style={!isGradient ? { borderLeftColor: borderColor } : undefined}
     >
       <div className="flex flex-col gap-1.5 lg:gap-1">
         <div className="flex items-start justify-between gap-2 lg:gap-1.5">
@@ -37,11 +62,20 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
           </span>
         </div>
 
-        {drivers.length > 0 && (
-          <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full">
-              🚗 {drivers.join(", ")}
-            </Badge>
+        {(event.transportation?.dropOffPerson || event.transportation?.pickUpPerson) && (
+          <div className="flex items-center gap-1 flex-wrap">
+            {event.transportation.dropOffPerson && DropOffIcon && (
+              <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
+                <DropOffIcon className="h-3 w-3" />
+                {FAMILY_MEMBERS[event.transportation.dropOffPerson].split(" ")[0]}
+              </Badge>
+            )}
+            {event.transportation.pickUpPerson && PickUpIcon && (
+              <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
+                <PickUpIcon className="h-3 w-3" />
+                {FAMILY_MEMBERS[event.transportation.pickUpPerson].split(" ")[0]}
+              </Badge>
+            )}
           </div>
         )}
 
