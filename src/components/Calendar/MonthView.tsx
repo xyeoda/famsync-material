@@ -77,10 +77,11 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
                     key={event.id}
                     onClick={() => onEventClick(event)}
                     className={cn(
-                      "text-xs p-2 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer",
+                      "text-xs p-2 rounded-lg cursor-pointer hover:shadow-elevation-1 transition-standard truncate state-layer border-l-2 bg-surface-container",
                       `category-${event.category}`,
-                      "text-white font-medium"
+                      "font-medium"
                     )}
+                    style={{ borderLeftColor: `hsl(var(--category-${event.category}))` }}
                   >
                     {event.title}
                   </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CalendarHeader } from "@/components/Calendar/CalendarHeader";
 import { WeekView } from "@/components/Calendar/WeekView";
 import { MonthView } from "@/components/Calendar/MonthView";
+import { EventDialog } from "@/components/Calendar/EventDialog";
 import { useEvents } from "@/hooks/useEvents";
 import { FamilyEvent } from "@/types/event";
 import { addWeeks, subWeeks, addMonths, subMonths } from "date-fns";
@@ -10,7 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<"week" | "month">("week");
-  const { events } = useEvents();
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<FamilyEvent | undefined>(undefined);
+  const { events, addEvent, updateEvent } = useEvents();
   const { toast } = useToast();
 
   const handlePreviousPeriod = () => {
@@ -34,17 +37,29 @@ const Index = () => {
   };
 
   const handleNewEvent = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Event creation form will open here",
-    });
+    setSelectedEvent(undefined);
+    setEventDialogOpen(true);
   };
 
   const handleEventClick = (event: FamilyEvent) => {
-    toast({
-      title: event.title,
-      description: `Category: ${event.category}`,
-    });
+    setSelectedEvent(event);
+    setEventDialogOpen(true);
+  };
+
+  const handleSaveEvent = (event: FamilyEvent) => {
+    if (selectedEvent) {
+      updateEvent(event.id, event);
+      toast({
+        title: "Event Updated",
+        description: `${event.title} has been updated successfully.`,
+      });
+    } else {
+      addEvent(event);
+      toast({
+        title: "Event Created",
+        description: `${event.title} has been added to your schedule.`,
+      });
+    }
   };
 
   return (
@@ -73,6 +88,13 @@ const Index = () => {
             onEventClick={handleEventClick}
           />
         )}
+
+        <EventDialog
+          open={eventDialogOpen}
+          onOpenChange={setEventDialogOpen}
+          onSave={handleSaveEvent}
+          event={selectedEvent}
+        />
       </div>
     </div>
   );
