@@ -53,3 +53,12 @@ export const ACTIVITY_CATEGORIES: Record<ActivityCategory, { label: string; icon
   health: { label: "Health", icon: "❤️" },
   other: { label: "Other", icon: "📌" },
 };
+
+export const EVENT_CATEGORIES: ActivityCategory[] = [
+  "sports",
+  "education",
+  "social",
+  "chores",
+  "health",
+  "other",
+];

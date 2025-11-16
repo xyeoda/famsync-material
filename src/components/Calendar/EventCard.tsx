@@ -37,12 +37,6 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
           </span>
         </div>
 
-        {event.location && (
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            📍 {event.location}
-          </p>
-        )}
-
         {drivers.length > 0 && (
           <div className="flex items-center gap-1 mt-0.5">
             <Badge variant="secondary" className="text-xs py-0.5 px-2 h-5 font-normal rounded-full">
