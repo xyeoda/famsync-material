@@ -48,11 +48,19 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
     <Card
       onClick={onClick}
       className={cn(
-        "p-2 lg:p-2 border-l-4 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer",
-        isGradient && "border-l-0 relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-kid-kid1 before:to-kid-kid2"
+        "p-2 lg:p-2 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer relative",
+        !isGradient && "border-l-4"
       )}
       style={!isGradient ? { borderLeftColor: borderColor } : undefined}
     >
+      {isGradient && (
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-1"
+          style={{ 
+            background: borderColor
+          }}
+        />
+      )}
       <div className="flex flex-col gap-1.5 lg:gap-1">
         <div className="flex items-start justify-between gap-2 lg:gap-1.5">
           <h4 className="font-medium text-sm lg:text-xs leading-tight line-clamp-2">
