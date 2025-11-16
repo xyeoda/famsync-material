@@ -22,10 +22,13 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          light: "hsl(var(--primary-light))",
+          container: "hsl(var(--primary-container))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          container: "hsl(var(--secondary-container))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -38,6 +41,7 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          container: "hsl(var(--accent-container))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -56,6 +60,14 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        category: {
+          sports: "hsl(var(--category-sports))",
+          education: "hsl(var(--category-education))",
+          social: "hsl(var(--category-social))",
+          chores: "hsl(var(--category-chores))",
+          health: "hsl(var(--category-health))",
+          other: "hsl(var(--category-other))",
         },
       },
       borderRadius: {
