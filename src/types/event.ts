@@ -13,16 +13,15 @@ export interface RecurrenceSlot {
 }
 
 export interface EventParticipant {
-  member: string; // Now stores member ID instead of fixed FamilyMember
+  member: FamilyMember;
   roles: EventRole[];
-  unaccompanied?: boolean; // True if member goes alone without supervision
 }
 
 export interface TransportationDetails {
   dropOffMethod?: TransportMethod;
-  dropOffPerson?: string; // Now stores member ID
+  dropOffPerson?: FamilyMember;
   pickUpMethod?: TransportMethod;
-  pickUpPerson?: string; // Now stores member ID
+  pickUpPerson?: FamilyMember;
 }
 
 export interface FamilyEvent {
