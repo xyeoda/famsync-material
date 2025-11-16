@@ -3,12 +3,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { EventInstance, FamilyMember, TransportMethod, TransportationDetails } from "@/types/event";
-import { FAMILY_MEMBERS } from "@/types/event";
+import { EventInstance, TransportMethod, TransportationDetails } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useFamilyMembers } from "@/hooks/useFamilyMembers";
 
 interface InstanceDialogProps {
   open: boolean;
@@ -35,7 +34,7 @@ export function InstanceDialog({
   instance,
   defaultTransportation 
 }: InstanceDialogProps) {
-  const { getFamilyMemberName } = useFamilySettings();
+  const { members } = useFamilyMembers();
   const [transportation, setTransportation] = useState<TransportationDetails>(
     instance?.transportation || defaultTransportation || {}
   );
@@ -109,15 +108,15 @@ export function InstanceDialog({
                   </Label>
                   <Select
                     value={transportation.dropOffPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value as FamilyMember })}
+                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value })}
                   >
                     <SelectTrigger id="dropOffPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
+                      {members.filter(m => m.canDrive || m.type === "kid").map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -161,15 +160,15 @@ export function InstanceDialog({
                   </Label>
                   <Select
                     value={transportation.pickUpPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value as FamilyMember })}
+                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value })}
                   >
                     <SelectTrigger id="pickUpPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
+                      {members.filter(m => m.canDrive || m.type === "kid").map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
