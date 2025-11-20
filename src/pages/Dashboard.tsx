@@ -96,22 +96,26 @@ const Dashboard = () => {
                   const todaySlot = event.recurrenceSlots.find((slot) => slot.dayOfWeek === dayOfWeek);
 
                   // Determine border color based on participants
-                  let borderColor = "border-l-primary";
+                  let borderColorStyle = `hsl(${settings.kid1Color})`;
                   const participants = event.participants;
                   
                   if (participants.length === 1) {
                     const participant = participants[0];
-                    if (participant === "kid1") borderColor = "border-l-[hsl(var(--kid1-color))]";
-                    else if (participant === "kid2") borderColor = "border-l-[hsl(var(--kid2-color))]";
-                    else if (participant === "parent1") borderColor = "border-l-[hsl(var(--parent1-color))]";
-                    else if (participant === "parent2") borderColor = "border-l-[hsl(var(--parent2-color))]";
-                    else if (participant === "housekeeper") borderColor = "border-l-[hsl(var(--housekeeper-color))]";
+                    if (participant === "kid1") borderColorStyle = `hsl(${settings.kid1Color})`;
+                    else if (participant === "kid2") borderColorStyle = `hsl(${settings.kid2Color})`;
+                    else if (participant === "parent1") borderColorStyle = `hsl(${settings.parent1Color})`;
+                    else if (participant === "parent2") borderColorStyle = `hsl(${settings.parent2Color})`;
+                    else if (participant === "housekeeper") borderColorStyle = `hsl(${settings.housekeeperColor})`;
                   } else if (participants.includes("kid1") && participants.includes("kid2")) {
-                    borderColor = "border-l-[hsl(var(--kid1-color))]";
+                    borderColorStyle = `hsl(${settings.kid1Color})`;
                   }
 
                   return (
-                    <Card key={event.id} className={`surface-elevation-2 border-l-4 ${borderColor}`}>
+                    <Card 
+                      key={event.id} 
+                      className="surface-elevation-2 border-l-4"
+                      style={{ borderLeftColor: borderColorStyle }}
+                    >
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div>
