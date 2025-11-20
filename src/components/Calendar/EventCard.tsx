@@ -20,7 +20,7 @@ const transportIcons = {
 };
 
 export function EventCard({ event, startTime, endTime, onClick }: EventCardProps) {
-  const { getFamilyMemberName } = useFamilySettings();
+  const { getFamilyMemberName, settings } = useFamilySettings();
   
   // Get kids participating in this event
   const kidsInvolved = event.participants.filter(p => p === "kid1" || p === "kid2");
@@ -89,14 +89,28 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
         )}
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
-          {event.participants.map((participant) => (
-            <span
-              key={participant}
-              className="text-xs lg:text-[10px] bg-surface-container px-1.5 py-0.5 rounded-full font-normal"
-            >
-              {getFamilyMemberName(participant).split(" ")[0]}
-            </span>
-          ))}
+          {event.participants.map((participant) => {
+            const getParticipantColor = (p: FamilyMember) => {
+              if (p === "kid1") return settings.kid1Color;
+              if (p === "kid2") return settings.kid2Color;
+              if (p === "parent1") return settings.parent1Color;
+              if (p === "parent2") return settings.parent2Color;
+              if (p === "housekeeper") return settings.housekeeperColor;
+              return "0 0% 50%"; // fallback
+            };
+
+            return (
+              <span
+                key={participant}
+                className="text-xs lg:text-[10px] px-1.5 py-0.5 rounded-full font-normal text-white"
+                style={{ 
+                  backgroundColor: `hsl(${getParticipantColor(participant)})`,
+                }}
+              >
+                {getFamilyMemberName(participant).split(" ")[0]}
+              </span>
+            );
+          })}
         </div>
       </div>
     </Card>
