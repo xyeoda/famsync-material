@@ -90,22 +90,23 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {event.participants.map((participant) => {
+            const isKid = participant === "kid1" || participant === "kid2";
             const getParticipantColor = (p: FamilyMember) => {
-              if (p === "kid1") return settings.kid1Color;
-              if (p === "kid2") return settings.kid2Color;
               if (p === "parent1") return settings.parent1Color;
               if (p === "parent2") return settings.parent2Color;
               if (p === "housekeeper") return settings.housekeeperColor;
-              return "0 0% 50%"; // fallback
+              return null;
             };
+
+            const bgColor = getParticipantColor(participant);
 
             return (
               <span
                 key={participant}
-                className="text-xs lg:text-[10px] px-1.5 py-0.5 rounded-full font-normal text-white"
-                style={{ 
-                  backgroundColor: `hsl(${getParticipantColor(participant)})`,
-                }}
+                className={`text-xs lg:text-[10px] px-1.5 py-0.5 rounded-full font-normal ${
+                  isKid ? 'bg-surface-container' : 'text-white'
+                }`}
+                style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
               >
                 {getFamilyMemberName(participant).split(" ")[0]}
               </span>
