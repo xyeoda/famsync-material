@@ -22,8 +22,15 @@ const transportIcons = {
 export function EventCard({ event, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettings();
   
+  const getMemberColor = (member: FamilyMember) => {
+    if (member === "parent1") return settings.parent1Color;
+    if (member === "parent2") return settings.parent2Color;
+    if (member === "housekeeper") return settings.housekeeperColor;
+    return null;
+  };
+
   // Get kids participating in this event
-  const kidsInvolved = event.participants.filter(p => p === "kid1" || p === "kid2");
+  const kidsInvolved = event.participants.filter((p) => p === "kid1" || p === "kid2");
   
   // Determine border color based on kids involved
   const getBorderColor = () => {
@@ -43,6 +50,13 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
 
   const DropOffIcon = event.transportation?.dropOffMethod ? transportIcons[event.transportation.dropOffMethod] : null;
   const PickUpIcon = event.transportation?.pickUpMethod ? transportIcons[event.transportation.pickUpMethod] : null;
+
+  const dropOffColor = event.transportation?.dropOffPerson
+    ? getMemberColor(event.transportation.dropOffPerson)
+    : null;
+  const pickUpColor = event.transportation?.pickUpPerson
+    ? getMemberColor(event.transportation.pickUpPerson)
+    : null;
 
   return (
     <Card
@@ -74,13 +88,27 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
         {(event.transportation?.dropOffPerson || event.transportation?.pickUpPerson) && (
           <div className="flex items-center gap-1 flex-wrap">
             {event.transportation.dropOffPerson && DropOffIcon && (
-              <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1",
+                  dropOffColor && "text-white",
+                )}
+                style={dropOffColor ? { backgroundColor: `hsl(${dropOffColor})` } : undefined}
+              >
                 <DropOffIcon className="h-3 w-3" />
                 {getFamilyMemberName(event.transportation.dropOffPerson).split(" ")[0]}
               </Badge>
             )}
             {event.transportation.pickUpPerson && PickUpIcon && (
-              <Badge variant="secondary" className="text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1",
+                  pickUpColor && "text-white",
+                )}
+                style={pickUpColor ? { backgroundColor: `hsl(${pickUpColor})` } : undefined}
+              >
                 <PickUpIcon className="h-3 w-3" />
                 {getFamilyMemberName(event.transportation.pickUpPerson).split(" ")[0]}
               </Badge>
@@ -91,20 +119,13 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {event.participants.map((participant) => {
             const isKid = participant === "kid1" || participant === "kid2";
-            const getParticipantColor = (p: FamilyMember) => {
-              if (p === "parent1") return settings.parent1Color;
-              if (p === "parent2") return settings.parent2Color;
-              if (p === "housekeeper") return settings.housekeeperColor;
-              return null;
-            };
-
-            const bgColor = getParticipantColor(participant);
+            const bgColor = getMemberColor(participant);
 
             return (
               <span
                 key={participant}
                 className={`text-xs lg:text-[10px] px-1.5 py-0.5 rounded-full font-normal ${
-                  isKid ? 'bg-surface-container' : 'text-white'
+                  isKid ? "bg-surface-container" : "text-white"
                 }`}
                 style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
               >
