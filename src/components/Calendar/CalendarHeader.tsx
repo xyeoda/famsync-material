@@ -36,7 +36,94 @@ export function CalendarHeader({
   return (
     <>
       <div className="surface-elevation-2 rounded-3xl p-3 mb-4">
-        <div className="flex items-center justify-between gap-3">
+        {/* Mobile: Two rows */}
+        <div className="flex flex-col gap-3 sm:hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="text"
+                size="icon"
+                asChild
+                className="h-9 w-9 rounded-full"
+                title="Back to Dashboard"
+              >
+                <Link to="/">
+                  <Home className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="text"
+                size="sm"
+                onClick={onToday}
+                className="text-sm"
+              >
+                {title}
+              </Button>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="text"
+                size="icon"
+                onClick={onPreviousPeriod}
+                className="h-9 w-9 rounded-full"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="text"
+                size="icon"
+                onClick={onNextPeriod}
+                className="h-9 w-9 rounded-full"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1 bg-surface-container rounded-full p-1">
+              <Button
+                variant={view === "week" ? "filled" : "text"}
+                size="sm"
+                onClick={() => onViewChange("week")}
+                className="h-8 px-3 text-sm"
+              >
+                Week
+              </Button>
+              <Button
+                variant={view === "month" ? "filled" : "text"}
+                size="sm"
+                onClick={() => onViewChange("month")}
+                className="h-8 px-3 text-sm"
+              >
+                Month
+              </Button>
+            </div>
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <Button
+                variant="text"
+                size="icon"
+                onClick={() => setSettingsOpen(true)}
+                className="h-9 w-9 rounded-full"
+                title="Family Settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={onNewEvent}
+                variant="filled"
+                size="sm"
+                className="h-9"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                <span className="text-sm">New</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: Single row */}
+        <div className="hidden sm:flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Button
               variant="text"
@@ -117,8 +204,7 @@ export function CalendarHeader({
               className="h-9"
             >
               <Plus className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline text-sm">New Event</span>
-              <span className="sm:hidden text-sm">New</span>
+              <span className="text-sm">New Event</span>
             </Button>
           </div>
         </div>
