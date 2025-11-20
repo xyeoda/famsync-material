@@ -85,7 +85,7 @@ const Dashboard = () => {
             {todayEvents.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4">No events scheduled for today</p>
             ) : (
-              <div className="flex gap-4 overflow-x-auto pb-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {todayEvents.map((event) => {
                   const instance = getInstanceForDate(event.id, today);
                   const transportation = instance?.transportation || event.transportation;
@@ -108,7 +108,7 @@ const Dashboard = () => {
                   return (
                     <Card 
                       key={event.id} 
-                      className={`min-w-[280px] surface-elevation-2 border-l-4 ${borderColor}`}
+                      className={`surface-elevation-2 border-l-4 ${borderColor}`}
                     >
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
