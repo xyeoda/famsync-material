@@ -9,6 +9,9 @@ export interface FamilySettings {
   housekeeperName: string;
   kid1Color: string; // HSL format: "266 100% 60%"
   kid2Color: string; // HSL format: "39 100% 50%"
+  parent1Color: string; // HSL format
+  parent2Color: string; // HSL format
+  housekeeperColor: string; // HSL format
 }
 
 const DEFAULT_SETTINGS: FamilySettings = {
@@ -19,6 +22,9 @@ const DEFAULT_SETTINGS: FamilySettings = {
   housekeeperName: "Housekeeper",
   kid1Color: "266 100% 60%", // Purple
   kid2Color: "39 100% 50%", // Orange
+  parent1Color: "217 91% 60%", // Blue
+  parent2Color: "142 71% 45%", // Green
+  housekeeperColor: "280 67% 56%", // Magenta
 };
 
 const STORAGE_KEY = "family-settings";
@@ -42,7 +48,10 @@ export function useFamilySettings() {
   useEffect(() => {
     document.documentElement.style.setProperty('--kid1-color', settings.kid1Color);
     document.documentElement.style.setProperty('--kid2-color', settings.kid2Color);
-  }, [settings.kid1Color, settings.kid2Color]);
+    document.documentElement.style.setProperty('--parent1-color', settings.parent1Color);
+    document.documentElement.style.setProperty('--parent2-color', settings.parent2Color);
+    document.documentElement.style.setProperty('--housekeeper-color', settings.housekeeperColor);
+  }, [settings.kid1Color, settings.kid2Color, settings.parent1Color, settings.parent2Color, settings.housekeeperColor]);
 
   const updateSettings = (newSettings: Partial<FamilySettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));

@@ -85,7 +85,7 @@ export function FamilySettingsDialog({
     setLocalSettings((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleColorChange = (field: 'kid1Color' | 'kid2Color', hex: string) => {
+  const handleColorChange = (field: 'kid1Color' | 'kid2Color' | 'parent1Color' | 'parent2Color' | 'housekeeperColor', hex: string) => {
     const hsl = hexToHsl(hex);
     setLocalSettings((prev) => ({ ...prev, [field]: hsl }));
   };
@@ -106,32 +106,95 @@ export function FamilySettingsDialog({
             
             <div>
               <Label htmlFor="parent1Name">Parent 1</Label>
-              <Input
-                id="parent1Name"
-                value={localSettings.parent1Name}
-                onChange={(e) => handleChange("parent1Name", e.target.value)}
-                placeholder="e.g., Mom, Dad, Sarah"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="parent1Name"
+                  value={localSettings.parent1Name}
+                  onChange={(e) => handleChange("parent1Name", e.target.value)}
+                  placeholder="e.g., Mom, Dad, Sarah"
+                  className="flex-1"
+                />
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={hslToHex(localSettings.parent1Color)}
+                    onChange={(e) => handleColorChange("parent1Color", e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Pick color"
+                  />
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="icon"
+                    className="h-10 w-10 pointer-events-none"
+                    style={{ backgroundColor: `hsl(${localSettings.parent1Color})` }}
+                  >
+                    <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="parent2Name">Parent 2</Label>
-              <Input
-                id="parent2Name"
-                value={localSettings.parent2Name}
-                onChange={(e) => handleChange("parent2Name", e.target.value)}
-                placeholder="e.g., Mom, Dad, John"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="parent2Name"
+                  value={localSettings.parent2Name}
+                  onChange={(e) => handleChange("parent2Name", e.target.value)}
+                  placeholder="e.g., Mom, Dad, John"
+                  className="flex-1"
+                />
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={hslToHex(localSettings.parent2Color)}
+                    onChange={(e) => handleColorChange("parent2Color", e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Pick color"
+                  />
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="icon"
+                    className="h-10 w-10 pointer-events-none"
+                    style={{ backgroundColor: `hsl(${localSettings.parent2Color})` }}
+                  >
+                    <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="housekeeperName">Helper</Label>
-              <Input
-                id="housekeeperName"
-                value={localSettings.housekeeperName}
-                onChange={(e) => handleChange("housekeeperName", e.target.value)}
-                placeholder="e.g., Nanny, Babysitter, Helper"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="housekeeperName"
+                  value={localSettings.housekeeperName}
+                  onChange={(e) => handleChange("housekeeperName", e.target.value)}
+                  placeholder="e.g., Nanny, Babysitter, Helper"
+                  className="flex-1"
+                />
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={hslToHex(localSettings.housekeeperColor)}
+                    onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    title="Pick color"
+                  />
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="icon"
+                    className="h-10 w-10 pointer-events-none"
+                    style={{ backgroundColor: `hsl(${localSettings.housekeeperColor})` }}
+                  >
+                    <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 

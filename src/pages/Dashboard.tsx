@@ -73,7 +73,6 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2">YeoDa Family</h2>
-          <p className="text-muted-foreground">{format(today, "EEEE, MMMM d, yyyy")}</p>
         </div>
 
         <Card className="surface-elevation-1 mb-8">
@@ -98,11 +97,17 @@ const Dashboard = () => {
 
                   // Determine border color based on participants
                   let borderColor = "border-l-primary";
-                  const kidsParticipating = event.participants.filter((p) => p === "kid1" || p === "kid2");
-                  if (kidsParticipating.length === 1) {
-                    borderColor = kidsParticipating.includes("kid1") ? "border-l-kid1" : "border-l-kid2";
-                  } else if (kidsParticipating.length === 2) {
-                    borderColor = "border-l-kid1";
+                  const participants = event.participants;
+                  
+                  if (participants.length === 1) {
+                    const participant = participants[0];
+                    if (participant === "kid1") borderColor = "border-l-[hsl(var(--kid1-color))]";
+                    else if (participant === "kid2") borderColor = "border-l-[hsl(var(--kid2-color))]";
+                    else if (participant === "parent1") borderColor = "border-l-[hsl(var(--parent1-color))]";
+                    else if (participant === "parent2") borderColor = "border-l-[hsl(var(--parent2-color))]";
+                    else if (participant === "housekeeper") borderColor = "border-l-[hsl(var(--housekeeper-color))]";
+                  } else if (participants.includes("kid1") && participants.includes("kid2")) {
+                    borderColor = "border-l-[hsl(var(--kid1-color))]";
                   }
 
                   return (
@@ -137,16 +142,14 @@ const Dashboard = () => {
                             <span>{event.location}</span>
                           </a>
                         )}
-                        {dropOffPerson && (
-                          <div className="flex items-center gap-2 text-xs">
-                            <Car className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">Drop: {getFamilyMemberName(dropOffPerson)}</span>
-                          </div>
-                        )}
-                        {pickUpPerson && (
-                          <div className="flex items-center gap-2 text-xs">
-                            <Car className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">Pick: {getFamilyMemberName(pickUpPerson)}</span>
+                        {(dropOffPerson || pickUpPerson) && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Car className="h-3 w-3" />
+                            <span>
+                              {dropOffPerson && `Drop: ${getFamilyMemberName(dropOffPerson)}`}
+                              {dropOffPerson && pickUpPerson && " • "}
+                              {pickUpPerson && `Pick: ${getFamilyMemberName(pickUpPerson)}`}
+                            </span>
                           </div>
                         )}
                       </CardContent>

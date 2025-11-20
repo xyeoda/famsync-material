@@ -90,6 +90,11 @@ export default {
           kid1: "hsl(var(--kid1-color))",
           kid2: "hsl(var(--kid2-color))",
         },
+        family: {
+          parent1: "hsl(var(--parent1-color))",
+          parent2: "hsl(var(--parent2-color))",
+          housekeeper: "hsl(var(--housekeeper-color))",
+        },
       },
       boxShadow: {
         'elevation-1': 'var(--elevation-1)',
