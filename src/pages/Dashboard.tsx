@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Settings, Car, User } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -126,6 +126,17 @@ const Dashboard = () => {
                             {event.participants.map((p) => getFamilyMemberName(p)).join(", ")}
                           </span>
                         </div>
+                        {event.location && (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-xs text-primary hover:underline"
+                          >
+                            <MapPin className="h-3 w-3" />
+                            <span>{event.location}</span>
+                          </a>
+                        )}
                         {dropOffPerson && (
                           <div className="flex items-center gap-2 text-xs">
                             <Car className="h-3 w-3 text-muted-foreground" />
