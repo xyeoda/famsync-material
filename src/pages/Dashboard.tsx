@@ -16,33 +16,35 @@ const Dashboard = () => {
   const { instances, getInstanceForDate } = useEventInstances();
   const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
-  
+
   const today = new Date();
   const weekStart = startOfWeek(today);
   const weekEnd = endOfWeek(today);
-  
+
   // Count events happening this week
-  const thisWeekEvents = events.filter(event => {
+  const thisWeekEvents = events.filter((event) => {
     if (!event.startDate) return false;
     return isWithinInterval(new Date(event.startDate), { start: weekStart, end: weekEnd });
   }).length;
 
   // Get today's events
-  const todayEvents = events.filter(event => {
-    if (!event.startDate || !event.recurrenceSlots || event.recurrenceSlots.length === 0) return false;
-    
-    const eventStart = new Date(event.startDate);
-    if (isSameDay(eventStart, today)) return true;
-    
-    // Check if event recurs on today
-    const dayOfWeek = getDay(today);
-    
-    return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
-  }).sort((a, b) => {
-    const timeA = a.recurrenceSlots[0]?.startTime || "00:00";
-    const timeB = b.recurrenceSlots[0]?.startTime || "00:00";
-    return timeA.localeCompare(timeB);
-  });
+  const todayEvents = events
+    .filter((event) => {
+      if (!event.startDate || !event.recurrenceSlots || event.recurrenceSlots.length === 0) return false;
+
+      const eventStart = new Date(event.startDate);
+      if (isSameDay(eventStart, today)) return true;
+
+      // Check if event recurs on today
+      const dayOfWeek = getDay(today);
+
+      return event.recurrenceSlots.some((slot) => slot.dayOfWeek === dayOfWeek);
+    })
+    .sort((a, b) => {
+      const timeA = a.recurrenceSlots[0]?.startTime || "00:00";
+      const timeB = b.recurrenceSlots[0]?.startTime || "00:00";
+      return timeA.localeCompare(timeB);
+    });
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,10 +72,8 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
-          <p className="text-muted-foreground">
-            {format(today, "EEEE, MMMM d, yyyy")}
-          </p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">YeoDa Family</h2>
+          <p className="text-muted-foreground">{format(today, "EEEE, MMMM d, yyyy")}</p>
         </div>
 
         <Card className="surface-elevation-1 mb-8">
@@ -91,14 +91,14 @@ const Dashboard = () => {
                   const transportation = instance?.transportation || event.transportation;
                   const dropOffPerson = transportation?.dropOffPerson;
                   const pickUpPerson = transportation?.pickUpPerson;
-                  
+
                   // Get today's time slot
                   const dayOfWeek = getDay(today);
-                  const todaySlot = event.recurrenceSlots.find(slot => slot.dayOfWeek === dayOfWeek);
-                  
+                  const todaySlot = event.recurrenceSlots.find((slot) => slot.dayOfWeek === dayOfWeek);
+
                   // Determine border color based on participants
                   let borderColor = "border-l-primary";
-                  const kidsParticipating = event.participants.filter(p => p === "kid1" || p === "kid2");
+                  const kidsParticipating = event.participants.filter((p) => p === "kid1" || p === "kid2");
                   if (kidsParticipating.length === 1) {
                     borderColor = kidsParticipating.includes("kid1") ? "border-l-kid1" : "border-l-kid2";
                   } else if (kidsParticipating.length === 2) {
@@ -106,10 +106,7 @@ const Dashboard = () => {
                   }
 
                   return (
-                    <Card 
-                      key={event.id} 
-                      className={`surface-elevation-2 border-l-4 ${borderColor}`}
-                    >
+                    <Card key={event.id} className={`surface-elevation-2 border-l-4 ${borderColor}`}>
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div>
@@ -126,23 +123,19 @@ const Dashboard = () => {
                         <div className="flex items-center gap-2 text-xs">
                           <User className="h-3 w-3 text-muted-foreground" />
                           <span className="text-muted-foreground">
-                            {event.participants.map(p => getFamilyMemberName(p)).join(", ")}
+                            {event.participants.map((p) => getFamilyMemberName(p)).join(", ")}
                           </span>
                         </div>
                         {dropOffPerson && (
                           <div className="flex items-center gap-2 text-xs">
                             <Car className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                              Drop: {getFamilyMemberName(dropOffPerson)}
-                            </span>
+                            <span className="text-muted-foreground">Drop: {getFamilyMemberName(dropOffPerson)}</span>
                           </div>
                         )}
                         {pickUpPerson && (
                           <div className="flex items-center gap-2 text-xs">
                             <Car className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                              Pick: {getFamilyMemberName(pickUpPerson)}
-                            </span>
+                            <span className="text-muted-foreground">Pick: {getFamilyMemberName(pickUpPerson)}</span>
                           </div>
                         )}
                       </CardContent>
@@ -167,11 +160,7 @@ const Dashboard = () => {
                   View Calendar
                 </Link>
               </Button>
-              <Button
-                className="w-full justify-start"
-                variant="outlined"
-                onClick={() => setSettingsOpen(true)}
-              >
+              <Button className="w-full justify-start" variant="outlined" onClick={() => setSettingsOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Family Settings
               </Button>
