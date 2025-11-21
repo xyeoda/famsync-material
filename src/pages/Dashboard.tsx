@@ -10,6 +10,7 @@ import { useEventInstances } from "@/hooks/useEventInstances";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import { FamilyEvent } from "@/types/event";
+import { FlipBoard } from "@/components/FlipBoard/FlipBoard";
 
 const Dashboard = () => {
   const { events } = useEvents();
@@ -71,8 +72,9 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">YeoDa Family</h2>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <h2 className="text-3xl font-bold text-foreground">YeoDa Family</h2>
+          <FlipBoard maxChars={30} />
         </div>
 
         <Card className="surface-elevation-1 mb-8">
