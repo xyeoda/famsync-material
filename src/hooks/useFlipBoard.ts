@@ -14,7 +14,8 @@ const ROTATION_PAUSE = 5000; // 5 seconds between messages
 export function useFlipBoard() {
   const [messages, setMessages] = useState<FlipBoardMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentMessage, setCurrentMessage] = useState(" ".repeat(DEFAULT_MESSAGE.length));
+  // Start with blank characters for visible animation on load
+  const [currentMessage, setCurrentMessage] = useState("-".repeat(DEFAULT_MESSAGE.length));
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Animate on initial load
@@ -22,7 +23,7 @@ export function useFlipBoard() {
     const timer = setTimeout(() => {
       setCurrentMessage(DEFAULT_MESSAGE);
       setIsInitialized(true);
-    }, 300);
+    }, 500); // Slightly longer delay for more visible flip
     return () => clearTimeout(timer);
   }, []);
 
@@ -101,10 +102,26 @@ export function useFlipBoard() {
     rotateMessages();
   }, [messages, currentIndex, isInitialized]);
 
-  // Expose method for Home Assistant integration
+  // Expose methods for testing and Home Assistant integration
   useEffect(() => {
     // @ts-ignore - Add to window for external access
     window.addFlipBoardMessage = addMessage;
+    
+    // @ts-ignore - Add test function
+    window.testFlipBoard = () => {
+      const testMessages = [
+        "Soccer practice at 3pm today!",
+        "Don't forget dance recital tmrw",
+        "Pizza night tonight!",
+        "Dentist appointment at 2pm",
+        "School assembly tomorrow 9am",
+      ];
+      const randomMsg = testMessages[Math.floor(Math.random() * testMessages.length)];
+      addMessage(randomMsg, "high");
+      console.log("🎯 Test message added:", randomMsg);
+    };
+    
+    console.log("🎪 FlipBoard ready! Test with: window.testFlipBoard()");
   }, [addMessage]);
 
   return {
