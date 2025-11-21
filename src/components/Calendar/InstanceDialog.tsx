@@ -115,11 +115,13 @@ export function InstanceDialog({
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
-                        </SelectItem>
-                      ))}
+                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
+                        .filter((member) => member !== "kid1" && member !== "kid2")
+                        .map((member) => (
+                          <SelectItem key={member} value={member}>
+                            {getFamilyMemberName(member)}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -167,11 +169,13 @@ export function InstanceDialog({
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[]).map((member) => (
-                        <SelectItem key={member} value={member}>
-                          {getFamilyMemberName(member)}
-                        </SelectItem>
-                      ))}
+                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
+                        .filter((member) => member !== "kid1" && member !== "kid2")
+                        .map((member) => (
+                          <SelectItem key={member} value={member}>
+                            {getFamilyMemberName(member)}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>

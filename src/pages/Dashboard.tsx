@@ -96,26 +96,37 @@ const Dashboard = () => {
                   const todaySlot = event.recurrenceSlots.find((slot) => slot.dayOfWeek === dayOfWeek);
 
                   // Determine border color based on participants
-                  let borderColorStyle = `hsl(${settings.kid1Color})`;
                   const participants = event.participants;
+                  const bothKids = participants.includes("kid1") && participants.includes("kid2");
                   
-                  if (participants.length === 1) {
+                  let borderColorStyle = `hsl(${settings.kid1Color})`;
+                  let borderBackground = undefined;
+                  
+                  if (bothKids) {
+                    borderBackground = `linear-gradient(to bottom, hsl(${settings.kid1Color}), hsl(${settings.kid2Color}))`;
+                  } else if (participants.length === 1) {
                     const participant = participants[0];
                     if (participant === "kid1") borderColorStyle = `hsl(${settings.kid1Color})`;
                     else if (participant === "kid2") borderColorStyle = `hsl(${settings.kid2Color})`;
                     else if (participant === "parent1") borderColorStyle = `hsl(${settings.parent1Color})`;
                     else if (participant === "parent2") borderColorStyle = `hsl(${settings.parent2Color})`;
                     else if (participant === "housekeeper") borderColorStyle = `hsl(${settings.housekeeperColor})`;
-                  } else if (participants.includes("kid1") && participants.includes("kid2")) {
-                    borderColorStyle = `hsl(${settings.kid1Color})`;
                   }
 
                   return (
                     <Card 
                       key={event.id} 
-                      className="surface-elevation-2 border-l-4"
-                      style={{ borderLeftColor: borderColorStyle }}
+                      className={`surface-elevation-2 ${bothKids ? 'relative overflow-hidden' : 'border-l-4'}`}
+                      style={!bothKids ? { borderLeftColor: borderColorStyle } : undefined}
                     >
+                      {bothKids && (
+                        <div 
+                          className="absolute left-0 top-0 bottom-0 w-1"
+                          style={{ 
+                            background: borderBackground
+                          }}
+                        />
+                      )}
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div>
