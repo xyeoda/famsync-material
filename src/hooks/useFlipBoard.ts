@@ -7,14 +7,24 @@ interface FlipBoardMessage {
 }
 
 const STORAGE_KEY = "flipboard_messages";
-const DEFAULT_MESSAGE = "Welcome to YeoDa Family Calendar";
+const DEFAULT_MESSAGE = "Welcome to YeoDa Family Dash";
 const MESSAGE_DURATION = 10000; // 10 seconds per message
 const ROTATION_PAUSE = 5000; // 5 seconds between messages
 
 export function useFlipBoard() {
   const [messages, setMessages] = useState<FlipBoardMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentMessage, setCurrentMessage] = useState(DEFAULT_MESSAGE);
+  const [currentMessage, setCurrentMessage] = useState(" ".repeat(DEFAULT_MESSAGE.length));
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Animate on initial load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentMessage(DEFAULT_MESSAGE);
+      setIsInitialized(true);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Load messages from localStorage
   useEffect(() => {
@@ -72,6 +82,8 @@ export function useFlipBoard() {
 
   // Rotate through messages
   useEffect(() => {
+    if (!isInitialized) return;
+
     if (messages.length === 0) {
       setCurrentMessage(DEFAULT_MESSAGE);
       return;
@@ -87,7 +99,7 @@ export function useFlipBoard() {
     };
 
     rotateMessages();
-  }, [messages, currentIndex]);
+  }, [messages, currentIndex, isInitialized]);
 
   // Expose method for Home Assistant integration
   useEffect(() => {

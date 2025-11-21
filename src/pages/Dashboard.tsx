@@ -72,9 +72,8 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <h2 className="text-3xl font-bold text-foreground">YeoDa Family</h2>
-          <FlipBoard maxChars={30} />
+        <div className="mb-8 flex justify-center">
+          <FlipBoard maxChars={32} />
         </div>
 
         <Card className="surface-elevation-1 mb-8">
