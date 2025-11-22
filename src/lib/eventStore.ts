@@ -15,11 +15,51 @@ function migrateParticipants(participants: any[]): FamilyMember[] {
     .filter((m: FamilyMember) => m === 'kid1' || m === 'kid2');
 }
 
-// Simple in-memory store for now - will be replaced with proper database
+// Store with localStorage persistence
 class EventStore {
   private events: FamilyEvent[] = [];
   private instances: EventInstance[] = [];
   private listeners: Set<() => void> = new Set();
+
+  constructor() {
+    this.loadFromStorage();
+  }
+
+  private loadFromStorage() {
+    try {
+      const storedEvents = localStorage.getItem('family-events');
+      const storedInstances = localStorage.getItem('family-event-instances');
+      
+      if (storedEvents) {
+        this.events = JSON.parse(storedEvents, (key, value) => {
+          if (key === 'startDate' || key === 'endDate' || key === 'createdAt' || key === 'updatedAt' || key === 'date') {
+            return value ? new Date(value) : value;
+          }
+          return value;
+        });
+      }
+      
+      if (storedInstances) {
+        this.instances = JSON.parse(storedInstances, (key, value) => {
+          if (key === 'date' || key === 'createdAt' || key === 'updatedAt') {
+            return value ? new Date(value) : value;
+          }
+          return value;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load events from storage:', error);
+    }
+  }
+
+  private saveToStorage() {
+    try {
+      localStorage.setItem('family-events', JSON.stringify(this.events));
+      localStorage.setItem('family-event-instances', JSON.stringify(this.instances));
+    } catch (error) {
+      console.error('Failed to save events to storage:', error);
+    }
+  }
 
   subscribe(listener: () => void) {
     this.listeners.add(listener);
@@ -27,6 +67,7 @@ class EventStore {
   }
 
   private notify() {
+    this.saveToStorage();
     this.listeners.forEach(listener => listener());
   }
 
