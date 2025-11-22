@@ -10,6 +10,7 @@ import { useEventInstances } from "@/hooks/useEventInstances";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import { FamilyEvent } from "@/types/event";
+import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Dashboard = () => {
   const { events } = useEvents();
@@ -47,8 +48,14 @@ const Dashboard = () => {
     });
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.15] dark:opacity-10"
+        style={{ backgroundImage: `url(${dashboardBg})` }}
+      />
+      
+      <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-3xl font-bold text-foreground">YeoDa Family</h2>
           <div className="flex items-center gap-2">
