@@ -48,28 +48,21 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="surface-elevation-2 border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="text"
-                size="icon"
-                onClick={() => setSettingsOpen(true)}
-                className="h-10 w-10 rounded-full"
-                title="Family Settings"
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">YeoDa Family</h2>
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-3xl font-bold text-foreground">YeoDa Family</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="text"
+              size="icon"
+              onClick={() => setSettingsOpen(true)}
+              className="h-10 w-10 rounded-full"
+              title="Family Settings"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <Card className="surface-elevation-1 mb-8">
