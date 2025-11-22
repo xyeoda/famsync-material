@@ -15,16 +15,16 @@ export interface FamilySettings {
 }
 
 const DEFAULT_SETTINGS: FamilySettings = {
-  parent1Name: "Parent 1",
-  parent2Name: "Parent 2",
-  kid1Name: "Kid 1",
-  kid2Name: "Kid 2",
-  housekeeperName: "Housekeeper",
+  parent1Name: "Shawn",
+  parent2Name: "Wynne",
+  kid1Name: "Vince",
+  kid2Name: "Maeve",
+  housekeeperName: "Nuru",
   kid1Color: "266 100% 60%", // Purple
-  kid2Color: "39 100% 50%", // Orange
-  parent1Color: "217 91% 60%", // Blue
-  parent2Color: "142 71% 45%", // Green
-  housekeeperColor: "280 67% 56%", // Magenta
+  kid2Color: "39 100% 50%", // Gold
+  parent1Color: "217 71% 58%", // Soft Blue
+  parent2Color: "340 65% 55%", // Rose/Coral
+  housekeeperColor: "180 50% 45%", // Teal
 };
 
 const STORAGE_KEY = "family-settings";
