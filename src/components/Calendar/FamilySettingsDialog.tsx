@@ -92,7 +92,7 @@ export function FamilySettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md bg-card/80 backdrop-blur-md border-border/50">
         <DialogHeader>
           <DialogTitle>Family Settings</DialogTitle>
           <DialogDescription>

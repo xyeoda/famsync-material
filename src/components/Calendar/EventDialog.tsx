@@ -95,7 +95,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card/80 backdrop-blur-md border-border/50">
         <DialogHeader>
           <DialogTitle>{event ? "Edit Event" : "Create New Event"}</DialogTitle>
         </DialogHeader>

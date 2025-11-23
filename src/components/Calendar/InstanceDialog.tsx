@@ -56,7 +56,7 @@ export function InstanceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl bg-card/80 backdrop-blur-md border-border/50">
         <DialogHeader>
           <DialogTitle>
             Edit {eventTitle} - {format(date, "MMM d, yyyy")}
