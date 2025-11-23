@@ -62,7 +62,7 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
     <Card
       onClick={onClick}
       className={cn(
-        "p-2 lg:p-2 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer relative",
+        "p-2 lg:p-2 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer relative bg-card/70 backdrop-blur-md border-border/40",
         !isGradient && "border-l-4"
       )}
       style={!isGradient ? { borderLeftColor: borderColor } : undefined}
