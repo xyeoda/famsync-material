@@ -51,7 +51,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Image */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.15] dark:opacity-10"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.20] dark:opacity-[0.15]"
         style={{ backgroundImage: `url(${dashboardBg})` }}
       />
       
