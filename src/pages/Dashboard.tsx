@@ -13,6 +13,18 @@ import { FamilyEvent } from "@/types/event";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Dashboard = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+    navigate("/auth");
+  };
   const { events } = useEvents();
   const { instances, getInstanceForDate } = useEventInstances();
   const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettings();

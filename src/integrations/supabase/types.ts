@@ -14,7 +14,199 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_instances: {
+        Row: {
+          cancelled: boolean | null
+          created_at: string
+          date: string
+          event_id: string
+          id: string
+          participants: Database["public"]["Enums"]["family_member"][] | null
+          transportation: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled?: boolean | null
+          created_at?: string
+          date: string
+          event_id: string
+          id?: string
+          participants?: Database["public"]["Enums"]["family_member"][] | null
+          transportation?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled?: boolean | null
+          created_at?: string
+          date?: string
+          event_id?: string
+          id?: string
+          participants?: Database["public"]["Enums"]["family_member"][] | null
+          transportation?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_instances_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "family_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_instances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_events: {
+        Row: {
+          category: Database["public"]["Enums"]["activity_category"]
+          color: string | null
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          participants: Database["public"]["Enums"]["family_member"][]
+          recurrence_slots: Json
+          start_date: string
+          title: string
+          transportation: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["activity_category"]
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          participants?: Database["public"]["Enums"]["family_member"][]
+          recurrence_slots?: Json
+          start_date: string
+          title: string
+          transportation?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["activity_category"]
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          participants?: Database["public"]["Enums"]["family_member"][]
+          recurrence_slots?: Json
+          start_date?: string
+          title?: string
+          transportation?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_settings: {
+        Row: {
+          created_at: string
+          housekeeper_color: string | null
+          housekeeper_name: string | null
+          id: string
+          kid1_color: string | null
+          kid1_name: string | null
+          kid2_color: string | null
+          kid2_name: string | null
+          parent1_color: string | null
+          parent1_name: string | null
+          parent2_color: string | null
+          parent2_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          housekeeper_color?: string | null
+          housekeeper_name?: string | null
+          id?: string
+          kid1_color?: string | null
+          kid1_name?: string | null
+          kid2_color?: string | null
+          kid2_name?: string | null
+          parent1_color?: string | null
+          parent1_name?: string | null
+          parent2_color?: string | null
+          parent2_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          housekeeper_color?: string | null
+          housekeeper_name?: string | null
+          id?: string
+          kid1_color?: string | null
+          kid1_name?: string | null
+          kid2_color?: string | null
+          kid2_name?: string | null
+          parent1_color?: string | null
+          parent1_name?: string | null
+          parent2_color?: string | null
+          parent2_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +215,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      activity_category:
+        | "sports"
+        | "education"
+        | "social"
+        | "chores"
+        | "health"
+        | "other"
+      family_member: "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper"
+      transport_method: "car" | "bus" | "walk" | "bike"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +350,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      activity_category: [
+        "sports",
+        "education",
+        "social",
+        "chores",
+        "health",
+        "other",
+      ],
+      family_member: ["parent1", "parent2", "kid1", "kid2", "housekeeper"],
+      transport_method: ["car", "bus", "walk", "bike"],
+    },
   },
 } as const
