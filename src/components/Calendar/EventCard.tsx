@@ -1,4 +1,4 @@
-import { FamilyEvent, FAMILY_MEMBERS, FamilyMember } from "@/types/event";
+import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember } from "@/types/event";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { useFamilySettings } from "@/hooks/useFamilySettings";
 
 interface EventCardProps {
   event: FamilyEvent;
+  instance?: EventInstance;
   startTime: string;
   endTime: string;
   onClick?: () => void;
@@ -19,7 +20,7 @@ const transportIcons = {
   bike: Bike,
 };
 
-export function EventCard({ event, startTime, endTime, onClick }: EventCardProps) {
+export function EventCard({ event, instance, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettings();
   
   const getMemberColor = (member: FamilyMember) => {
@@ -29,8 +30,12 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
     return null;
   };
 
+  // Use instance data if available, otherwise fall back to event data
+  const transportation = instance?.transportation || event.transportation;
+  const participants = instance?.participants || event.participants;
+
   // Get kids participating in this event
-  const kidsInvolved = event.participants.filter((p) => p === "kid1" || p === "kid2");
+  const kidsInvolved = participants.filter((p) => p === "kid1" || p === "kid2");
   
   // Determine border color based on kids involved
   const getBorderColor = () => {
@@ -48,14 +53,14 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
   const borderColor = getBorderColor();
   const isGradient = kidsInvolved.length === 2;
 
-  const DropOffIcon = event.transportation?.dropOffMethod ? transportIcons[event.transportation.dropOffMethod] : null;
-  const PickUpIcon = event.transportation?.pickUpMethod ? transportIcons[event.transportation.pickUpMethod] : null;
+  const DropOffIcon = transportation?.dropOffMethod ? transportIcons[transportation.dropOffMethod] : null;
+  const PickUpIcon = transportation?.pickUpMethod ? transportIcons[transportation.pickUpMethod] : null;
 
-  const dropOffColor = event.transportation?.dropOffPerson
-    ? getMemberColor(event.transportation.dropOffPerson)
+  const dropOffColor = transportation?.dropOffPerson
+    ? getMemberColor(transportation.dropOffPerson)
     : null;
-  const pickUpColor = event.transportation?.pickUpPerson
-    ? getMemberColor(event.transportation.pickUpPerson)
+  const pickUpColor = transportation?.pickUpPerson
+    ? getMemberColor(transportation.pickUpPerson)
     : null;
 
   return (
@@ -85,9 +90,9 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
           </span>
         </div>
 
-        {(event.transportation?.dropOffPerson || event.transportation?.pickUpPerson) && (
+        {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
           <div className="flex items-center gap-1 flex-wrap">
-            {event.transportation.dropOffPerson && DropOffIcon && (
+            {transportation.dropOffPerson && DropOffIcon && (
               <Badge
                 variant="secondary"
                 className={cn(
@@ -97,10 +102,10 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
                 style={dropOffColor ? { backgroundColor: `hsl(${dropOffColor})` } : undefined}
               >
                 <DropOffIcon className="h-3 w-3" />
-                {getFamilyMemberName(event.transportation.dropOffPerson).split(" ")[0]}
+                {getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]}
               </Badge>
             )}
-            {event.transportation.pickUpPerson && PickUpIcon && (
+            {transportation.pickUpPerson && PickUpIcon && (
               <Badge
                 variant="secondary"
                 className={cn(
@@ -110,14 +115,14 @@ export function EventCard({ event, startTime, endTime, onClick }: EventCardProps
                 style={pickUpColor ? { backgroundColor: `hsl(${pickUpColor})` } : undefined}
               >
                 <PickUpIcon className="h-3 w-3" />
-                {getFamilyMemberName(event.transportation.pickUpPerson).split(" ")[0]}
+                {getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]}
               </Badge>
             )}
           </div>
         )}
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
-          {event.participants.map((participant) => {
+          {participants.map((participant) => {
             const isKid = participant === "kid1" || participant === "kid2";
             const bgColor = getMemberColor(participant);
 
