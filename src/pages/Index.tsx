@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -127,8 +128,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
-      <div className="mx-auto max-w-[1800px]">
+    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8 relative">
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 pointer-events-none"
+        style={{ backgroundImage: `url(${dashboardBg})` }}
+      />
+      <div className="mx-auto max-w-[1800px] relative z-10">
         <CalendarHeader
           currentDate={currentDate}
           view={view}
