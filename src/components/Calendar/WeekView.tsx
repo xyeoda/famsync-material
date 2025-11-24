@@ -1,4 +1,4 @@
-import { FamilyEvent, RecurrenceSlot } from "@/types/event";
+import { FamilyEvent, RecurrenceSlot, EventInstance } from "@/types/event";
 import { EventCard } from "./EventCard";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface WeekViewProps {
   currentDate: Date;
   events: FamilyEvent[];
+  instances: EventInstance[];
   onEventClick: (event: FamilyEvent, date: Date) => void;
 }
 
@@ -14,9 +15,17 @@ interface DayEvent {
   slot: RecurrenceSlot;
 }
 
-export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
+export function WeekView({ currentDate, events, instances, onEventClick }: WeekViewProps) {
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  const getInstanceForDate = (eventId: string, date: Date): EventInstance | undefined => {
+    const dateStr = date.toISOString().split('T')[0];
+    return instances.find(instance => {
+      const instanceDateStr = instance.date.toISOString().split('T')[0];
+      return instance.eventId === eventId && instanceDateStr === dateStr;
+    });
+  };
 
   // Map events to their days based on recurrence slots
   const getEventsForDay = (date: Date): DayEvent[] => {
@@ -77,15 +86,19 @@ export function WeekView({ currentDate, events, onEventClick }: WeekViewProps) {
                     No events
                   </div>
                 ) : (
-                  dayEvents.map(({ event, slot }, index) => (
-                    <EventCard
-                      key={`${event.id}-${index}`}
-                      event={event}
-                      startTime={slot.startTime}
-                      endTime={slot.endTime}
-                      onClick={() => onEventClick(event, day)}
-                    />
-                  ))
+                  dayEvents.map(({ event, slot }, index) => {
+                    const instance = getInstanceForDate(event.id, day);
+                    return (
+                      <EventCard
+                        key={`${event.id}-${index}`}
+                        event={event}
+                        instance={instance}
+                        startTime={slot.startTime}
+                        endTime={slot.endTime}
+                        onClick={() => onEventClick(event, day)}
+                      />
+                    );
+                  })
                 )}
               </div>
             </div>

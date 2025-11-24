@@ -1,14 +1,15 @@
-import { FamilyEvent } from "@/types/event";
+import { FamilyEvent, EventInstance } from "@/types/event";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, startOfWeek, endOfWeek, isSameDay, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface MonthViewProps {
   currentDate: Date;
   events: FamilyEvent[];
+  instances: EventInstance[];
   onEventClick: (event: FamilyEvent, date: Date) => void;
 }
 
-export function MonthView({ currentDate, events, onEventClick }: MonthViewProps) {
+export function MonthView({ currentDate, events, instances, onEventClick }: MonthViewProps) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -16,6 +17,14 @@ export function MonthView({ currentDate, events, onEventClick }: MonthViewProps)
   
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const getInstanceForDate = (eventId: string, date: Date): EventInstance | undefined => {
+    const dateStr = date.toISOString().split('T')[0];
+    return instances.find(instance => {
+      const instanceDateStr = instance.date.toISOString().split('T')[0];
+      return instance.eventId === eventId && instanceDateStr === dateStr;
+    });
+  };
 
   const getEventsForDay = (date: Date) => {
     const dayOfWeek = date.getDay();

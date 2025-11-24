@@ -148,12 +148,14 @@ const Index = () => {
           <WeekView
             currentDate={currentDate}
             events={events}
+            instances={instances}
             onEventClick={handleEventClick}
           />
         ) : (
           <MonthView
             currentDate={currentDate}
             events={events}
+            instances={instances}
             onEventClick={handleEventClick}
           />
         )}
