@@ -35,9 +35,7 @@ export function useFamilySettingsDB() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      loadSettings();
-    }
+    loadSettings();
   }, [user]);
 
   useEffect(() => {
@@ -48,15 +46,22 @@ export function useFamilySettingsDB() {
     document.documentElement.style.setProperty('--housekeeper-color', settings.housekeeperColor);
   }, [settings]);
 
-  const loadSettings = async () => {
-    if (!user) return;
-
+  const loadSettings = async (forceHouseholdId?: string) => {
     try {
-      const { data, error } = await supabase
-        .from('family_settings')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      let query = supabase.from('family_settings').select('*');
+      
+      // If we have a specific household ID to load (display mode)
+      if (forceHouseholdId) {
+        query = query.eq('household_id', forceHouseholdId);
+      } else if (user) {
+        // Otherwise load by user_id (authenticated mode)
+        query = query.eq('user_id', user.id);
+      } else {
+        // No user and no household ID, can't load settings
+        return;
+      }
+      
+      const { data, error } = await query.maybeSingle();
 
       if (error) throw error;
 
@@ -75,7 +80,7 @@ export function useFamilySettingsDB() {
         });
       } else {
         // Create default settings
-        await createDefaultSettings();
+        await createDefaultSettings(forceHouseholdId);
       }
     } catch (error) {
       console.error('Error loading family settings:', error);
@@ -84,25 +89,31 @@ export function useFamilySettingsDB() {
     }
   };
 
-  const createDefaultSettings = async () => {
+  const createDefaultSettings = async (householdId?: string) => {
     if (!user) return;
 
     try {
+      const insertData: any = {
+        user_id: user.id,
+        parent1_name: DEFAULT_SETTINGS.parent1Name,
+        parent2_name: DEFAULT_SETTINGS.parent2Name,
+        kid1_name: DEFAULT_SETTINGS.kid1Name,
+        kid2_name: DEFAULT_SETTINGS.kid2Name,
+        housekeeper_name: DEFAULT_SETTINGS.housekeeperName,
+        kid1_color: DEFAULT_SETTINGS.kid1Color,
+        kid2_color: DEFAULT_SETTINGS.kid2Color,
+        parent1_color: DEFAULT_SETTINGS.parent1Color,
+        parent2_color: DEFAULT_SETTINGS.parent2Color,
+        housekeeper_color: DEFAULT_SETTINGS.housekeeperColor,
+      };
+
+      if (householdId) {
+        insertData.household_id = householdId;
+      }
+
       const { error } = await supabase
         .from('family_settings')
-        .insert({
-          user_id: user.id,
-          parent1_name: DEFAULT_SETTINGS.parent1Name,
-          parent2_name: DEFAULT_SETTINGS.parent2Name,
-          kid1_name: DEFAULT_SETTINGS.kid1Name,
-          kid2_name: DEFAULT_SETTINGS.kid2Name,
-          housekeeper_name: DEFAULT_SETTINGS.housekeeperName,
-          kid1_color: DEFAULT_SETTINGS.kid1Color,
-          kid2_color: DEFAULT_SETTINGS.kid2Color,
-          parent1_color: DEFAULT_SETTINGS.parent1Color,
-          parent2_color: DEFAULT_SETTINGS.parent2Color,
-          housekeeper_color: DEFAULT_SETTINGS.housekeeperColor,
-        });
+        .insert(insertData);
 
       if (error) throw error;
     } catch (error) {
@@ -169,5 +180,6 @@ export function useFamilySettingsDB() {
     resetSettings,
     getFamilyMemberName,
     getFamilyMembers,
+    loadSettings,
   };
 }

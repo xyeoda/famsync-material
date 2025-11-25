@@ -1,5 +1,6 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useEffect } from "react";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
+import { useHousehold } from "./HouseholdContext";
 import { FamilyMember } from "@/types/event";
 
 interface FamilySettingsContextType {
@@ -10,7 +11,14 @@ interface FamilySettingsContextType {
 const FamilySettingsContext = createContext<FamilySettingsContextType | undefined>(undefined);
 
 export function FamilySettingsProvider({ children }: { children: ReactNode }) {
-  const { getFamilyMemberName, getFamilyMembers } = useFamilySettingsDB();
+  const { getFamilyMemberName, getFamilyMembers, loadSettings } = useFamilySettingsDB();
+  const { householdId } = useHousehold();
+
+  useEffect(() => {
+    if (householdId) {
+      loadSettings(householdId);
+    }
+  }, [householdId]);
 
   return (
     <FamilySettingsContext.Provider value={{ getFamilyMemberName, getFamilyMembers }}>
