@@ -111,14 +111,18 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("Parent role assigned via trigger");
     }
 
-    // Update family_settings with household_id
+    // Create family_settings with household_id
     const { error: settingsError } = await supabaseAdmin
       .from("family_settings")
-      .update({ household_id: householdData.id })
-      .eq("user_id", userId);
+      .insert({
+        user_id: userId,
+        household_id: householdData.id,
+      });
 
     if (settingsError) {
-      console.error("Error updating family_settings:", settingsError);
+      console.error("Error creating family_settings:", settingsError);
+    } else {
+      console.log("Family settings created with household_id");
     }
 
     console.log("Admin setup complete");

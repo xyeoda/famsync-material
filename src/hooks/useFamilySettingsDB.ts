@@ -93,6 +93,20 @@ export function useFamilySettingsDB() {
     if (!user) return;
 
     try {
+      // If no household ID provided, fetch it
+      let finalHouseholdId = householdId;
+      if (!finalHouseholdId) {
+        const { data: householdData } = await supabase
+          .from('households')
+          .select('id')
+          .eq('owner_id', user.id)
+          .maybeSingle();
+        
+        if (householdData) {
+          finalHouseholdId = householdData.id;
+        }
+      }
+
       const insertData: any = {
         user_id: user.id,
         parent1_name: DEFAULT_SETTINGS.parent1Name,
@@ -107,8 +121,8 @@ export function useFamilySettingsDB() {
         housekeeper_color: DEFAULT_SETTINGS.housekeeperColor,
       };
 
-      if (householdId) {
-        insertData.household_id = householdId;
+      if (finalHouseholdId) {
+        insertData.household_id = finalHouseholdId;
       }
 
       const { error } = await supabase
