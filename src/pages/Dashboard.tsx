@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users, Trash2 } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users, Trash2, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEventsDB } from "@/hooks/useEventsDB";
@@ -13,6 +24,7 @@ import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { UserManagementDialog } from "@/components/UserManagement/UserManagementDialog";
+import { AdminBootstrap } from "@/components/AdminBootstrap";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import { FamilyEvent } from "@/types/event";
 import dashboardBg from "@/assets/dashboard-bg.png";
@@ -57,10 +69,6 @@ const Dashboard = () => {
   };
 
   const handleResetDatabase = async () => {
-    if (!confirm("⚠️ WARNING: This will DELETE ALL data and users from the database. This action CANNOT be undone. Are you absolutely sure?")) {
-      return;
-    }
-
     setResetting(true);
     try {
       const { error } = await supabase.functions.invoke("reset-database", {
@@ -158,16 +166,40 @@ const Dashboard = () => {
                       <Users className="h-4 w-4" />
                       Manage Users
                     </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={handleResetDatabase}
-                      disabled={resetting}
-                      className="gap-2"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      {resetting ? "Resetting..." : "Reset DB"}
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={resetting}
+                          className="gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {resetting ? "Resetting..." : "Reset DB"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>⚠️ Reset Database</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently DELETE ALL data including:
+                            <ul className="list-disc list-inside mt-2 space-y-1">
+                              <li>All users and their accounts</li>
+                              <li>All events and calendar data</li>
+                              <li>All pending invitations</li>
+                              <li>All household settings</li>
+                            </ul>
+                            <p className="mt-3 font-semibold text-destructive">This action CANNOT be undone!</p>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive hover:bg-destructive/90">
+                            Yes, Delete Everything
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <Button
                       variant="text"
                       size="icon"
@@ -380,6 +412,8 @@ const Dashboard = () => {
           )}
         </>
       )}
+
+      {!user && <AdminBootstrap />}
     </div>
   );
 };

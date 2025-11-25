@@ -6,9 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, UserPlus, Loader2, Mail } from "lucide-react";
+import { Trash2, UserPlus, Loader2, Mail, Copy } from "lucide-react";
 
 interface UserManagementDialogProps {
   open: boolean;
@@ -29,6 +39,7 @@ interface PendingInvitation {
   email: string;
   role: "parent" | "helper" | "kid";
   created_at: string;
+  token: string;
 }
 
 export function UserManagementDialog({
@@ -44,6 +55,7 @@ export function UserManagementDialog({
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -155,6 +167,7 @@ export function UserManagementDialog({
         description: "The member has been removed from the household",
       });
 
+      setMemberToRemove(null);
       loadMembers();
     } catch (error: any) {
       console.error("Error removing member:", error);
@@ -222,6 +235,15 @@ export function UserManagementDialog({
     } finally {
       setSendingTest(false);
     }
+  };
+
+  const handleCopyInviteLink = (token: string) => {
+    const inviteUrl = `${window.location.origin}/accept-invite/${token}`;
+    navigator.clipboard.writeText(inviteUrl);
+    toast({
+      title: "Link Copied",
+      description: "Invitation link copied to clipboard",
+    });
   };
 
   const getRoleBadgeVariant = (role: string) => {
@@ -334,16 +356,16 @@ export function UserManagementDialog({
                       <TableCell>
                         {new Date(member.created_at).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveMember(member.id)}
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setMemberToRemove(member.id)}
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -362,6 +384,7 @@ export function UserManagementDialog({
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Sent</TableHead>
+                      <TableHead>Invitation Link</TableHead>
                       <TableHead className="w-[80px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -376,6 +399,17 @@ export function UserManagementDialog({
                         </TableCell>
                         <TableCell>
                           {new Date(invite.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCopyInviteLink(invite.token)}
+                            className="gap-2 h-8"
+                          >
+                            <Copy className="h-3 w-3" />
+                            Copy Link
+                          </Button>
                         </TableCell>
                         <TableCell>
                           <Button
@@ -396,6 +430,23 @@ export function UserManagementDialog({
           )}
         </div>
       </DialogContent>
+
+      <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Member</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this member from the household? They will lose access to the calendar immediately.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => memberToRemove && handleRemoveMember(memberToRemove)} className="bg-destructive hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

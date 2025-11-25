@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,11 +149,16 @@ export default function Auth() {
                 disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
-            </Button>
-          </form>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Sign In
+                </Button>
+                <div className="text-center">
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                    Forgot your password?
+                  </Link>
+                </div>
+              </form>
         </CardContent>
       </Card>
     </div>
