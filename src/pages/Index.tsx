@@ -1,22 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CalendarHeader } from "@/components/Calendar/CalendarHeader";
 import { WeekView } from "@/components/Calendar/WeekView";
 import { MonthView } from "@/components/Calendar/MonthView";
 import { EventDialog } from "@/components/Calendar/EventDialog";
 import { InstanceDialog } from "@/components/Calendar/InstanceDialog";
 import { BulkDeleteDialog } from "@/components/Calendar/BulkDeleteDialog";
-import { useEvents } from "@/hooks/useEvents";
-import { useEventInstances } from "@/hooks/useEventInstances";
+import { useEventsDB } from "@/hooks/useEventsDB";
+import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { FamilyEvent, EventInstance } from "@/types/event";
 import { addWeeks, subWeeks, addMonths, subMonths } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useHousehold } from "@/contexts/HouseholdContext";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Index = () => {
@@ -28,9 +22,18 @@ const Index = () => {
   const [selectedEvent, setSelectedEvent] = useState<FamilyEvent | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedInstance, setSelectedInstance] = useState<EventInstance | undefined>(undefined);
-  const { events, addEvent, updateEvent, deleteEventsByTitle } = useEvents();
-  const { instances, addInstance, updateInstance, getInstanceForDate } = useEventInstances();
+  const { householdId, canEdit, loading: householdLoading } = useHousehold();
+  const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents, loading: eventsLoading } = useEventsDB();
+  const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances, loading: instancesLoading } = useEventInstancesDB();
   const { toast } = useToast();
+
+  // Load data when household ID is available
+  useEffect(() => {
+    if (householdId) {
+      loadEvents(householdId);
+      loadInstances(householdId);
+    }
+  }, [householdId]);
 
   const handlePreviousPeriod = () => {
     if (view === "week") {
@@ -53,11 +56,14 @@ const Index = () => {
   };
 
   const handleNewEvent = () => {
+    if (!canEdit) return;
     setSelectedEvent(undefined);
     setEventDialogOpen(true);
   };
 
   const handleEventClick = (event: FamilyEvent, date?: Date) => {
+    if (!canEdit) return; // Don't allow editing in display mode
+    
     if (date) {
       // Show context menu to choose between editing instance or series
       setSelectedEvent(event);
@@ -95,6 +101,8 @@ const Index = () => {
   };
 
   const handleSaveEvent = (event: FamilyEvent) => {
+    if (!householdId) return;
+    
     if (selectedEvent) {
       updateEvent(event.id, event);
       toast({
@@ -102,7 +110,7 @@ const Index = () => {
         description: `${event.title} has been updated successfully.`,
       });
     } else {
-      addEvent(event);
+      addEvent(event, householdId);
       toast({
         title: "Event Created",
         description: `${event.title} has been added to your schedule.`,
@@ -111,6 +119,8 @@ const Index = () => {
   };
 
   const handleSaveInstance = (instance: EventInstance) => {
+    if (!householdId) return;
+    
     const existingInstance = getInstanceForDate(instance.eventId, instance.date);
     if (existingInstance) {
       updateInstance(existingInstance.id, instance);
@@ -119,13 +129,21 @@ const Index = () => {
         description: "Event details for this date have been updated.",
       });
     } else {
-      addInstance(instance);
+      addInstance(instance, householdId);
       toast({
         title: "Instance Created",
         description: "Custom details saved for this date.",
       });
     }
   };
+
+  if (householdLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8 relative">
@@ -142,6 +160,7 @@ const Index = () => {
           onNextPeriod={handleNextPeriod}
           onToday={handleToday}
           onNewEvent={handleNewEvent}
+          canEdit={canEdit}
         />
 
         {view === "week" ? (

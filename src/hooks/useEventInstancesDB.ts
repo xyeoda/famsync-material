@@ -9,20 +9,29 @@ export function useEventInstancesDB() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      loadInstances();
-    }
+    loadInstances();
   }, [user]);
 
-  const loadInstances = async () => {
-    if (!user) return;
-
+  const loadInstances = async (forceHouseholdId?: string) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('event_instances')
         .select('*')
-        .eq('user_id', user.id)
         .order('date', { ascending: true });
+      
+      // If we have a specific household ID to load (display mode)
+      if (forceHouseholdId) {
+        query = query.eq('household_id', forceHouseholdId);
+      } else if (user) {
+        // Otherwise load by user_id (authenticated mode)
+        query = query.eq('user_id', user.id);
+      } else {
+        // No user and no household ID, can't load instances
+        setLoading(false);
+        return;
+      }
+      
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -53,7 +62,7 @@ export function useEventInstancesDB() {
     });
   };
 
-  const addInstance = async (instance: EventInstance) => {
+  const addInstance = async (instance: EventInstance, householdId: string) => {
     if (!user) return;
 
     try {
@@ -62,6 +71,7 @@ export function useEventInstancesDB() {
         .insert([{
           event_id: instance.eventId,
           user_id: user.id,
+          household_id: householdId,
           date: instance.date.toISOString().split('T')[0],
           transportation: instance.transportation as any,
           participants: instance.participants,
@@ -124,5 +134,6 @@ export function useEventInstancesDB() {
     addInstance,
     updateInstance,
     deleteInstance,
+    loadInstances,
   };
 }

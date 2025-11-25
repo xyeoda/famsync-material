@@ -9,20 +9,29 @@ export function useEventsDB() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      loadEvents();
-    }
+    loadEvents();
   }, [user]);
 
-  const loadEvents = async () => {
-    if (!user) return;
-
+  const loadEvents = async (forceHouseholdId?: string) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('family_events')
         .select('*')
-        .eq('user_id', user.id)
         .order('start_date', { ascending: true });
+      
+      // If we have a specific household ID to load (display mode)
+      if (forceHouseholdId) {
+        query = query.eq('household_id', forceHouseholdId);
+      } else if (user) {
+        // Otherwise load by user_id (authenticated mode)
+        query = query.eq('user_id', user.id);
+      } else {
+        // No user and no household ID, can't load events
+        setLoading(false);
+        return;
+      }
+      
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -51,7 +60,7 @@ export function useEventsDB() {
     }
   };
 
-  const addEvent = async (event: FamilyEvent) => {
+  const addEvent = async (event: FamilyEvent, householdId: string) => {
     if (!user) return;
 
     try {
@@ -59,6 +68,7 @@ export function useEventsDB() {
         .from('family_events')
         .insert([{
           user_id: user.id,
+          household_id: householdId,
           title: event.title,
           description: event.description,
           category: event.category,
@@ -159,5 +169,6 @@ export function useEventsDB() {
     deleteEvent,
     deleteEventsByTitle,
     getEventById,
+    loadEvents,
   };
 }

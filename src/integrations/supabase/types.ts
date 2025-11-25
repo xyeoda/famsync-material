@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           date: string
           event_id: string
+          household_id: string | null
           id: string
           participants: Database["public"]["Enums"]["family_member"][] | null
           transportation: Json | null
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           date: string
           event_id: string
+          household_id?: string | null
           id?: string
           participants?: Database["public"]["Enums"]["family_member"][] | null
           transportation?: Json | null
@@ -42,6 +44,7 @@ export type Database = {
           created_at?: string
           date?: string
           event_id?: string
+          household_id?: string | null
           id?: string
           participants?: Database["public"]["Enums"]["family_member"][] | null
           transportation?: Json | null
@@ -54,6 +57,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "family_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_instances_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
             referencedColumns: ["id"]
           },
           {
@@ -72,6 +82,7 @@ export type Database = {
           created_at: string
           description: string | null
           end_date: string | null
+          household_id: string | null
           id: string
           location: string | null
           notes: string | null
@@ -89,6 +100,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           end_date?: string | null
+          household_id?: string | null
           id?: string
           location?: string | null
           notes?: string | null
@@ -106,6 +118,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           end_date?: string | null
+          household_id?: string | null
           id?: string
           location?: string | null
           notes?: string | null
@@ -119,6 +132,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "family_events_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "family_events_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -130,6 +150,7 @@ export type Database = {
       family_settings: {
         Row: {
           created_at: string
+          household_id: string | null
           housekeeper_color: string | null
           housekeeper_name: string | null
           id: string
@@ -146,6 +167,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          household_id?: string | null
           housekeeper_color?: string | null
           housekeeper_name?: string | null
           id?: string
@@ -162,6 +184,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          household_id?: string | null
           housekeeper_color?: string | null
           housekeeper_name?: string | null
           id?: string
@@ -178,9 +201,48 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "family_settings_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "family_settings_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "households_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },

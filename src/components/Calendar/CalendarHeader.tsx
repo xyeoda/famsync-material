@@ -15,6 +15,7 @@ interface CalendarHeaderProps {
   onNextPeriod: () => void;
   onToday: () => void;
   onNewEvent: () => void;
+  canEdit: boolean;
 }
 
 export function CalendarHeader({
@@ -25,6 +26,7 @@ export function CalendarHeader({
   onNextPeriod,
   onToday,
   onNewEvent,
+  canEdit,
 }: CalendarHeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSettings, resetSettings } = useFamilySettings();
@@ -100,24 +102,28 @@ export function CalendarHeader({
             </div>
             <div className="flex items-center gap-1">
               <ThemeToggle />
-              <Button
-                variant="text"
-                size="icon"
-                onClick={() => setSettingsOpen(true)}
-                className="h-9 w-9 rounded-full"
-                title="Family Settings"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={onNewEvent}
-                variant="filled"
-                size="sm"
-                className="h-9"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                <span className="text-sm">New</span>
-              </Button>
+              {canEdit && (
+                <>
+                  <Button
+                    variant="text"
+                    size="icon"
+                    onClick={() => setSettingsOpen(true)}
+                    className="h-9 w-9 rounded-full"
+                    title="Family Settings"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={onNewEvent}
+                    variant="filled"
+                    size="sm"
+                    className="h-9"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    <span className="text-sm">New</span>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -187,25 +193,29 @@ export function CalendarHeader({
               </Button>
             </div>
 
-            <Button
-              variant="text"
-              size="icon"
-              onClick={() => setSettingsOpen(true)}
-              className="h-9 w-9 rounded-full"
-              title="Family Settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
+            {canEdit && (
+              <>
+                <Button
+                  variant="text"
+                  size="icon"
+                  onClick={() => setSettingsOpen(true)}
+                  className="h-9 w-9 rounded-full"
+                  title="Family Settings"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
 
-            <Button
-              onClick={onNewEvent}
-              variant="filled"
-              size="sm"
-              className="h-9"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              <span className="text-sm">New Event</span>
-            </Button>
+                <Button
+                  onClick={onNewEvent}
+                  variant="filled"
+                  size="sm"
+                  className="h-9"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  <span className="text-sm">New Event</span>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
