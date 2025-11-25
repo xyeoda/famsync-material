@@ -67,16 +67,6 @@ const handler = async (req: Request): Promise<Response> => {
     const userId = userData.user.id;
     console.log(`Admin user created: ${userId}`);
 
-    // Set must_change_password flag in profiles
-    const { error: profileError } = await supabaseAdmin
-      .from("profiles")
-      .update({ must_change_password: true })
-      .eq("id", userId);
-
-    if (profileError) {
-      console.error("Error setting must_change_password:", profileError);
-    }
-
     // Create household
     const { data: householdData, error: householdError } = await supabaseAdmin
       .from("households")
