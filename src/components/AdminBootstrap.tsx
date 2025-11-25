@@ -1,8 +1,43 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AdminBootstrap() {
+  const [showButton, setShowButton] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkForExistingAdmin();
+  }, []);
+
+  const checkForExistingAdmin = async () => {
+    try {
+      // Check if any households exist (indicates admin has been set up)
+      const { data, error } = await supabase
+        .from('households')
+        .select('id')
+        .limit(1);
+
+      if (error) {
+        console.error("Error checking for admin:", error);
+        return;
+      }
+
+      // Only show button if no households exist
+      setShowButton(!data || data.length === 0);
+    } catch (error) {
+      console.error("Error checking for admin:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !showButton) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <Link to="/setup">
