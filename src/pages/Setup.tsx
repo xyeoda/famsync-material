@@ -6,33 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Shield, CheckCircle2 } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 
 export default function Setup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(false);
-  const [adminExists, setAdminExists] = useState<boolean | null>(null);
   const [email, setEmail] = useState("xyeoda@yeoda.space");
   const [defaultPassword, setDefaultPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const checkExistingAdmin = async () => {
-    setChecking(true);
-    try {
-      const { data: users } = await supabase.auth.admin.listUsers();
-      setAdminExists(users?.users && users.users.length > 0);
-    } catch (error) {
-      console.error("Error checking for admin:", error);
-      setAdminExists(null);
-    } finally {
-      setChecking(false);
-    }
-  };
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage("");
 
     if (defaultPassword !== confirmPassword) {
       toast({
@@ -62,7 +49,14 @@ export default function Setup() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's the "admin already exists" error
+        if (error.message?.includes("Admin already exists") || error.message?.includes("already exists")) {
+          setErrorMessage("An administrator account already exists. Please reset the database from the Dashboard first, or sign in if you already have an account.");
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Admin Created!",
@@ -74,6 +68,7 @@ export default function Setup() {
       }, 2000);
     } catch (error: any) {
       console.error("Error creating admin:", error);
+      setErrorMessage(error.message || "Failed to create admin account. Please try again.");
       toast({
         title: "Failed to Create Admin",
         description: error.message || "Please try again",
@@ -101,35 +96,40 @@ export default function Setup() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {adminExists === null ? (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Before setting up a new admin account, we need to check if one already exists.
+          <form onSubmit={handleCreateAdmin} className="space-y-4">
+            <div className="p-3 bg-muted/50 rounded-md border border-border/50">
+              <p className="text-xs text-muted-foreground">
+                ℹ️ This account will have full administrative privileges and can invite other users.
               </p>
-              <Button onClick={checkExistingAdmin} disabled={checking} className="w-full">
-                {checking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Check System Status
-              </Button>
             </div>
-          ) : adminExists ? (
-            <div className="space-y-4 text-center">
-              <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-              <h3 className="text-lg font-semibold">Admin Already Exists</h3>
-              <p className="text-sm text-muted-foreground">
-                An administrator account has already been created. Please sign in to continue.
-              </p>
-              <Button onClick={() => navigate("/auth")} className="w-full">
-                Go to Sign In
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleCreateAdmin} className="space-y-4">
-              <div className="p-3 bg-muted/50 rounded-md border border-border/50">
-                <p className="text-xs text-muted-foreground">
-                  ℹ️ This account will have full administrative privileges and can invite other users.
-                </p>
+
+            {errorMessage && (
+              <div className="p-4 bg-destructive/10 border border-destructive/50 rounded-md">
+                <p className="text-sm text-destructive font-medium mb-2">{errorMessage}</p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="sm"
+                    onClick={() => navigate("/")}
+                    className="flex-1"
+                  >
+                    Go to Dashboard
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    size="sm"
+                    onClick={() => navigate("/auth")}
+                    className="flex-1"
+                  >
+                    Sign In
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
+            )}
+
+            <div className="space-y-2">
                 <Label htmlFor="email">Admin Email</Label>
                 <Input
                   id="email"
@@ -170,12 +170,24 @@ export default function Setup() {
                   minLength={6}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Admin Account
-              </Button>
-            </form>
-          )}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create Admin Account
+            </Button>
+
+            <div className="text-center pt-2">
+              <p className="text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => navigate("/auth")}
+                  className="text-primary hover:underline"
+                >
+                  Sign in
+                </button>
+              </p>
+            </div>
+          </form>
         </CardContent>
       </Card>
     </div>
