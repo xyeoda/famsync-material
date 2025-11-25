@@ -15,6 +15,8 @@ export function AdminBootstrap() {
 
   const checkForExistingAdmin = async () => {
     try {
+      console.log("[AdminBootstrap] Checking for existing admin...");
+      
       // Check if any households exist (indicates admin has been set up)
       const { data, error } = await supabase
         .from('households')
@@ -22,14 +24,20 @@ export function AdminBootstrap() {
         .limit(1);
 
       if (error) {
-        console.error("Error checking for admin:", error);
+        console.error("[AdminBootstrap] Error checking for admin:", error);
+        // On error, don't show button to be safe
+        setShowButton(false);
         return;
       }
 
+      const shouldShow = !data || data.length === 0;
+      console.log(`[AdminBootstrap] Households found: ${data?.length || 0}, showing button: ${shouldShow}`);
+      
       // Only show button if no households exist
-      setShowButton(!data || data.length === 0);
+      setShowButton(shouldShow);
     } catch (error) {
-      console.error("Error checking for admin:", error);
+      console.error("[AdminBootstrap] Exception checking for admin:", error);
+      setShowButton(false);
     } finally {
       setLoading(false);
     }
