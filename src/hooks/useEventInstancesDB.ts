@@ -59,14 +59,14 @@ export function useEventInstancesDB() {
     try {
       const { error } = await supabase
         .from('event_instances')
-        .insert({
+        .insert([{
           event_id: instance.eventId,
           user_id: user.id,
           date: instance.date.toISOString().split('T')[0],
-          transportation: instance.transportation,
+          transportation: instance.transportation as any,
           participants: instance.participants,
           cancelled: instance.cancelled,
-        });
+        }]);
 
       if (error) throw error;
 
