@@ -152,14 +152,19 @@ const Dashboard = () => {
         </div>
       ) : (
         <main className="container mx-auto px-4 py-8 relative z-10">
-          <div className="mb-8 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
-              {user && userRole && <UserRoleBadge role={userRole} />}
+          <div className="mb-8 space-y-4">
+            {/* Row 1: Family Name + Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
+                {user && userRole && <UserRoleBadge role={userRole} />}
+              </div>
+              <ThemeToggle />
             </div>
-            <div className="flex items-center gap-2">
+
+            {/* Row 2: Action Buttons */}
             {user ? (
-              <>
+              <div className="flex flex-wrap items-center gap-2">
                 {displayUrl && (
                   <Button
                     variant="outlined"
@@ -171,60 +176,60 @@ const Dashboard = () => {
                     Copy Display Link
                   </Button>
                 )}
-              {canEdit && (
-                <>
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    onClick={() => navigate("/settings")}
-                    className="gap-2"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    onClick={() => setUserManagementOpen(true)}
-                    className="gap-2"
-                  >
-                    <Users className="h-4 w-4" />
-                    Manage Users
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={resetting}
-                        className="gap-2"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        {resetting ? "Resetting..." : "Reset DB"}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>⚠️ Reset Database</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently DELETE ALL data including:
-                          <ul className="list-disc list-inside mt-2 space-y-1">
-                            <li>All users and their accounts</li>
-                            <li>All events and calendar data</li>
-                            <li>All pending invitations</li>
-                            <li>All household settings</li>
-                          </ul>
-                          <p className="mt-3 font-semibold text-destructive">This action CANNOT be undone!</p>
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive hover:bg-destructive/90">
-                          Yes, Delete Everything
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                {canEdit && (
+                  <>
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      onClick={() => navigate("/settings")}
+                      className="gap-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      onClick={() => setUserManagementOpen(true)}
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      Manage Users
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          disabled={resetting}
+                          className="gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {resetting ? "Resetting..." : "Reset DB"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>⚠️ Reset Database</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently DELETE ALL data including:
+                            <ul className="list-disc list-inside mt-2 space-y-1">
+                              <li>All users and their accounts</li>
+                              <li>All events and calendar data</li>
+                              <li>All pending invitations</li>
+                              <li>All household settings</li>
+                            </ul>
+                            <p className="mt-3 font-semibold text-destructive">This action CANNOT be undone!</p>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive hover:bg-destructive/90">
+                            Yes, Delete Everything
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </>
                 )}
                 <Button
@@ -236,7 +241,7 @@ const Dashboard = () => {
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </Button>
-              </>
+              </div>
             ) : (
               <Button
                 variant="filled"
@@ -248,9 +253,7 @@ const Dashboard = () => {
                 Sign In
               </Button>
             )}
-            <ThemeToggle />
           </div>
-        </div>
 
         <Card className="surface-elevation-1 mb-8 bg-card/80 backdrop-blur-md border-border/50">
           <CardHeader>
