@@ -26,13 +26,14 @@ import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog
 import { UserManagementDialog } from "@/components/UserManagement/UserManagementDialog";
 import { AdminBootstrap } from "@/components/AdminBootstrap";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { UserRoleBadge } from "@/components/UserRoleBadge";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import { FamilyEvent } from "@/types/event";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
-  const { householdId, householdName, displayUrl, canEdit } = useHousehold();
+  const { householdId, householdName, displayUrl, canEdit, loading: householdLoading, userRole } = useHousehold();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -139,10 +140,21 @@ const Dashboard = () => {
         style={{ backgroundImage: `url(${dashboardBg})` }}
       />
       
-      <main className="container mx-auto px-4 py-8 relative z-10">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
-          <div className="flex items-center gap-2">
+      {householdLoading ? (
+        <div className="container mx-auto px-4 py-8 relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Loading your household...</p>
+          </div>
+        </div>
+      ) : (
+        <main className="container mx-auto px-4 py-8 relative z-10">
+          <div className="mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
+              {user && userRole && <UserRoleBadge role={userRole} />}
+            </div>
+            <div className="flex items-center gap-2">
             {user ? (
               <>
                 {displayUrl && (
@@ -397,6 +409,7 @@ const Dashboard = () => {
           </Card>
         </div>
       </main>
+      )}
 
       {user && canEdit && (
         <>
