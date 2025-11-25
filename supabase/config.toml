@@ -1,1 +1,13 @@
 project_id = "cxiceumycfzofrrbwgwr"
+
+[functions.send-invitation]
+verify_jwt = false
+
+[functions.send-test-email]
+verify_jwt = false
+
+[functions.reset-database]
+verify_jwt = false
+
+[functions.create-admin]
+verify_jwt = false

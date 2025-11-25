@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettingsDB();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userManagementOpen, setUserManagementOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   // Load data when household ID is available
   useEffect(() => {
@@ -51,6 +53,43 @@ const Dashboard = () => {
         title: "Display URL Copied",
         description: "Share this link with devices you want to display the calendar on.",
       });
+    }
+  };
+
+  const handleResetDatabase = async () => {
+    if (!confirm("⚠️ WARNING: This will DELETE ALL data and users from the database. This action CANNOT be undone. Are you absolutely sure?")) {
+      return;
+    }
+
+    setResetting(true);
+    try {
+      const { error } = await supabase.functions.invoke("reset-database", {
+        body: {
+          resetToken: "RESET_ALL_DATA_NOW",
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Database Reset",
+        description: "All data has been wiped. Signing out...",
+      });
+
+      // Sign out and redirect
+      setTimeout(async () => {
+        await signOut();
+        navigate("/auth");
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error resetting database:", error);
+      toast({
+        title: "Reset Failed",
+        description: error.message || "Could not reset database",
+        variant: "destructive",
+      });
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -118,6 +157,16 @@ const Dashboard = () => {
                     >
                       <Users className="h-4 w-4" />
                       Manage Users
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleResetDatabase}
+                      disabled={resetting}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {resetting ? "Resetting..." : "Reset DB"}
                     </Button>
                     <Button
                       variant="text"
