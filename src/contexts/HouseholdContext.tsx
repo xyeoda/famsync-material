@@ -46,13 +46,15 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
 
       // If user is logged in, load their household
       if (user) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('households')
           .select('id, name')
           .eq('owner_id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (data) {
+        if (error) {
+          console.error("Error loading household:", error);
+        } else if (data) {
           setHouseholdId(data.id);
           setHouseholdName(data.name);
         }
