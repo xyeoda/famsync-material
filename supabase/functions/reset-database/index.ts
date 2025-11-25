@@ -43,27 +43,80 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Starting database reset...");
 
+    const deletionResults = {
+      pendingInvitations: 0,
+      eventInstances: 0,
+      familyEvents: 0,
+      familySettings: 0,
+      userRoles: 0,
+      households: 0,
+      profiles: 0,
+      authUsers: 0,
+    };
+
     // Delete in correct order to respect foreign key constraints
-    await supabaseAdmin.from("pending_invitations").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted pending_invitations");
+    const { data: invitations, error: invErr } = await supabaseAdmin
+      .from("pending_invitations")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (invErr) console.error("Error deleting pending_invitations:", invErr);
+    else deletionResults.pendingInvitations = invitations?.length || 0;
+    console.log(`Deleted ${deletionResults.pendingInvitations} pending_invitations`);
 
-    await supabaseAdmin.from("event_instances").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted event_instances");
+    const { data: instances, error: instErr } = await supabaseAdmin
+      .from("event_instances")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (instErr) console.error("Error deleting event_instances:", instErr);
+    else deletionResults.eventInstances = instances?.length || 0;
+    console.log(`Deleted ${deletionResults.eventInstances} event_instances`);
 
-    await supabaseAdmin.from("family_events").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted family_events");
+    const { data: events, error: evErr } = await supabaseAdmin
+      .from("family_events")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (evErr) console.error("Error deleting family_events:", evErr);
+    else deletionResults.familyEvents = events?.length || 0;
+    console.log(`Deleted ${deletionResults.familyEvents} family_events`);
 
-    await supabaseAdmin.from("family_settings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted family_settings");
+    const { data: settings, error: setErr } = await supabaseAdmin
+      .from("family_settings")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (setErr) console.error("Error deleting family_settings:", setErr);
+    else deletionResults.familySettings = settings?.length || 0;
+    console.log(`Deleted ${deletionResults.familySettings} family_settings`);
 
-    await supabaseAdmin.from("user_roles").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted user_roles");
+    const { data: roles, error: rolesErr } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (rolesErr) console.error("Error deleting user_roles:", rolesErr);
+    else deletionResults.userRoles = roles?.length || 0;
+    console.log(`Deleted ${deletionResults.userRoles} user_roles`);
 
-    await supabaseAdmin.from("households").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted households");
+    const { data: households, error: hhErr } = await supabaseAdmin
+      .from("households")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (hhErr) console.error("Error deleting households:", hhErr);
+    else deletionResults.households = households?.length || 0;
+    console.log(`Deleted ${deletionResults.households} households`);
 
-    await supabaseAdmin.from("profiles").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    console.log("Deleted profiles");
+    const { data: profiles, error: profErr } = await supabaseAdmin
+      .from("profiles")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (profErr) console.error("Error deleting profiles:", profErr);
+    else deletionResults.profiles = profiles?.length || 0;
+    console.log(`Deleted ${deletionResults.profiles} profiles`);
 
     // Delete all auth users
     const { data: users, error: listUsersError } = await supabaseAdmin.auth.admin.listUsers();
@@ -81,18 +134,23 @@ const handler = async (req: Request): Promise<Response> => {
           console.error(`Error deleting user ${user.email}:`, deleteError);
         } else {
           console.log(`Deleted user: ${user.email}`);
+          deletionResults.authUsers++;
         }
       }
-      // Small delay to ensure auth cleanup propagates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Delay to ensure auth cleanup propagates
+      await new Promise(resolve => setTimeout(resolve, 1000));
     } else {
       console.log("No auth users to delete");
     }
 
-    console.log("Database reset complete - all data wiped");
+    console.log("Database reset complete - all data wiped", deletionResults);
 
     return new Response(
-      JSON.stringify({ success: true, message: "Database reset complete" }),
+      JSON.stringify({ 
+        success: true, 
+        message: "Database reset complete",
+        deletedCounts: deletionResults
+      }),
       { 
         status: 200, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 
