@@ -57,20 +57,20 @@ export function useEventsDB() {
     try {
       const { error } = await supabase
         .from('family_events')
-        .insert({
+        .insert([{
           user_id: user.id,
           title: event.title,
           description: event.description,
           category: event.category,
           participants: event.participants,
-          transportation: event.transportation,
+          transportation: event.transportation as any,
           start_date: event.startDate.toISOString(),
           end_date: event.endDate?.toISOString(),
           location: event.location,
           notes: event.notes,
           color: event.color,
-          recurrence_slots: event.recurrenceSlots,
-        });
+          recurrence_slots: event.recurrenceSlots as any,
+        }]);
 
       if (error) throw error;
 
