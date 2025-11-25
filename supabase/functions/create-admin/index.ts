@@ -29,17 +29,25 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    console.log("Checking for existing users...");
+    console.log("Checking for existing households...");
 
-    // Check if any users already exist
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    if (existingUsers?.users && existingUsers.users.length > 0) {
+    // Check if any households already exist (indicates setup already run)
+    const { data: existingHouseholds, error: householdsError } = await supabaseAdmin
+      .from("households")
+      .select("id")
+      .limit(1);
+
+    if (householdsError) {
+      console.error("Error checking existing households:", householdsError);
+    }
+
+    if (existingHouseholds && existingHouseholds.length > 0) {
       return new Response(
         JSON.stringify({ error: "Admin already exists. Please reset database first." }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
