@@ -11,6 +11,8 @@ export function useUserRole(householdId: string | null) {
 
   useEffect(() => {
     const loadRole = async () => {
+      setLoading(true); // Always set loading to true when effect runs
+      
       if (!user || !householdId) {
         setRole(null);
         setLoading(false);
