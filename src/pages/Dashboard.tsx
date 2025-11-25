@@ -411,6 +411,13 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* UAT Reset Access - Always visible */}
+        <div className="text-center mt-8 pb-4">
+          <Link to="/reset" className="text-xs text-muted-foreground hover:text-primary underline">
+            Reset Database (UAT)
+          </Link>
+        </div>
       </main>
       )}
 

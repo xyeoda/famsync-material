@@ -51,22 +51,41 @@ export function AdminBootstrap() {
     );
   }
 
-  if (!showButton) {
-    return null;
+  // Show setup button if no household exists
+  if (showButton) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Link to="/setup">
+          <Button
+            variant="elevated"
+            size="lg"
+            className="gap-2 shadow-lg hover:shadow-xl"
+          >
+            <Shield className="h-5 w-5" />
+            Setup Admin
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
-  return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Link to="/setup">
-        <Button
-          variant="elevated"
-          size="lg"
-          className="gap-2 shadow-lg hover:shadow-xl"
-        >
-          <Shield className="h-5 w-5" />
-          Setup Admin
-        </Button>
-      </Link>
-    </div>
-  );
+  // If household exists but we're on homepage (not logged in), show reset option
+  // This helps with UAT testing when you need to reset without logging in
+  if (window.location.pathname === "/") {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Link to="/reset">
+          <Button
+            variant="outlined"
+            size="sm"
+            className="gap-2 shadow-lg hover:shadow-xl"
+          >
+            Reset Database (UAT)
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return null;
 }
