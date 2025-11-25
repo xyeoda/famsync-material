@@ -66,15 +66,30 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Deleted profiles");
 
     // Delete all auth users
-    const { data: users } = await supabaseAdmin.auth.admin.listUsers();
-    if (users?.users) {
-      for (const user of users.users) {
-        await supabaseAdmin.auth.admin.deleteUser(user.id);
-        console.log(`Deleted user: ${user.email}`);
-      }
+    const { data: users, error: listUsersError } = await supabaseAdmin.auth.admin.listUsers();
+    
+    if (listUsersError) {
+      console.error("Error listing users:", listUsersError);
+      throw new Error(`Failed to list users: ${listUsersError.message}`);
     }
 
-    console.log("Database reset complete");
+    if (users?.users && users.users.length > 0) {
+      console.log(`Deleting ${users.users.length} auth users...`);
+      for (const user of users.users) {
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+        if (deleteError) {
+          console.error(`Error deleting user ${user.email}:`, deleteError);
+        } else {
+          console.log(`Deleted user: ${user.email}`);
+        }
+      }
+      // Small delay to ensure auth cleanup propagates
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } else {
+      console.log("No auth users to delete");
+    }
+
+    console.log("Database reset complete - all data wiped");
 
     return new Response(
       JSON.stringify({ success: true, message: "Database reset complete" }),
