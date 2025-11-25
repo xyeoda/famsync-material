@@ -9,6 +9,7 @@ const corsHeaders = {
 interface CreateAdminRequest {
   email: string;
   defaultPassword: string;
+  householdName?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -17,7 +18,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, defaultPassword }: CreateAdminRequest = await req.json();
+    const { email, defaultPassword, householdName }: CreateAdminRequest = await req.json();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -72,7 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from("households")
       .insert({
         owner_id: userId,
-        name: "Admin Family",
+        name: householdName || "My Family",
       })
       .select()
       .single();
