@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, Users, Palette } from "lucide-react";
+import { ArrowLeft, Home, Users, Palette, Trash2, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
@@ -10,18 +10,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { UserManagementDialog } from "@/components/UserManagement/UserManagementDialog";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 export default function Settings() {
-  const { user } = useAuth();
-  const { householdId, householdName, canEdit } = useHousehold();
+  const { user, signOut } = useAuth();
+  const { householdId, householdName, canEdit, loading: householdLoading } = useHousehold();
   const { settings, updateSettings } = useFamilySettingsDB();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [editedHouseholdName, setEditedHouseholdName] = useState(householdName);
+  const [userManagementOpen, setUserManagementOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     setEditedHouseholdName(householdName);
@@ -33,10 +47,56 @@ export default function Settings() {
     }
   }, [user, navigate]);
 
+  // Show loading state while permissions are being checked
+  if (householdLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Only redirect AFTER loading is complete
   if (!canEdit) {
     navigate("/");
     return null;
   }
+
+  const handleResetDatabase = async () => {
+    setResetting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reset-database", {
+        body: {
+          resetToken: "RESET_ALL_DATA_NOW",
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Database Reset Complete",
+        description: "All data wiped. Redirecting to setup...",
+      });
+
+      // Clear all localStorage
+      localStorage.clear();
+      
+      // Sign out and redirect to home page
+      setTimeout(async () => {
+        await signOut();
+        navigate("/");
+        window.location.reload();
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error resetting database:", error);
+      toast({
+        title: "Reset Failed",
+        description: error.message || "Could not reset database",
+        variant: "destructive",
+      });
+      setResetting(false);
+    }
+  };
 
   const handleUpdateHouseholdName = async () => {
     if (!householdId || !editedHouseholdName.trim()) return;
@@ -280,8 +340,79 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* User Management */}
+          <Card className="bg-card/80 backdrop-blur-md border-border/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                <CardTitle>Household Members</CardTitle>
+              </div>
+              <CardDescription>Invite and manage household users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => setUserManagementOpen(true)} className="w-full">
+                <Users className="mr-2 h-4 w-4" />
+                Manage Users
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Danger Zone */}
+          <Card className="bg-card/80 backdrop-blur-md border-destructive/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Trash2 className="h-5 w-5 text-destructive" />
+                <CardTitle className="text-destructive">Danger Zone</CardTitle>
+              </div>
+              <CardDescription>Irreversible actions - proceed with caution</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    disabled={resetting}
+                    className="w-full"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {resetting ? "Resetting Database..." : "Reset Database"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>⚠️ Reset Database</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently DELETE ALL data including:
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>All users and their accounts</li>
+                        <li>All events and calendar data</li>
+                        <li>All pending invitations</li>
+                        <li>All household settings</li>
+                      </ul>
+                      <p className="mt-3 font-semibold text-destructive">This action CANNOT be undone!</p>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive hover:bg-destructive/90">
+                      Yes, Delete Everything
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardContent>
+          </Card>
         </div>
       </main>
+
+      {/* User Management Dialog */}
+      <UserManagementDialog
+        open={userManagementOpen}
+        onOpenChange={setUserManagementOpen}
+        householdId={householdId || ""}
+        householdName={householdName}
+      />
     </div>
   );
 }
