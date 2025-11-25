@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, UserPlus, Loader2 } from "lucide-react";
+import { Trash2, UserPlus, Loader2, Mail } from "lucide-react";
 
 interface UserManagementDialogProps {
   open: boolean;
@@ -43,6 +43,7 @@ export function UserManagementDialog({
   const [pendingInvites, setPendingInvites] = useState<PendingInvitation[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -190,6 +191,39 @@ export function UserManagementDialog({
     }
   };
 
+  const handleSendTestEmail = async () => {
+    setSendingTest(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user?.email) {
+        throw new Error("User email not found");
+      }
+
+      const { error } = await supabase.functions.invoke("send-test-email", {
+        body: {
+          recipientEmail: user.email,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Test email sent",
+        description: `A test email has been sent to ${user.email}`,
+      });
+    } catch (error: any) {
+      console.error("Error sending test email:", error);
+      toast({
+        title: "Failed to send test email",
+        description: error.message || "Please check your SMTP settings",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case "parent":
@@ -253,6 +287,24 @@ export function UserManagementDialog({
                 </>
               ) : (
                 "Send Invitation"
+              )}
+            </Button>
+            <Button 
+              onClick={handleSendTestEmail} 
+              disabled={sendingTest} 
+              variant="outlined" 
+              className="w-full gap-2"
+            >
+              {sendingTest ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Sending Test...
+                </>
+              ) : (
+                <>
+                  <Mail className="h-4 w-4" />
+                  Send Test Email
+                </>
               )}
             </Button>
           </div>
