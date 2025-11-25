@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Setup from "./pages/Setup";
+import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -36,6 +37,7 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/setup" element={<Setup />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
