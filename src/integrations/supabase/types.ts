@@ -248,33 +248,137 @@ export type Database = {
           },
         ]
       }
+      pending_invitations: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          household_id: string
+          id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          household_id: string
+          id?: string
+          invited_by: string
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          household_id?: string
+          id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_invitations_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           id: string
+          must_change_password: boolean | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           email?: string | null
           id: string
+          must_change_password?: boolean | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
+          must_change_password?: boolean | null
           updated_at?: string
         }
         Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          household_id: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          household_id: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _household_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_parent_in_household: {
+        Args: { _household_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       activity_category:
@@ -284,6 +388,7 @@ export type Database = {
         | "chores"
         | "health"
         | "other"
+      app_role: "parent" | "helper" | "kid"
       family_member: "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper"
       transport_method: "car" | "bus" | "walk" | "bike"
     }
@@ -421,6 +526,7 @@ export const Constants = {
         "health",
         "other",
       ],
+      app_role: ["parent", "helper", "kid"],
       family_member: ["parent1", "parent2", "kid1", "kid2", "housekeeper"],
       transport_method: ["car", "bus", "walk", "bike"],
     },
