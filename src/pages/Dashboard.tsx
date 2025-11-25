@@ -1,29 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users, Trash2, Shield } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEventsDB } from "@/hooks/useEventsDB";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
-import { UserManagementDialog } from "@/components/UserManagement/UserManagementDialog";
 import { AdminBootstrap } from "@/components/AdminBootstrap";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { UserRoleBadge } from "@/components/UserRoleBadge";
@@ -49,8 +36,6 @@ const Dashboard = () => {
   const { instances, getInstanceForDate, loadInstances } = useEventInstancesDB();
   const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettingsDB();
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [userManagementOpen, setUserManagementOpen] = useState(false);
-  const [resetting, setResetting] = useState(false);
 
   // Load data when household ID is available
   useEffect(() => {
@@ -67,42 +52,6 @@ const Dashboard = () => {
         title: "Display URL Copied",
         description: "Share this link with devices you want to display the calendar on.",
       });
-    }
-  };
-
-  const handleResetDatabase = async () => {
-    setResetting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("reset-database", {
-        body: {
-          resetToken: "RESET_ALL_DATA_NOW",
-        },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Database Reset Complete",
-        description: "All data wiped. Redirecting to setup...",
-      });
-
-      // Clear all localStorage
-      localStorage.clear();
-      
-      // Sign out and redirect to home page
-      setTimeout(async () => {
-        await signOut();
-        navigate("/");
-        window.location.reload(); // Force reload to show AdminBootstrap button
-      }, 1500);
-    } catch (error: any) {
-      console.error("Error resetting database:", error);
-      toast({
-        title: "Reset Failed",
-        description: error.message || "Could not reset database",
-        variant: "destructive",
-      });
-      setResetting(false);
     }
   };
 
@@ -177,60 +126,15 @@ const Dashboard = () => {
                   </Button>
                 )}
                 {canEdit && (
-                  <>
-                    <Button
-                      variant="outlined"
-                      size="sm"
-                      onClick={() => navigate("/settings")}
-                      className="gap-2"
-                    >
-                      <Settings className="h-4 w-4" />
-                      Settings
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size="sm"
-                      onClick={() => setUserManagementOpen(true)}
-                      className="gap-2"
-                    >
-                      <Users className="h-4 w-4" />
-                      Manage Users
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          disabled={resetting}
-                          className="gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {resetting ? "Resetting..." : "Reset DB"}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>⚠️ Reset Database</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently DELETE ALL data including:
-                            <ul className="list-disc list-inside mt-2 space-y-1">
-                              <li>All users and their accounts</li>
-                              <li>All events and calendar data</li>
-                              <li>All pending invitations</li>
-                              <li>All household settings</li>
-                            </ul>
-                            <p className="mt-3 font-semibold text-destructive">This action CANNOT be undone!</p>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive hover:bg-destructive/90">
-                            Yes, Delete Everything
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </>
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    onClick={() => navigate("/settings")}
+                    className="gap-2"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Button>
                 )}
                 <Button
                   variant="outlined"
@@ -379,10 +283,6 @@ const Dashboard = () => {
                     <Settings className="mr-2 h-4 w-4" />
                     Family Member Settings
                   </Button>
-                  <Button className="w-full justify-start" variant="outlined" onClick={() => setUserManagementOpen(true)}>
-                    <Users className="mr-2 h-4 w-4" />
-                    Manage Users
-                  </Button>
                 </>
               )}
             </CardContent>
@@ -425,23 +325,13 @@ const Dashboard = () => {
       )}
 
       {user && canEdit && (
-        <>
-          <FamilySettingsDialog
-            open={settingsOpen}
-            onOpenChange={setSettingsOpen}
-            settings={settings}
-            onSave={updateSettings}
-            onReset={resetSettings}
-          />
-          {householdId && (
-            <UserManagementDialog
-              open={userManagementOpen}
-              onOpenChange={setUserManagementOpen}
-              householdId={householdId}
-              householdName={householdName}
-            />
-          )}
-        </>
+        <FamilySettingsDialog
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          settings={settings}
+          onSave={updateSettings}
+          onReset={resetSettings}
+        />
       )}
 
       {!user && <AdminBootstrap />}
