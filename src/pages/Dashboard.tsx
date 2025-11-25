@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
@@ -11,13 +11,14 @@ import { useEventsDB } from "@/hooks/useEventsDB";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
+import { UserManagementDialog } from "@/components/UserManagement/UserManagementDialog";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import { FamilyEvent } from "@/types/event";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
-  const { householdId, householdName, displayUrl } = useHousehold();
+  const { householdId, householdName, displayUrl, canEdit } = useHousehold();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -33,6 +34,7 @@ const Dashboard = () => {
   const { instances, getInstanceForDate, loadInstances } = useEventInstancesDB();
   const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettingsDB();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userManagementOpen, setUserManagementOpen] = useState(false);
 
   // Load data when household ID is available
   useEffect(() => {
@@ -106,15 +108,28 @@ const Dashboard = () => {
                     Copy Display Link
                   </Button>
                 )}
-                <Button
-                  variant="text"
-                  size="icon"
-                  onClick={() => setSettingsOpen(true)}
-                  className="h-10 w-10 rounded-full"
-                  title="Family Settings"
-                >
-                  <Settings className="h-5 w-5" />
-                </Button>
+                {canEdit && (
+                  <>
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      onClick={() => setUserManagementOpen(true)}
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      Manage Users
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="icon"
+                      onClick={() => setSettingsOpen(true)}
+                      className="h-10 w-10 rounded-full"
+                      title="Family Settings"
+                    >
+                      <Settings className="h-5 w-5" />
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="outlined"
                   size="sm"
@@ -254,11 +269,17 @@ const Dashboard = () => {
                   View Calendar
                 </Link>
               </Button>
-              {user && (
-                <Button className="w-full justify-start" variant="outlined" onClick={() => setSettingsOpen(true)}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Family Settings
-                </Button>
+              {canEdit && (
+                <>
+                  <Button className="w-full justify-start" variant="outlined" onClick={() => setSettingsOpen(true)}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Family Settings
+                  </Button>
+                  <Button className="w-full justify-start" variant="outlined" onClick={() => setUserManagementOpen(true)}>
+                    <Users className="mr-2 h-4 w-4" />
+                    Manage Users
+                  </Button>
+                </>
               )}
             </CardContent>
           </Card>
@@ -291,14 +312,24 @@ const Dashboard = () => {
         </div>
       </main>
 
-      {user && (
-        <FamilySettingsDialog
-          open={settingsOpen}
-          onOpenChange={setSettingsOpen}
-          settings={settings}
-          onSave={updateSettings}
-          onReset={resetSettings}
-        />
+      {user && canEdit && (
+        <>
+          <FamilySettingsDialog
+            open={settingsOpen}
+            onOpenChange={setSettingsOpen}
+            settings={settings}
+            onSave={updateSettings}
+            onReset={resetSettings}
+          />
+          {householdId && (
+            <UserManagementDialog
+              open={userManagementOpen}
+              onOpenChange={setUserManagementOpen}
+              householdId={householdId}
+              householdName={householdName}
+            />
+          )}
+        </>
       )}
     </div>
   );

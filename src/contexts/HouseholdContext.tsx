@@ -1,6 +1,7 @@
 import { createContext, useContext, ReactNode, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 
 interface HouseholdContextType {
@@ -10,6 +11,7 @@ interface HouseholdContextType {
   isDisplayMode: boolean;
   loading: boolean;
   displayUrl: string | null;
+  userRole: "parent" | "helper" | "kid" | null;
 }
 
 const HouseholdContext = createContext<HouseholdContextType | undefined>(undefined);
@@ -20,6 +22,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [householdName, setHouseholdName] = useState("My Family");
   const [loading, setLoading] = useState(true);
+  const { role: userRole, canEdit: roleCanEdit, loading: roleLoading } = useUserRole(householdId);
 
   useEffect(() => {
     const loadHousehold = async () => {
@@ -62,7 +65,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   }, [user, urlHouseholdId]);
 
   const isDisplayMode = !!urlHouseholdId;
-  const canEdit = !isDisplayMode && !!user;
+  const canEdit = !isDisplayMode && roleCanEdit;
   const displayUrl = householdId && !isDisplayMode
     ? `${window.location.origin}/display/${householdId}`
     : null;
@@ -74,8 +77,9 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
         householdName,
         canEdit,
         isDisplayMode,
-        loading,
+        loading: loading || roleLoading,
         displayUrl,
+        userRole,
       }}
     >
       {children}
