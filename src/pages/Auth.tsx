@@ -159,6 +159,13 @@ export default function Auth() {
                   </Link>
                 </div>
               </form>
+              
+              {/* UAT Reset Link */}
+              <div className="text-center mt-4 pt-4 border-t border-border/50">
+                <Link to="/reset" className="text-xs text-muted-foreground hover:text-primary">
+                  Need to reset the database for testing?
+                </Link>
+              </div>
         </CardContent>
       </Card>
     </div>

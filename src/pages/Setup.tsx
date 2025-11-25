@@ -241,6 +241,22 @@ export default function Setup() {
                 </button>
               </p>
             </div>
+
+            {/* Always-visible reset section */}
+            <div className="pt-4 border-t border-border/50">
+              <div className="text-center">
+                <p className="text-xs text-muted-foreground mb-2">Need to clear everything?</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/reset")}
+                  className="text-xs"
+                >
+                  Go to Reset Database
+                </Button>
+              </div>
+            </div>
           </form>
         </CardContent>
       </Card>
