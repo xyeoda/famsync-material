@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function AdminBootstrap() {
   const [showButton, setShowButton] = useState(false);
@@ -34,7 +35,15 @@ export function AdminBootstrap() {
     }
   };
 
-  if (loading || !showButton) {
+  if (loading) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <Skeleton className="h-12 w-40 rounded-full" />
+      </div>
+    );
+  }
+
+  if (!showButton) {
     return null;
   }
 

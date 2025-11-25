@@ -73,7 +73,7 @@ const Dashboard = () => {
   const handleResetDatabase = async () => {
     setResetting(true);
     try {
-      const { error } = await supabase.functions.invoke("reset-database", {
+      const { data, error } = await supabase.functions.invoke("reset-database", {
         body: {
           resetToken: "RESET_ALL_DATA_NOW",
         },
@@ -82,14 +82,18 @@ const Dashboard = () => {
       if (error) throw error;
 
       toast({
-        title: "Database Reset",
-        description: "All data has been wiped. Signing out...",
+        title: "Database Reset Complete",
+        description: "All data wiped. Redirecting to setup...",
       });
 
-      // Sign out and redirect
+      // Clear all localStorage
+      localStorage.clear();
+      
+      // Sign out and redirect to home page
       setTimeout(async () => {
         await signOut();
-        navigate("/auth");
+        navigate("/");
+        window.location.reload(); // Force reload to show AdminBootstrap button
       }, 1500);
     } catch (error: any) {
       console.error("Error resetting database:", error);
@@ -98,7 +102,6 @@ const Dashboard = () => {
         description: error.message || "Could not reset database",
         variant: "destructive",
       });
-    } finally {
       setResetting(false);
     }
   };
