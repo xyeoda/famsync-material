@@ -9,7 +9,10 @@ import { FamilySettingsProvider } from "./contexts/FamilySettingsContext";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Setup from "./pages/Setup";
 import ChangePassword from "./pages/ChangePassword";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import AcceptInvite from "./pages/AcceptInvite";
 import NotFound from "./pages/NotFound";
 import { initializeSampleData } from "./lib/initSampleData";
@@ -32,7 +35,10 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/setup" element={<Setup />} />
                 <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/accept-invite/:token" element={<AcceptInvite />} />
                 <Route path="/calendar" element={<Index />} />
                 <Route path="/display/:householdId" element={<Index />} />
