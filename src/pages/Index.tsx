@@ -5,12 +5,14 @@ import { MonthView } from "@/components/Calendar/MonthView";
 import { EventDialog } from "@/components/Calendar/EventDialog";
 import { InstanceDialog } from "@/components/Calendar/InstanceDialog";
 import { BulkDeleteDialog } from "@/components/Calendar/BulkDeleteDialog";
+import { UserRoleBadge } from "@/components/UserRoleBadge";
 import { useEventsDB } from "@/hooks/useEventsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { FamilyEvent, EventInstance } from "@/types/event";
 import { addWeeks, subWeeks, addMonths, subMonths } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
+import { useAuth } from "@/hooks/useAuth";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Index = () => {
@@ -22,7 +24,8 @@ const Index = () => {
   const [selectedEvent, setSelectedEvent] = useState<FamilyEvent | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedInstance, setSelectedInstance] = useState<EventInstance | undefined>(undefined);
-  const { householdId, canEdit, loading: householdLoading } = useHousehold();
+  const { householdId, canEdit, loading: householdLoading, userRole } = useHousehold();
+  const { user } = useAuth();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents, loading: eventsLoading } = useEventsDB();
   const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances, loading: instancesLoading } = useEventInstancesDB();
   const { toast } = useToast();
@@ -161,6 +164,8 @@ const Index = () => {
           onToday={handleToday}
           onNewEvent={handleNewEvent}
           canEdit={canEdit}
+          userRole={userRole}
+          user={user}
         />
 
         {view === "week" ? (

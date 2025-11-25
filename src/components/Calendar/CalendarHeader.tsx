@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Settings, Home } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Settings, Home, Cog } from "lucide-react";
 import { format } from "date-fns";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { FamilySettingsDialog } from "./FamilySettingsDialog";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { UserRoleBadge } from "@/components/UserRoleBadge";
 import { Link } from "react-router-dom";
+import type { User } from "@supabase/supabase-js";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -16,6 +18,8 @@ interface CalendarHeaderProps {
   onToday: () => void;
   onNewEvent: () => void;
   canEdit: boolean;
+  userRole?: "parent" | "helper" | "kid" | null;
+  user?: User | null;
 }
 
 export function CalendarHeader({
@@ -27,6 +31,8 @@ export function CalendarHeader({
   onToday,
   onNewEvent,
   canEdit,
+  userRole,
+  user,
 }: CalendarHeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings, updateSettings, resetSettings } = useFamilySettings();
@@ -61,6 +67,7 @@ export function CalendarHeader({
               >
                 {title}
               </Button>
+              {user && userRole && <UserRoleBadge role={userRole} />}
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -107,9 +114,20 @@ export function CalendarHeader({
                   <Button
                     variant="text"
                     size="icon"
+                    asChild
+                    className="h-9 w-9 rounded-full"
+                    title="Settings"
+                  >
+                    <Link to="/settings">
+                      <Cog className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="text"
+                    size="icon"
                     onClick={() => setSettingsOpen(true)}
                     className="h-9 w-9 rounded-full"
-                    title="Family Settings"
+                    title="Family Member Settings"
                   >
                     <Settings className="h-4 w-4" />
                   </Button>
@@ -151,6 +169,7 @@ export function CalendarHeader({
             >
               {title}
             </Button>
+            {user && userRole && <UserRoleBadge role={userRole} />}
             <ThemeToggle />
           </div>
 
@@ -198,9 +217,20 @@ export function CalendarHeader({
                 <Button
                   variant="text"
                   size="icon"
+                  asChild
+                  className="h-9 w-9 rounded-full"
+                  title="Settings"
+                >
+                  <Link to="/settings">
+                    <Cog className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  variant="text"
+                  size="icon"
                   onClick={() => setSettingsOpen(true)}
                   className="h-9 w-9 rounded-full"
-                  title="Family Settings"
+                  title="Family Member Settings"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
