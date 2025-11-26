@@ -76,7 +76,18 @@ const handler = async (req: Request): Promise<Response> => {
     const appUrl = Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovableproject.com") || "";
     const inviteUrl = `${appUrl}/accept-invite?token=${token}`;
 
-    // Store invitation in database
+    // Delete any existing pending invitation for this email in this household
+    const { error: deleteError } = await supabaseClient
+      .from("pending_invitations")
+      .delete()
+      .eq("household_id", householdId)
+      .eq("email", email.toLowerCase());
+
+    if (deleteError) {
+      console.error("Error deleting old invitation:", deleteError);
+    }
+
+    // Store new invitation in database
     const { error: inviteError } = await supabaseClient
       .from("pending_invitations")
       .insert({
