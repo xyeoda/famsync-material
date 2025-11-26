@@ -105,58 +105,74 @@ const Dashboard = () => {
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   {/* Left side: Family Name */}
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
-                  </div>
+                  <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
 
-                  {/* Right side: Badge + Actions + Theme Toggle */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <ThemeToggle />
-                    {user && userRole && <UserRoleBadge role={userRole} />}
+                  {/* Right side: User Controls */}
+                  <div className="flex items-center gap-3">
                     {user ? (
                       <>
-                        {displayUrl && (
+                        {/* User Info Section */}
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50">
+                          {user && userRole && <UserRoleBadge role={userRole} />}
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-6 w-px bg-border hidden md:block" />
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {displayUrl && (
+                            <Button
+                              variant="outlined"
+                              size="sm"
+                              onClick={handleCopyDisplayUrl}
+                              className="gap-2"
+                            >
+                              <Copy className="h-4 w-4" />
+                              <span className="hidden sm:inline">Copy Link</span>
+                            </Button>
+                          )}
+                          {canEdit && (
+                            <Button
+                              variant="outlined"
+                              size="sm"
+                              onClick={() => navigate("/settings")}
+                              className="gap-2"
+                            >
+                              <Settings className="h-4 w-4" />
+                              <span className="hidden sm:inline">Settings</span>
+                            </Button>
+                          )}
                           <Button
                             variant="outlined"
                             size="sm"
-                            onClick={handleCopyDisplayUrl}
+                            onClick={handleSignOut}
                             className="gap-2"
                           >
-                            <Copy className="h-4 w-4" />
-                            Copy Display Link
+                            <LogOut className="h-4 w-4" />
+                            <span className="hidden sm:inline">Sign Out</span>
                           </Button>
-                        )}
-                        {canEdit && (
-                          <Button
-                            variant="outlined"
-                            size="sm"
-                            onClick={() => navigate("/settings")}
-                            className="gap-2"
-                          >
-                            <Settings className="h-4 w-4" />
-                            Settings
-                          </Button>
-                        )}
-                        <Button
-                          variant="outlined"
-                          size="sm"
-                          onClick={handleSignOut}
-                          className="gap-2"
-                        >
-                          <LogOut className="h-4 w-4" />
-                          Sign Out
-                        </Button>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-6 w-px bg-border hidden md:block" />
+
+                        {/* Theme Toggle */}
+                        <ThemeToggle />
                       </>
                     ) : (
-                      <Button
-                        variant="filled"
-                        size="sm"
-                        onClick={() => navigate("/auth")}
-                        className="gap-2"
-                      >
-                        <LogIn className="h-4 w-4" />
-                        Sign In
-                      </Button>
+                      <>
+                        <Button
+                          variant="filled"
+                          size="sm"
+                          onClick={() => navigate("/auth")}
+                          className="gap-2"
+                        >
+                          <LogIn className="h-4 w-4" />
+                          Sign In
+                        </Button>
+                        <ThemeToggle />
+                      </>
                     )}
                   </div>
                 </div>
