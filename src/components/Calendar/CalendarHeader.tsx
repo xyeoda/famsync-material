@@ -1,10 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Settings, Home, Cog } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Home, Cog } from "lucide-react";
 import { format } from "date-fns";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useState } from "react";
-import { FamilySettingsDialog } from "./FamilySettingsDialog";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
 import { UserRoleBadge } from "@/components/UserRoleBadge";
 import { Link } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
@@ -34,9 +31,6 @@ export function CalendarHeader({
   userRole,
   user,
 }: CalendarHeaderProps) {
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const { settings, updateSettings, resetSettings } = useFamilySettings();
-  
   const title = view === "month" 
     ? format(currentDate, "MMMM yyyy")
     : format(currentDate, "MMMM yyyy");
@@ -121,15 +115,6 @@ export function CalendarHeader({
                     <Link to="/settings">
                       <Cog className="h-4 w-4" />
                     </Link>
-                  </Button>
-                  <Button
-                    variant="text"
-                    size="icon"
-                    onClick={() => setSettingsOpen(true)}
-                    className="h-9 w-9 rounded-full"
-                    title="Family Member Settings"
-                  >
-                    <Settings className="h-4 w-4" />
                   </Button>
                   <Button
                     onClick={onNewEvent}
@@ -225,15 +210,6 @@ export function CalendarHeader({
                     <Cog className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button
-                  variant="text"
-                  size="icon"
-                  onClick={() => setSettingsOpen(true)}
-                  className="h-9 w-9 rounded-full"
-                  title="Family Member Settings"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
 
                 <Button
                   onClick={onNewEvent}
@@ -249,14 +225,6 @@ export function CalendarHeader({
           </div>
         </div>
       </div>
-
-      <FamilySettingsDialog
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        settings={settings}
-        onSave={updateSettings}
-        onReset={resetSettings}
-      />
     </>
   );
 }

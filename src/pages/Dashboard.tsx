@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEventsDB } from "@/hooks/useEventsDB";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
-import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { AdminBootstrap } from "@/components/AdminBootstrap";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { UserRoleBadge } from "@/components/UserRoleBadge";
@@ -34,8 +33,7 @@ const Dashboard = () => {
   
   const { events, loadEvents } = useEventsDB();
   const { instances, getInstanceForDate, loadInstances } = useEventInstancesDB();
-  const { settings, updateSettings, resetSettings, getFamilyMemberName } = useFamilySettingsDB();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { settings, getFamilyMemberName } = useFamilySettingsDB();
 
   // Load data when household ID is available
   useEffect(() => {
@@ -267,23 +265,15 @@ const Dashboard = () => {
               <CardDescription>Manage your family calendar</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              <Button asChild className="w-full justify-start" variant="filled">
-                <Link to="/calendar">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  View Calendar
-                </Link>
+              <Button className="w-full justify-start" variant="filled" onClick={() => navigate("/calendar")}>
+                <Calendar className="mr-2 h-4 w-4" />
+                Add Event
               </Button>
               {canEdit && (
-                <>
-                  <Button className="w-full justify-start" variant="outlined" onClick={() => navigate("/settings")}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Button>
-                  <Button className="w-full justify-start" variant="outlined" onClick={() => setSettingsOpen(true)}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Family Member Settings
-                  </Button>
-                </>
+                <Button className="w-full justify-start" variant="outlined" onClick={() => navigate("/settings")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Button>
               )}
             </CardContent>
           </Card>
@@ -324,15 +314,6 @@ const Dashboard = () => {
       </main>
       )}
 
-      {user && canEdit && (
-        <FamilySettingsDialog
-          open={settingsOpen}
-          onOpenChange={setSettingsOpen}
-          settings={settings}
-          onSave={updateSettings}
-          onReset={resetSettings}
-        />
-      )}
 
       {!user && <AdminBootstrap />}
       {user && <OnboardingTour userId={user.id} />}
