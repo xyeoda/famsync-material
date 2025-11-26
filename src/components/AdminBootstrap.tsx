@@ -15,12 +15,13 @@ export function AdminBootstrap() {
 
   const checkForExistingAdmin = async () => {
     try {
-      console.log("[AdminBootstrap] Checking for existing admin...");
+      console.log("[AdminBootstrap] Checking for existing site admin...");
       
-      // Check if any households exist (indicates admin has been set up)
+      // Check if any site_admin exists in system_roles
       const { data, error } = await supabase
-        .from('households')
+        .from('system_roles')
         .select('id')
+        .eq('role', 'site_admin')
         .limit(1);
 
       if (error) {
@@ -31,9 +32,9 @@ export function AdminBootstrap() {
       }
 
       const shouldShow = !data || data.length === 0;
-      console.log(`[AdminBootstrap] Households found: ${data?.length || 0}, showing button: ${shouldShow}`);
+      console.log(`[AdminBootstrap] Site admins found: ${data?.length || 0}, showing button: ${shouldShow}`);
       
-      // Only show button if no households exist
+      // Only show button if no site admin exists
       setShowButton(shouldShow);
     } catch (error) {
       console.error("[AdminBootstrap] Exception checking for admin:", error);
@@ -63,24 +64,6 @@ export function AdminBootstrap() {
           >
             <Shield className="h-5 w-5" />
             Setup Admin
-          </Button>
-        </Link>
-      </div>
-    );
-  }
-
-  // If household exists but we're on homepage (not logged in), show reset option
-  // This helps with UAT testing when you need to reset without logging in
-  if (window.location.pathname === "/") {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <Link to="/reset">
-          <Button
-            variant="outlined"
-            size="sm"
-            className="gap-2 shadow-lg hover:shadow-xl"
-          >
-            Reset Database (UAT)
           </Button>
         </Link>
       </div>
