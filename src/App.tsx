@@ -6,11 +6,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HouseholdProvider } from "./contexts/HouseholdContext";
 import { FamilySettingsProvider } from "./contexts/FamilySettingsContext";
-import Dashboard from "./pages/Dashboard";
-import Index from "./pages/Index";
+import { FamilyLayout } from "./components/FamilyLayout";
+import LandingPage from "./pages/LandingPage";
+import FamilyDashboard from "./pages/FamilyDashboard";
+import FamilyCalendar from "./pages/FamilyCalendar";
+import FamilySettings from "./pages/FamilySettings";
 import Auth from "./pages/Auth";
 import Setup from "./pages/Setup";
-import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -36,18 +38,26 @@ const App = () => {
           <HouseholdProvider>
             <FamilySettingsProvider>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/setup" element={<Setup />} />
-                <Route path="/settings" element={<Settings />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/accept-invite/:token" element={<AcceptInvite />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/reset" element={<Reset />} />
-                <Route path="/calendar" element={<Index />} />
-                <Route path="/display/:householdId" element={<Index />} />
+                
+                {/* Family-scoped routes */}
+                <Route path="/family/:householdId" element={<FamilyLayout />}>
+                  <Route index element={<FamilyDashboard />} />
+                  <Route path="calendar" element={<FamilyCalendar />} />
+                  <Route path="settings" element={<FamilySettings />} />
+                </Route>
+                
+                {/* Display mode (read-only) */}
+                <Route path="/display/:householdId" element={<FamilyCalendar />} />
+                
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

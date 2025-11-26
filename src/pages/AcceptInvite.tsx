@@ -166,7 +166,7 @@ export default function AcceptInvite() {
 
       if (signInError) throw signInError;
 
-      navigate("/calendar");
+      navigate(`/family/${invitationData!.household_id}`);
     } catch (error: any) {
       console.error("Error accepting invitation:", error);
       toast({
