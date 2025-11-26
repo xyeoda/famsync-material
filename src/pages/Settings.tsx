@@ -27,7 +27,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
 export default function Settings() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const { householdId, householdName, canEdit, loading: householdLoading } = useHousehold();
   const { settings, updateSettings } = useFamilySettingsDB();
   const { toast } = useToast();
@@ -42,10 +42,10 @@ export default function Settings() {
   }, [householdName]);
 
   useEffect(() => {
-    if (!user) {
+    if (!authLoading && !user) {
       navigate("/auth");
     }
-  }, [user, navigate]);
+  }, [authLoading, user, navigate]);
 
   // Show loading state while permissions are being checked
   if (householdLoading) {
