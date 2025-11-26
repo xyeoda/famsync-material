@@ -104,15 +104,15 @@ const Dashboard = () => {
             <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  {/* Left side: Family Name + Badge */}
+                  {/* Left side: Family Name */}
                   <div className="flex items-center gap-3">
                     <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
-                    {user && userRole && <UserRoleBadge role={userRole} />}
                   </div>
 
-                  {/* Right side: Actions + Theme Toggle */}
+                  {/* Right side: Badge + Actions + Theme Toggle */}
                   <div className="flex flex-wrap items-center gap-2">
                     <ThemeToggle />
+                    {user && userRole && <UserRoleBadge role={userRole} />}
                     {user ? (
                       <>
                         {displayUrl && (
