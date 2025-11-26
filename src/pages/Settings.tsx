@@ -56,12 +56,6 @@ export default function Settings() {
     );
   }
 
-  // Only redirect AFTER loading is complete
-  if (!canEdit) {
-    navigate("/");
-    return null;
-  }
-
   const handleResetDatabase = async () => {
     setResetting(true);
     try {
