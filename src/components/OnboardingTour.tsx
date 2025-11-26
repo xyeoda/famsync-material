@@ -29,9 +29,11 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
     }
   }, [userId]);
 
-  const handleDismiss = () => {
-    const storageKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
-    localStorage.setItem(storageKey, "true");
+  const handleDismiss = (markComplete: boolean = true) => {
+    if (markComplete) {
+      const storageKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
+      localStorage.setItem(storageKey, "true");
+    }
     setIsVisible(false);
   };
 
@@ -44,10 +46,11 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
   };
 
   const handleAction = (action: string) => {
-    handleDismiss();
     if (action === "calendar") {
       navigate("/calendar");
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     } else if (action === "settings") {
+      handleDismiss(true);
       navigate("/settings");
     }
   };
@@ -93,7 +96,7 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
           <Button
             variant="text"
             size="icon"
-            onClick={handleDismiss}
+            onClick={() => handleDismiss()}
             className="absolute top-2 right-2 h-8 w-8"
           >
             <X className="h-4 w-4" />
@@ -133,7 +136,7 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
           <div className="flex gap-2 pt-2">
             <Button
               variant="outlined"
-              onClick={handleDismiss}
+              onClick={() => handleDismiss()}
               className="flex-1"
             >
               Skip Tour
