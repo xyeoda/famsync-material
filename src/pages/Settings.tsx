@@ -348,17 +348,10 @@ export default function Settings() {
                 <div className="space-y-2">
                   <Label htmlFor="parent1-color">Parent 1 Color</Label>
                   <div className="relative">
-                    <input
-                      type="color"
-                      id="parent1-color"
-                      value={hslToHex(settings.parent1Color || "210 40% 50%")}
-                      onChange={(e) => handleColorChange("parent1Color", e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                     <Button
                       type="button"
                       variant="outlined"
-                      className="w-full h-12 justify-start gap-3"
+                      className="w-full h-12 justify-start gap-3 pointer-events-none"
                       style={{ 
                         backgroundColor: `hsl(${settings.parent1Color})`,
                         borderColor: `hsl(${settings.parent1Color})`
@@ -369,22 +362,22 @@ export default function Settings() {
                         Click to change color
                       </span>
                     </Button>
+                    <input
+                      type="color"
+                      id="parent1-color"
+                      value={hslToHex(settings.parent1Color || "210 40% 50%")}
+                      onChange={(e) => handleColorChange("parent1Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="parent2-color">Parent 2 Color</Label>
                   <div className="relative">
-                    <input
-                      type="color"
-                      id="parent2-color"
-                      value={hslToHex(settings.parent2Color || "280 40% 50%")}
-                      onChange={(e) => handleColorChange("parent2Color", e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                     <Button
                       type="button"
                       variant="outlined"
-                      className="w-full h-12 justify-start gap-3"
+                      className="w-full h-12 justify-start gap-3 pointer-events-none"
                       style={{ 
                         backgroundColor: `hsl(${settings.parent2Color})`,
                         borderColor: `hsl(${settings.parent2Color})`
@@ -395,22 +388,22 @@ export default function Settings() {
                         Click to change color
                       </span>
                     </Button>
+                    <input
+                      type="color"
+                      id="parent2-color"
+                      value={hslToHex(settings.parent2Color || "280 40% 50%")}
+                      onChange={(e) => handleColorChange("parent2Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kid1-color">Kid 1 Color</Label>
                   <div className="relative">
-                    <input
-                      type="color"
-                      id="kid1-color"
-                      value={hslToHex(settings.kid1Color || "150 40% 50%")}
-                      onChange={(e) => handleColorChange("kid1Color", e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                     <Button
                       type="button"
                       variant="outlined"
-                      className="w-full h-12 justify-start gap-3"
+                      className="w-full h-12 justify-start gap-3 pointer-events-none"
                       style={{ 
                         backgroundColor: `hsl(${settings.kid1Color})`,
                         borderColor: `hsl(${settings.kid1Color})`
@@ -421,22 +414,22 @@ export default function Settings() {
                         Click to change color
                       </span>
                     </Button>
+                    <input
+                      type="color"
+                      id="kid1-color"
+                      value={hslToHex(settings.kid1Color || "150 40% 50%")}
+                      onChange={(e) => handleColorChange("kid1Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kid2-color">Kid 2 Color</Label>
                   <div className="relative">
-                    <input
-                      type="color"
-                      id="kid2-color"
-                      value={hslToHex(settings.kid2Color || "30 40% 50%")}
-                      onChange={(e) => handleColorChange("kid2Color", e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                     <Button
                       type="button"
                       variant="outlined"
-                      className="w-full h-12 justify-start gap-3"
+                      className="w-full h-12 justify-start gap-3 pointer-events-none"
                       style={{ 
                         backgroundColor: `hsl(${settings.kid2Color})`,
                         borderColor: `hsl(${settings.kid2Color})`
@@ -447,22 +440,22 @@ export default function Settings() {
                         Click to change color
                       </span>
                     </Button>
+                    <input
+                      type="color"
+                      id="kid2-color"
+                      value={hslToHex(settings.kid2Color || "30 40% 50%")}
+                      onChange={(e) => handleColorChange("kid2Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="housekeeper-color">Housekeeper Color</Label>
                   <div className="relative">
-                    <input
-                      type="color"
-                      id="housekeeper-color"
-                      value={hslToHex(settings.housekeeperColor || "180 30% 50%")}
-                      onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                     <Button
                       type="button"
                       variant="outlined"
-                      className="w-full h-12 justify-start gap-3"
+                      className="w-full h-12 justify-start gap-3 pointer-events-none"
                       style={{ 
                         backgroundColor: `hsl(${settings.housekeeperColor})`,
                         borderColor: `hsl(${settings.housekeeperColor})`
@@ -473,6 +466,13 @@ export default function Settings() {
                         Click to change color
                       </span>
                     </Button>
+                    <input
+                      type="color"
+                      id="housekeeper-color"
+                      value={hslToHex(settings.housekeeperColor || "180 30% 50%")}
+                      onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
                   </div>
                 </div>
               </div>
