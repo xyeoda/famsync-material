@@ -26,6 +26,54 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
+// Color conversion utilities
+function hslToHex(hsl: string): string {
+  const [h, s, l] = hsl.split(' ').map((v, i) => {
+    const num = parseFloat(v);
+    return i === 0 ? num : num / 100;
+  });
+  
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color);
+  };
+  
+  const r = f(0).toString(16).padStart(2, '0');
+  const g = f(8).toString(16).padStart(2, '0');
+  const b = f(4).toString(16).padStart(2, '0');
+  
+  return `#${r}${g}${b}`;
+}
+
+function hexToHsl(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+  
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  
+  h = Math.round(h * 360);
+  s = Math.round(s * 100);
+  l = Math.round(l * 100);
+  
+  return `${h} ${s}% ${l}%`;
+}
+
 export default function Settings() {
   const { user, signOut, loading: authLoading } = useAuth();
   const { householdId, householdName, displayUrl, canEdit, loading: householdLoading } = useHousehold();
@@ -126,6 +174,11 @@ export default function Settings() {
       [field]: value,
     };
     await updateSettings(updatedSettings);
+  };
+
+  const handleColorChange = (field: string, hex: string) => {
+    const hsl = hexToHsl(hex);
+    handleUpdateFamilyMember(field, hsl);
   };
 
   const handleCopyDisplayUrl = () => {
@@ -288,83 +341,138 @@ export default function Settings() {
                 <Palette className="h-5 w-5 text-primary" />
                 <CardTitle>Color Customization</CardTitle>
               </div>
-              <CardDescription>Customize family member colors (HSL format)</CardDescription>
+              <CardDescription>Click the colored buttons to pick a color</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="parent1-color">Parent 1 Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
+                  <div className="relative">
+                    <input
+                      type="color"
                       id="parent1-color"
-                      value={settings.parent1Color || ""}
-                      onChange={(e) => handleUpdateFamilyMember("parent1Color", e.target.value)}
-                      placeholder="210, 40%, 50%"
+                      value={hslToHex(settings.parent1Color || "210 40% 50%")}
+                      onChange={(e) => handleColorChange("parent1Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div
-                      className="h-10 w-10 rounded border border-border"
-                      style={{ backgroundColor: `hsl(${settings.parent1Color})` }}
-                    />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      className="w-full h-12 justify-start gap-3"
+                      style={{ 
+                        backgroundColor: `hsl(${settings.parent1Color})`,
+                        borderColor: `hsl(${settings.parent1Color})`
+                      }}
+                    >
+                      <Palette className="h-5 w-5" style={{ color: 'white', filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                      <span style={{ color: 'white', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>
+                        Click to change color
+                      </span>
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="parent2-color">Parent 2 Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
+                  <div className="relative">
+                    <input
+                      type="color"
                       id="parent2-color"
-                      value={settings.parent2Color || ""}
-                      onChange={(e) => handleUpdateFamilyMember("parent2Color", e.target.value)}
-                      placeholder="280, 40%, 50%"
+                      value={hslToHex(settings.parent2Color || "280 40% 50%")}
+                      onChange={(e) => handleColorChange("parent2Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div
-                      className="h-10 w-10 rounded border border-border"
-                      style={{ backgroundColor: `hsl(${settings.parent2Color})` }}
-                    />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      className="w-full h-12 justify-start gap-3"
+                      style={{ 
+                        backgroundColor: `hsl(${settings.parent2Color})`,
+                        borderColor: `hsl(${settings.parent2Color})`
+                      }}
+                    >
+                      <Palette className="h-5 w-5" style={{ color: 'white', filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                      <span style={{ color: 'white', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>
+                        Click to change color
+                      </span>
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kid1-color">Kid 1 Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
+                  <div className="relative">
+                    <input
+                      type="color"
                       id="kid1-color"
-                      value={settings.kid1Color || ""}
-                      onChange={(e) => handleUpdateFamilyMember("kid1Color", e.target.value)}
-                      placeholder="150, 40%, 50%"
+                      value={hslToHex(settings.kid1Color || "150 40% 50%")}
+                      onChange={(e) => handleColorChange("kid1Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div
-                      className="h-10 w-10 rounded border border-border"
-                      style={{ backgroundColor: `hsl(${settings.kid1Color})` }}
-                    />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      className="w-full h-12 justify-start gap-3"
+                      style={{ 
+                        backgroundColor: `hsl(${settings.kid1Color})`,
+                        borderColor: `hsl(${settings.kid1Color})`
+                      }}
+                    >
+                      <Palette className="h-5 w-5" style={{ color: 'white', filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                      <span style={{ color: 'white', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>
+                        Click to change color
+                      </span>
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kid2-color">Kid 2 Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
+                  <div className="relative">
+                    <input
+                      type="color"
                       id="kid2-color"
-                      value={settings.kid2Color || ""}
-                      onChange={(e) => handleUpdateFamilyMember("kid2Color", e.target.value)}
-                      placeholder="30, 40%, 50%"
+                      value={hslToHex(settings.kid2Color || "30 40% 50%")}
+                      onChange={(e) => handleColorChange("kid2Color", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div
-                      className="h-10 w-10 rounded border border-border"
-                      style={{ backgroundColor: `hsl(${settings.kid2Color})` }}
-                    />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      className="w-full h-12 justify-start gap-3"
+                      style={{ 
+                        backgroundColor: `hsl(${settings.kid2Color})`,
+                        borderColor: `hsl(${settings.kid2Color})`
+                      }}
+                    >
+                      <Palette className="h-5 w-5" style={{ color: 'white', filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                      <span style={{ color: 'white', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>
+                        Click to change color
+                      </span>
+                    </Button>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="housekeeper-color">Housekeeper Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
+                  <div className="relative">
+                    <input
+                      type="color"
                       id="housekeeper-color"
-                      value={settings.housekeeperColor || ""}
-                      onChange={(e) => handleUpdateFamilyMember("housekeeperColor", e.target.value)}
-                      placeholder="180, 30%, 50%"
+                      value={hslToHex(settings.housekeeperColor || "180 30% 50%")}
+                      onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     />
-                    <div
-                      className="h-10 w-10 rounded border border-border"
-                      style={{ backgroundColor: `hsl(${settings.housekeeperColor})` }}
-                    />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      className="w-full h-12 justify-start gap-3"
+                      style={{ 
+                        backgroundColor: `hsl(${settings.housekeeperColor})`,
+                        borderColor: `hsl(${settings.housekeeperColor})`
+                      }}
+                    >
+                      <Palette className="h-5 w-5" style={{ color: 'white', filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.5))' }} />
+                      <span style={{ color: 'white', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}>
+                        Click to change color
+                      </span>
+                    </Button>
                   </div>
                 </div>
               </div>
