@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -73,7 +73,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Generate invitation token
     const token = crypto.randomUUID();
-    const inviteUrl = `${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", "")}/auth/accept-invite?token=${token}`;
+    const appUrl = Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovableproject.com") || "";
+    const inviteUrl = `${appUrl}/accept-invite?token=${token}`;
 
     // Store invitation in database
     const { error: inviteError } = await supabaseClient
@@ -94,15 +95,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email via SMTP
-    const client = new SmtpClient();
-
-    await client.connectTLS({
-      hostname: Deno.env.get("SMTP_HOST")!,
-      port: parseInt(Deno.env.get("SMTP_PORT") || "587"),
-      username: Deno.env.get("SMTP_USER")!,
-      password: Deno.env.get("SMTP_PASSWORD")!,
-    });
+    // Send email via Resend
+    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
     const roleNames = {
       parent: "Parent",
@@ -110,11 +104,10 @@ const handler = async (req: Request): Promise<Response> => {
       kid: "Family Member",
     };
 
-    await client.send({
-      from: Deno.env.get("SMTP_FROM_EMAIL")!,
-      to: email,
+    const { error: emailError } = await resend.emails.send({
+      from: "Family Calendar <onboarding@resend.dev>",
+      to: [email],
       subject: `You're invited to join ${householdName}'s calendar`,
-      content: `You've been invited to join ${householdName}'s family calendar. Click the link to accept: ${inviteUrl}`,
       html: `<!DOCTYPE html>
 <html>
 <head>
@@ -152,7 +145,13 @@ const handler = async (req: Request): Promise<Response> => {
 </html>`,
     });
 
-    await client.close();
+    if (emailError) {
+      console.error("Error sending email:", emailError);
+      return new Response(
+        JSON.stringify({ error: "Failed to send invitation email" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     console.log(`Invitation sent to ${email} for household ${householdId}`);
 
