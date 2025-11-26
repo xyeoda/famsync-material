@@ -99,64 +99,69 @@ const Dashboard = () => {
         </div>
       ) : (
         <main className="container mx-auto px-4 py-8 relative z-10">
-          <div className="mb-8 space-y-4">
-            {/* Row 1: Family Name + Theme Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
-                {user && userRole && <UserRoleBadge role={userRole} />}
-              </div>
-              <ThemeToggle />
-            </div>
+          <div className="mb-8">
+            {/* Header Card */}
+            <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
+              <CardContent className="pt-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  {/* Left side: Family Name + Badge */}
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
+                    {user && userRole && <UserRoleBadge role={userRole} />}
+                  </div>
 
-            {/* Row 2: Action Buttons - Right aligned */}
-            {user ? (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                {displayUrl && (
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    onClick={handleCopyDisplayUrl}
-                    className="gap-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                    Copy Display Link
-                  </Button>
-                )}
-                {canEdit && (
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    onClick={() => navigate("/settings")}
-                    className="gap-2"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Button>
-                )}
-                <Button
-                  variant="outlined"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="flex justify-end">
-                <Button
-                  variant="filled"
-                  size="sm"
-                  onClick={() => navigate("/auth")}
-                  className="gap-2"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Sign In
-                </Button>
-              </div>
-            )}
+                  {/* Right side: Actions + Theme Toggle */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <ThemeToggle />
+                    {user ? (
+                      <>
+                        {displayUrl && (
+                          <Button
+                            variant="outlined"
+                            size="sm"
+                            onClick={handleCopyDisplayUrl}
+                            className="gap-2"
+                          >
+                            <Copy className="h-4 w-4" />
+                            Copy Display Link
+                          </Button>
+                        )}
+                        {canEdit && (
+                          <Button
+                            variant="outlined"
+                            size="sm"
+                            onClick={() => navigate("/settings")}
+                            className="gap-2"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Settings
+                          </Button>
+                        )}
+                        <Button
+                          variant="outlined"
+                          size="sm"
+                          onClick={handleSignOut}
+                          className="gap-2"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Sign Out
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="filled"
+                        size="sm"
+                        onClick={() => navigate("/auth")}
+                        className="gap-2"
+                      >
+                        <LogIn className="h-4 w-4" />
+                        Sign In
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
         <Card className="surface-elevation-1 mb-8 bg-card/80 backdrop-blur-md border-border/50">
