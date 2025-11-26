@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Settings, Car, User, MapPin, Copy, LogIn, LogOut } from "lucide-react";
+import { Calendar, Settings, Car, User, MapPin, LogIn, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
@@ -19,7 +19,7 @@ import dashboardBg from "@/assets/dashboard-bg.png";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
-  const { householdId, householdName, displayUrl, canEdit, loading: householdLoading, userRole } = useHousehold();
+  const { householdId, householdName, canEdit, loading: householdLoading, userRole } = useHousehold();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -42,16 +42,6 @@ const Dashboard = () => {
       loadInstances(householdId);
     }
   }, [householdId]);
-
-  const handleCopyDisplayUrl = () => {
-    if (displayUrl) {
-      navigator.clipboard.writeText(displayUrl);
-      toast({
-        title: "Display URL Copied",
-        description: "Share this link with devices you want to display the calendar on.",
-      });
-    }
-  };
 
   const today = new Date();
   const weekStart = startOfWeek(today);
@@ -121,17 +111,6 @@ const Dashboard = () => {
 
                         {/* Action Buttons */}
                         <div className="flex flex-wrap items-center gap-2">
-                          {displayUrl && (
-                            <Button
-                              variant="outlined"
-                              size="sm"
-                              onClick={handleCopyDisplayUrl}
-                              className="gap-2"
-                            >
-                              <Copy className="h-4 w-4" />
-                              <span className="hidden sm:inline">Copy Link</span>
-                            </Button>
-                          )}
                           {canEdit && (
                             <Button
                               variant="outlined"

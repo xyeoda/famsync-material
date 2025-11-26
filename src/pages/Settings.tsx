@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, Users, Palette, Trash2, Shield } from "lucide-react";
+import { ArrowLeft, Home, Users, Palette, Trash2, Shield, Copy } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
@@ -28,7 +28,7 @@ import dashboardBg from "@/assets/dashboard-bg.png";
 
 export default function Settings() {
   const { user, signOut, loading: authLoading } = useAuth();
-  const { householdId, householdName, canEdit, loading: householdLoading } = useHousehold();
+  const { householdId, householdName, displayUrl, canEdit, loading: householdLoading } = useHousehold();
   const { settings, updateSettings } = useFamilySettingsDB();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -128,6 +128,16 @@ export default function Settings() {
     await updateSettings(updatedSettings);
   };
 
+  const handleCopyDisplayUrl = () => {
+    if (displayUrl) {
+      navigator.clipboard.writeText(displayUrl);
+      toast({
+        title: "Display URL Copied",
+        description: "Share this link with devices you want to display the calendar on.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div 
@@ -179,6 +189,32 @@ export default function Settings() {
                     disabled={loading || editedHouseholdName === householdName}
                   >
                     Update
+                  </Button>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <Label htmlFor="display-url">Display Link</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Share this link with devices you want to display the calendar on (read-only access)
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    id="display-url"
+                    value={displayUrl || "Loading..."}
+                    readOnly
+                    className="font-mono text-sm"
+                  />
+                  <Button
+                    onClick={handleCopyDisplayUrl}
+                    disabled={!displayUrl}
+                    variant="outlined"
+                    className="gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copy
                   </Button>
                 </div>
               </div>
