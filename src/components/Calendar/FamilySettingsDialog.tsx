@@ -96,7 +96,7 @@ export function FamilySettingsDialog({
         <DialogHeader>
           <DialogTitle>Family Settings</DialogTitle>
           <DialogDescription>
-            Customize the names of your family members. These names will be used throughout the calendar.
+            Customize the names and colors of your family members. Click the colored buttons to pick a color.
           </DialogDescription>
         </DialogHeader>
 
@@ -114,19 +114,19 @@ export function FamilySettingsDialog({
                   placeholder="e.g., Mom, Dad, Sarah"
                   className="flex-1"
                 />
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="color"
                     value={hslToHex(localSettings.parent1Color)}
                     onChange={(e) => handleColorChange("parent1Color", e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     title="Pick color"
                   />
                   <Button
                     type="button"
                     variant="outlined"
                     size="icon"
-                    className="h-10 w-10 pointer-events-none"
+                    className="h-10 w-10 border-2 transition-all group-hover:scale-105 group-hover:border-primary"
                     style={{ backgroundColor: `hsl(${localSettings.parent1Color})` }}
                   >
                     <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
@@ -145,19 +145,19 @@ export function FamilySettingsDialog({
                   placeholder="e.g., Mom, Dad, John"
                   className="flex-1"
                 />
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="color"
                     value={hslToHex(localSettings.parent2Color)}
                     onChange={(e) => handleColorChange("parent2Color", e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     title="Pick color"
                   />
                   <Button
                     type="button"
                     variant="outlined"
                     size="icon"
-                    className="h-10 w-10 pointer-events-none"
+                    className="h-10 w-10 border-2 transition-all group-hover:scale-105 group-hover:border-primary"
                     style={{ backgroundColor: `hsl(${localSettings.parent2Color})` }}
                   >
                     <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
@@ -176,19 +176,19 @@ export function FamilySettingsDialog({
                   placeholder="e.g., Nanny, Babysitter, Helper"
                   className="flex-1"
                 />
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="color"
                     value={hslToHex(localSettings.housekeeperColor)}
                     onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     title="Pick color"
                   />
                   <Button
                     type="button"
                     variant="outlined"
                     size="icon"
-                    className="h-10 w-10 pointer-events-none"
+                    className="h-10 w-10 border-2 transition-all group-hover:scale-105 group-hover:border-primary"
                     style={{ backgroundColor: `hsl(${localSettings.housekeeperColor})` }}
                   >
                     <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
@@ -211,19 +211,19 @@ export function FamilySettingsDialog({
                   placeholder="e.g., Emma, Alex"
                   className="flex-1"
                 />
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="color"
                     value={hslToHex(localSettings.kid1Color)}
                     onChange={(e) => handleColorChange("kid1Color", e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     title="Pick color"
                   />
                   <Button
                     type="button"
                     variant="outlined"
                     size="icon"
-                    className="h-10 w-10 pointer-events-none"
+                    className="h-10 w-10 border-2 transition-all group-hover:scale-105 group-hover:border-primary"
                     style={{ backgroundColor: `hsl(${localSettings.kid1Color})` }}
                   >
                     <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
@@ -242,19 +242,19 @@ export function FamilySettingsDialog({
                   placeholder="e.g., Oliver, Sophie"
                   className="flex-1"
                 />
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="color"
                     value={hslToHex(localSettings.kid2Color)}
                     onChange={(e) => handleColorChange("kid2Color", e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     title="Pick color"
                   />
                   <Button
                     type="button"
                     variant="outlined"
                     size="icon"
-                    className="h-10 w-10 pointer-events-none"
+                    className="h-10 w-10 border-2 transition-all group-hover:scale-105 group-hover:border-primary"
                     style={{ backgroundColor: `hsl(${localSettings.kid2Color})` }}
                   >
                     <Palette className="h-4 w-4" style={{ color: 'white', mixBlendMode: 'difference' }} />
