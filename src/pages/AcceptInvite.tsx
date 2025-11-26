@@ -13,6 +13,7 @@ interface InvitationData {
   role: string;
   household_id: string;
   household_name?: string;
+  is_first_parent?: boolean;
 }
 
 export default function AcceptInvite() {
@@ -43,7 +44,7 @@ export default function AcceptInvite() {
     try {
       const { data, error } = await supabase
         .from("pending_invitations")
-        .select("email, role, household_id, households(name)")
+        .select("email, role, household_id, is_first_parent, households(name)")
         .eq("token", token)
         .gt("expires_at", new Date().toISOString())
         .single();
@@ -63,6 +64,7 @@ export default function AcceptInvite() {
         role: data.role,
         household_id: data.household_id,
         household_name: (data.households as any)?.name,
+        is_first_parent: data.is_first_parent,
       });
     } catch (error: any) {
       console.error("Error verifying token:", error);
@@ -114,6 +116,30 @@ export default function AcceptInvite() {
 
       const userId = authData.user?.id;
       if (!userId) throw new Error("User ID not found");
+
+      // If this is the first parent, set them as the household owner
+      if (invitationData!.is_first_parent) {
+        const { error: ownerError } = await supabase
+          .from("households")
+          .update({ owner_id: userId })
+          .eq("id", invitationData!.household_id);
+
+        if (ownerError) {
+          console.error("Error setting household owner:", ownerError);
+        }
+
+        // Create family_settings for the household
+        const { error: settingsError } = await supabase
+          .from("family_settings")
+          .insert({
+            user_id: userId,
+            household_id: invitationData!.household_id,
+          });
+
+        if (settingsError) {
+          console.error("Error creating family settings:", settingsError);
+        }
+      }
 
       // Assign user role
       const { error: roleError } = await supabase.from("user_roles").insert([{

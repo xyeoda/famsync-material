@@ -20,6 +20,20 @@ export default function Auth() {
     // Check if user is already logged in and if they need to change password
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
+        // Check if user is site admin
+        const { data: systemRole } = await supabase
+          .from("system_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .eq("role", "site_admin")
+          .maybeSingle();
+
+        if (systemRole) {
+          navigate("/admin");
+          return;
+        }
+
+        // Check if regular user needs to change password
         const { data: profile } = await supabase
           .from("profiles")
           .select("must_change_password")
@@ -37,6 +51,20 @@ export default function Auth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === "SIGNED_IN") {
         setTimeout(async () => {
+          // Check if user is site admin
+          const { data: systemRole } = await supabase
+            .from("system_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "site_admin")
+            .maybeSingle();
+
+          if (systemRole) {
+            navigate("/admin");
+            return;
+          }
+
+          // Check if regular user needs to change password
           const { data: profile } = await supabase
             .from("profiles")
             .select("must_change_password")
