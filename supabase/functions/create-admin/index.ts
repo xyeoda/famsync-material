@@ -9,7 +9,6 @@ const corsHeaders = {
 interface CreateAdminRequest {
   email: string;
   defaultPassword: string;
-  householdName?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -18,7 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, defaultPassword, householdName }: CreateAdminRequest = await req.json();
+    const { email, defaultPassword }: CreateAdminRequest = await req.json();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -30,21 +29,20 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    console.log("Checking for existing households...");
-
-    // Check if any households already exist (indicates setup already run)
-    const { data: existingHouseholds, error: householdsError } = await supabaseAdmin
-      .from("households")
+    // Check if site admin already exists
+    const { data: existingAdmin, error: adminError } = await supabaseAdmin
+      .from("system_roles")
       .select("id")
+      .eq("role", "site_admin")
       .limit(1);
 
-    if (householdsError) {
-      console.error("Error checking existing households:", householdsError);
+    if (adminError) {
+      console.error("Error checking existing admin:", adminError);
     }
 
-    if (existingHouseholds && existingHouseholds.length > 0) {
+    if (existingAdmin && existingAdmin.length > 0) {
       return new Response(
-        JSON.stringify({ error: "Admin already exists. Please reset database first." }),
+        JSON.stringify({ error: "Site administrator already exists. Please sign in instead." }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -52,9 +50,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log("Creating admin user...");
-
-    // Create the admin user
+    // Create the site admin user
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password: defaultPassword,
@@ -66,73 +62,28 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const userId = userData.user.id;
-    console.log(`Admin user created: ${userId}`);
+    console.log(`Site admin user created: ${userId}`);
 
-    // Create household
-    const { data: householdData, error: householdError } = await supabaseAdmin
-      .from("households")
-      .insert({
-        owner_id: userId,
-        name: householdName || "My Family",
-      })
-      .select()
-      .single();
-
-    if (householdError) {
-      throw new Error(`Failed to create household: ${householdError.message}`);
-    }
-
-    console.log(`Household created: ${householdData.id}`);
-
-    // The trigger should assign parent role, but let's verify it was created
-    const { data: roleData } = await supabaseAdmin
-      .from("user_roles")
-      .select()
-      .eq("user_id", userId)
-      .eq("household_id", householdData.id)
-      .single();
-
-    if (!roleData) {
-      // Manually assign parent role if trigger didn't work
-      const { error: roleError } = await supabaseAdmin
-        .from("user_roles")
-        .insert({
-          user_id: userId,
-          household_id: householdData.id,
-          role: "parent",
-        });
-
-      if (roleError) {
-        console.error("Error assigning parent role:", roleError);
-      } else {
-        console.log("Parent role manually assigned");
-      }
-    } else {
-      console.log("Parent role assigned via trigger");
-    }
-
-    // Create family_settings with household_id
-    const { error: settingsError } = await supabaseAdmin
-      .from("family_settings")
+    // Assign site_admin system role
+    const { error: roleError } = await supabaseAdmin
+      .from("system_roles")
       .insert({
         user_id: userId,
-        household_id: householdData.id,
+        role: "site_admin",
       });
 
-    if (settingsError) {
-      console.error("Error creating family_settings:", settingsError);
-    } else {
-      console.log("Family settings created with household_id");
+    if (roleError) {
+      console.error("Error assigning site admin role:", roleError);
+      throw new Error(`Failed to assign site admin role: ${roleError.message}`);
     }
 
-    console.log("Admin setup complete");
+    console.log("Site admin role assigned");
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Admin user created successfully",
+        message: "Site administrator created successfully",
         userId,
-        householdId: householdData.id,
       }),
       { 
         status: 200, 

@@ -14,7 +14,7 @@ export default function Setup() {
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [email, setEmail] = useState("xyeoda@yeoda.space");
-  const [householdName, setHouseholdName] = useState("My Family");
+  
   const [defaultPassword, setDefaultPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -76,7 +76,6 @@ export default function Setup() {
         body: {
           email,
           defaultPassword,
-          householdName,
         },
       });
 
@@ -120,10 +119,10 @@ export default function Setup() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <CardTitle className="text-2xl">Initial Setup</CardTitle>
+            <CardTitle className="text-2xl">Site Administrator Setup</CardTitle>
           </div>
           <CardDescription>
-            Create the master administrator account for YeoDa Family Calendar
+            Create the site administrator account. You'll manage families from your admin dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -179,21 +178,6 @@ export default function Setup() {
                 required
                 disabled={loading}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="household-name">Household Name</Label>
-              <Input
-                id="household-name"
-                type="text"
-                placeholder="The Smith Family"
-                value={householdName}
-                onChange={(e) => setHouseholdName(e.target.value)}
-                required
-                disabled={loading}
-              />
-              <p className="text-xs text-muted-foreground">
-                This will be the name of your family calendar
-              </p>
             </div>
               <div className="space-y-2">
                 <Label htmlFor="default-password">Initial Password</Label>

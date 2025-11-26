@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          performed_by: string
+          target_household_id: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          performed_by: string
+          target_household_id?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string
+          target_household_id?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_target_household_id_fkey"
+            columns: ["target_household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_instances: {
         Row: {
           cancelled: boolean | null
@@ -221,21 +259,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          owner_id: string
+          owner_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
-          owner_id: string
+          owner_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
-          owner_id?: string
+          owner_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -256,6 +294,7 @@ export type Database = {
           household_id: string
           id: string
           invited_by: string
+          is_first_parent: boolean
           role: Database["public"]["Enums"]["app_role"]
           token: string
         }
@@ -266,6 +305,7 @@ export type Database = {
           household_id: string
           id?: string
           invited_by: string
+          is_first_parent?: boolean
           role: Database["public"]["Enums"]["app_role"]
           token: string
         }
@@ -276,6 +316,7 @@ export type Database = {
           household_id?: string
           id?: string
           invited_by?: string
+          is_first_parent?: boolean
           role?: Database["public"]["Enums"]["app_role"]
           token?: string
         }
@@ -317,6 +358,30 @@ export type Database = {
           id?: string
           must_change_password?: boolean | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      system_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["system_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["system_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["system_role"]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -379,6 +444,7 @@ export type Database = {
         Args: { _household_id: string; _user_id: string }
         Returns: boolean
       }
+      is_site_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       activity_category:
@@ -390,6 +456,7 @@ export type Database = {
         | "other"
       app_role: "parent" | "helper" | "kid"
       family_member: "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper"
+      system_role: "site_admin" | "user"
       transport_method: "car" | "bus" | "walk" | "bike"
     }
     CompositeTypes: {
@@ -528,6 +595,7 @@ export const Constants = {
       ],
       app_role: ["parent", "helper", "kid"],
       family_member: ["parent1", "parent2", "kid1", "kid2", "housekeeper"],
+      system_role: ["site_admin", "user"],
       transport_method: ["car", "bus", "walk", "bike"],
     },
   },
