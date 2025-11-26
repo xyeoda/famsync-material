@@ -50,6 +50,7 @@ const handler = async (req: Request): Promise<Response> => {
       familySettings: 0,
       userRoles: 0,
       households: 0,
+      systemRoles: 0,
       profiles: 0,
       authUsers: 0,
     };
@@ -108,6 +109,15 @@ const handler = async (req: Request): Promise<Response> => {
     if (hhErr) console.error("Error deleting households:", hhErr);
     else deletionResults.households = households?.length || 0;
     console.log(`Deleted ${deletionResults.households} households`);
+
+    const { data: systemRoles, error: sysRolesErr } = await supabaseAdmin
+      .from("system_roles")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000")
+      .select();
+    if (sysRolesErr) console.error("Error deleting system_roles:", sysRolesErr);
+    else deletionResults.systemRoles = systemRoles?.length || 0;
+    console.log(`Deleted ${deletionResults.systemRoles} system_roles`);
 
     const { data: profiles, error: profErr } = await supabaseAdmin
       .from("profiles")
