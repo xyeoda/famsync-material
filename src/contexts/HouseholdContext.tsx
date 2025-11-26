@@ -22,6 +22,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [householdName, setHouseholdName] = useState("My Family");
   const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
   const { role: userRole, canEdit: roleCanEdit, loading: roleLoading } = useUserRole(householdId);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
       if (user) {
         const { data, error } = await supabase
           .from('households')
-          .select('id, name')
+          .select('id, name, owner_id')
           .eq('owner_id', user.id)
           .maybeSingle();
 
@@ -57,6 +58,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
         } else if (data) {
           setHouseholdId(data.id);
           setHouseholdName(data.name);
+          setIsOwner(data.owner_id === user.id);
         }
       }
       
@@ -67,7 +69,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   }, [user, urlHouseholdId]);
 
   const isDisplayMode = !!urlHouseholdId;
-  const canEdit = !isDisplayMode && roleCanEdit;
+  const canEdit = !isDisplayMode && (roleCanEdit || isOwner);
   const displayUrl = householdId && !isDisplayMode
     ? `${window.location.origin}/display/${householdId}`
     : null;
