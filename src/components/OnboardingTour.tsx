@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useNavigate } from "react-router-dom";
 
 const ONBOARDING_STORAGE_KEY = "yeoda-onboarding-completed";
+const ONBOARDING_STEP_STORAGE_KEY = "yeoda-onboarding-step";
 
 interface OnboardingTourProps {
   userId: string;
@@ -17,29 +18,46 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
 
   useEffect(() => {
     // Check if user has completed onboarding
-    const storageKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
-    const completed = localStorage.getItem(storageKey);
-    
-    if (!completed) {
-      // Show onboarding after a brief delay
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 500);
-      return () => clearTimeout(timer);
+    const completedKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
+    const stepKey = `${ONBOARDING_STEP_STORAGE_KEY}-${userId}`;
+    const completed = localStorage.getItem(completedKey);
+
+    if (completed) {
+      return;
     }
+
+    const savedStep = localStorage.getItem(stepKey);
+    if (savedStep !== null) {
+      const stepIndex = parseInt(savedStep, 10);
+      if (!Number.isNaN(stepIndex)) {
+        setCurrentStep(stepIndex);
+      }
+    }
+    
+    // Show onboarding after a brief delay
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [userId]);
 
   const handleDismiss = (markComplete: boolean = true) => {
     if (markComplete) {
-      const storageKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
-      localStorage.setItem(storageKey, "true");
+      const completedKey = `${ONBOARDING_STORAGE_KEY}-${userId}`;
+      const stepKey = `${ONBOARDING_STEP_STORAGE_KEY}-${userId}`;
+      localStorage.setItem(completedKey, "true");
+      localStorage.removeItem(stepKey);
     }
     setIsVisible(false);
   };
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      const stepKey = `${ONBOARDING_STEP_STORAGE_KEY}-${userId}`;
+      localStorage.setItem(stepKey, String(nextStep));
     } else {
       handleDismiss();
     }
@@ -47,8 +65,11 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
 
   const handleAction = (action: string) => {
     if (action === "calendar") {
+      const nextStep = Math.min(currentStep + 1, steps.length - 1);
+      setCurrentStep(nextStep);
+      const stepKey = `${ONBOARDING_STEP_STORAGE_KEY}-${userId}`;
+      localStorage.setItem(stepKey, String(nextStep));
       navigate("/calendar");
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     } else if (action === "settings") {
       handleDismiss(true);
       navigate("/settings");
