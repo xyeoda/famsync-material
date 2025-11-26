@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { Resend } from "npm:resend@2.0.0";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -95,8 +95,18 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email via Resend
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    // Send email via SMTP
+    const client = new SMTPClient({
+      connection: {
+        hostname: Deno.env.get("SMTP_HOST")!,
+        port: parseInt(Deno.env.get("SMTP_PORT") || "587"),
+        tls: true,
+        auth: {
+          username: Deno.env.get("SMTP_USER")!,
+          password: Deno.env.get("SMTP_PASSWORD")!,
+        },
+      },
+    });
 
     const roleNames = {
       parent: "Parent",
@@ -104,11 +114,12 @@ const handler = async (req: Request): Promise<Response> => {
       kid: "Family Member",
     };
 
-    const { error: emailError } = await resend.emails.send({
-      from: "Family Calendar <onboarding@resend.dev>",
-      to: [email],
-      subject: `You're invited to join ${householdName}'s calendar`,
-      html: `<!DOCTYPE html>
+    try {
+      await client.send({
+        from: Deno.env.get("SMTP_FROM_EMAIL")!,
+        to: email,
+        subject: `You're invited to join ${householdName}'s calendar`,
+        html: `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -143,10 +154,12 @@ const handler = async (req: Request): Promise<Response> => {
   </div>
 </body>
 </html>`,
-    });
+      });
 
-    if (emailError) {
+      await client.close();
+    } catch (emailError: any) {
       console.error("Error sending email:", emailError);
+      await client.close();
       return new Response(
         JSON.stringify({ error: "Failed to send invitation email" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
