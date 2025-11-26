@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { CalendarHeader } from "@/components/Calendar/CalendarHeader";
 import { WeekView } from "@/components/Calendar/WeekView";
 import { MonthView } from "@/components/Calendar/MonthView";
@@ -26,6 +27,7 @@ const Index = () => {
   const [selectedInstance, setSelectedInstance] = useState<EventInstance | undefined>(undefined);
   const { householdId, canEdit, loading: householdLoading, userRole } = useHousehold();
   const { user } = useAuth();
+  const location = useLocation();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents, loading: eventsLoading } = useEventsDB();
   const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances, loading: instancesLoading } = useEventInstancesDB();
   const { toast } = useToast();
@@ -37,6 +39,16 @@ const Index = () => {
       loadInstances(householdId);
     }
   }, [householdId]);
+
+  // Check if we should open the event dialog from navigation state
+  useEffect(() => {
+    const state = location.state as { openEventDialog?: boolean } | null;
+    if (state?.openEventDialog && canEdit) {
+      setEventDialogOpen(true);
+      // Clear the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, canEdit]);
 
   const handlePreviousPeriod = () => {
     if (view === "week") {

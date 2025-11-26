@@ -265,7 +265,7 @@ const Dashboard = () => {
               <CardDescription>Manage your family calendar</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              <Button className="w-full justify-start" variant="filled" onClick={() => navigate("/calendar")}>
+              <Button className="w-full justify-start" variant="filled" onClick={() => navigate("/calendar", { state: { openEventDialog: true } })}>
                 <Calendar className="mr-2 h-4 w-4" />
                 Add Event
               </Button>
