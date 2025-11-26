@@ -109,9 +109,9 @@ const Dashboard = () => {
               <ThemeToggle />
             </div>
 
-            {/* Row 2: Action Buttons */}
+            {/* Row 2: Action Buttons - Right aligned */}
             {user ? (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 {displayUrl && (
                   <Button
                     variant="outlined"
@@ -145,15 +145,17 @@ const Dashboard = () => {
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="filled"
-                size="sm"
-                onClick={() => navigate("/auth")}
-                className="gap-2"
-              >
-                <LogIn className="h-4 w-4" />
-                Sign In
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  variant="filled"
+                  size="sm"
+                  onClick={() => navigate("/auth")}
+                  className="gap-2"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </div>
             )}
           </div>
 
@@ -269,12 +271,10 @@ const Dashboard = () => {
                 <Calendar className="mr-2 h-4 w-4" />
                 Add Event
               </Button>
-              {canEdit && (
-                <Button className="w-full justify-start" variant="outlined" onClick={() => navigate("/settings")}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Button>
-              )}
+              <Button className="w-full justify-start" variant="outlined" onClick={() => navigate("/calendar")}>
+                <Calendar className="mr-2 h-4 w-4" />
+                View Calendar
+              </Button>
             </CardContent>
           </Card>
         </div>
