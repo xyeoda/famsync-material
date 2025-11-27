@@ -27,39 +27,23 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const loadHousehold = async () => {
-      // If we have a URL household ID (display mode)
+      // Always use URL household ID when available (family routes)
       if (urlHouseholdId) {
         setHouseholdId(urlHouseholdId);
         
-        // Load household name
+        // Load household name and owner
         const { data } = await supabase
           .from('households')
-          .select('name')
+          .select('name, owner_id')
           .eq('id', urlHouseholdId)
           .single();
         
         if (data) {
           setHouseholdName(data.name);
+          setIsOwner(user ? data.owner_id === user.id : false);
         }
         setLoading(false);
         return;
-      }
-
-      // If user is logged in, load their household
-      if (user) {
-        const { data, error } = await supabase
-          .from('households')
-          .select('id, name, owner_id')
-          .eq('owner_id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error("Error loading household:", error);
-        } else if (data) {
-          setHouseholdId(data.id);
-          setHouseholdName(data.name);
-          setIsOwner(data.owner_id === user.id);
-        }
       }
       
       setLoading(false);
@@ -68,9 +52,10 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
     loadHousehold();
   }, [user, urlHouseholdId]);
 
-  const isDisplayMode = !!urlHouseholdId;
+  // Check if we're in display mode (URL path starts with /display/)
+  const isDisplayMode = window.location.pathname.startsWith('/display/');
   const canEdit = !isDisplayMode && (roleCanEdit || isOwner);
-  const displayUrl = householdId && !isDisplayMode
+  const displayUrl = householdId
     ? `${window.location.origin}/display/${householdId}`
     : null;
 

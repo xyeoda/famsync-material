@@ -42,8 +42,21 @@ export default function Auth() {
 
         if (profile?.must_change_password) {
           navigate("/change-password");
+          return;
+        }
+
+        // Get user's household
+        const { data: userRole } = await supabase
+          .from("user_roles")
+          .select("household_id")
+          .eq("user_id", session.user.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (userRole?.household_id) {
+          navigate(`/family/${userRole.household_id}`);
         } else {
-          navigate("/calendar");
+          navigate("/");
         }
       }
     });
@@ -73,8 +86,21 @@ export default function Auth() {
 
           if (profile?.must_change_password) {
             navigate("/change-password");
+            return;
+          }
+
+          // Get user's household
+          const { data: userRole } = await supabase
+            .from("user_roles")
+            .select("household_id")
+            .eq("user_id", session.user.id)
+            .limit(1)
+            .maybeSingle();
+
+          if (userRole?.household_id) {
+            navigate(`/family/${userRole.household_id}`);
           } else {
-            navigate("/calendar");
+            navigate("/");
           }
         }, 0);
       }
