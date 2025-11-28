@@ -86,7 +86,9 @@ Deno.serve(async (req) => {
     }
 
     // Send invitation email directly via SMTP
-    const inviteUrl = `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com')}/accept-invite/${token}`;
+    const siteUrl = Deno.env.get('SITE_URL') || 
+      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    const inviteUrl = `${siteUrl}/accept-invite/${token}`;
     
     try {
       const smtpClient = new SMTPClient({

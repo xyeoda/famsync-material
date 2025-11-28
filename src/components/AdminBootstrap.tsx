@@ -17,12 +17,8 @@ export function AdminBootstrap() {
     try {
       console.log("[AdminBootstrap] Checking for existing site admin...");
       
-      // Check if any site_admin exists in system_roles
-      const { data, error } = await supabase
-        .from('system_roles')
-        .select('id')
-        .eq('role', 'site_admin')
-        .limit(1);
+      // Use RPC call to secure function instead of direct table query
+      const { data, error } = await supabase.rpc('admin_exists');
 
       if (error) {
         console.error("[AdminBootstrap] Error checking for admin:", error);
@@ -31,11 +27,12 @@ export function AdminBootstrap() {
         return;
       }
 
-      const shouldShow = !data || data.length === 0;
-      console.log(`[AdminBootstrap] Site admins found: ${data?.length || 0}, showing button: ${shouldShow}`);
+      // data is a boolean - true if admin exists, false if not
+      const adminExists = data === true;
+      console.log(`[AdminBootstrap] Admin exists: ${adminExists}, showing button: ${!adminExists}`);
       
       // Only show button if no site admin exists
-      setShowButton(shouldShow);
+      setShowButton(!adminExists);
     } catch (error) {
       console.error("[AdminBootstrap] Exception checking for admin:", error);
       setShowButton(false);

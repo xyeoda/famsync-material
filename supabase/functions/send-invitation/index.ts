@@ -71,10 +71,11 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Generate invitation token
+    // Generate invitation token and URL using SITE_URL secret with fallback
     const token = crypto.randomUUID();
-    const appUrl = Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovableproject.com") || "";
-    const inviteUrl = `${appUrl}/accept-invite?token=${token}`;
+    const siteUrl = Deno.env.get('SITE_URL') || 
+      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    const inviteUrl = `${siteUrl}/accept-invite?token=${token}`;
 
     // Delete any existing pending invitation for this email in this household
     const { error: deleteError } = await supabaseClient

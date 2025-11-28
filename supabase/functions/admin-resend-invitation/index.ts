@@ -84,8 +84,10 @@ Deno.serve(async (req) => {
 
     const householdName = (invitation.households as any).name;
 
-    // Generate invitation URL
-    const inviteUrl = `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com')}/accept-invite/${invitation.token}`;
+    // Construct invitation URL using SITE_URL secret with fallback
+    const siteUrl = Deno.env.get('SITE_URL') || 
+      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    const inviteUrl = `${siteUrl}/accept-invite/${invitation.token}`;
     
     console.log(`Resending invitation to ${invitation.email} with URL: ${inviteUrl}`);
 
