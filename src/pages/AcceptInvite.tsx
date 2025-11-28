@@ -103,55 +103,16 @@ export default function AcceptInvite() {
     setLoading(true);
 
     try {
-      // Create user account
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: invitationData!.email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/calendar`,
+      // Call the edge function to handle invitation acceptance
+      const { data, error } = await supabase.functions.invoke('accept-invitation', {
+        body: {
+          token,
+          password,
         },
       });
 
-      if (signUpError) throw signUpError;
-
-      const userId = authData.user?.id;
-      if (!userId) throw new Error("User ID not found");
-
-      // If this is the first parent, set them as the household owner
-      if (invitationData!.is_first_parent) {
-        const { error: ownerError } = await supabase
-          .from("households")
-          .update({ owner_id: userId })
-          .eq("id", invitationData!.household_id);
-
-        if (ownerError) {
-          console.error("Error setting household owner:", ownerError);
-        }
-
-        // Create family_settings for the household
-        const { error: settingsError } = await supabase
-          .from("family_settings")
-          .insert({
-            user_id: userId,
-            household_id: invitationData!.household_id,
-          });
-
-        if (settingsError) {
-          console.error("Error creating family settings:", settingsError);
-        }
-      }
-
-      // Assign user role
-      const { error: roleError } = await supabase.from("user_roles").insert([{
-        user_id: userId,
-        household_id: invitationData!.household_id,
-        role: invitationData!.role as "parent" | "helper" | "kid",
-      }]);
-
-      if (roleError) throw roleError;
-
-      // Delete the used invitation
-      await supabase.from("pending_invitations").delete().eq("token", token);
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Success!",
@@ -171,7 +132,7 @@ export default function AcceptInvite() {
       console.error("Error accepting invitation:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to accept invitation",
         variant: "destructive",
       });
     } finally {
