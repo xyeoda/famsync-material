@@ -35,34 +35,46 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <HouseholdProvider>
-            <FamilySettingsProvider>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/setup" element={<Setup />} />
-                <Route path="/change-password" element={<ChangePassword />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/accept-invite/:token" element={<AcceptInvite />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                
-                {/* Family-scoped routes */}
-                <Route path="/family/:householdId" element={<FamilyLayout />}>
-                  <Route index element={<FamilyDashboard />} />
-                  <Route path="calendar" element={<FamilyCalendar />} />
-                  <Route path="settings" element={<FamilySettings />} />
-                </Route>
-                
-                {/* Display mode (read-only) */}
-                <Route path="/display/:householdId" element={<FamilyCalendar />} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </FamilySettingsProvider>
-          </HouseholdProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/setup" element={<Setup />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/accept-invite/:token" element={<AcceptInvite />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            
+            {/* Family-scoped routes with household context */}
+            <Route
+              path="/family/:householdId"
+              element={(
+                <HouseholdProvider>
+                  <FamilySettingsProvider>
+                    <FamilyLayout />
+                  </FamilySettingsProvider>
+                </HouseholdProvider>
+              )}
+            >
+              <Route index element={<FamilyDashboard />} />
+              <Route path="calendar" element={<FamilyCalendar />} />
+              <Route path="settings" element={<FamilySettings />} />
+            </Route>
+            
+            {/* Display mode (read-only) still needs household context for name, but editing stays disabled */}
+            <Route
+              path="/display/:householdId"
+              element={(
+                <HouseholdProvider>
+                  <FamilyCalendar />
+                </HouseholdProvider>
+              )}
+            />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
