@@ -18,6 +18,13 @@ interface Household {
   ownerEmail: string | null;
   memberCount: number;
   createdAt: string;
+  pendingInvitations: Array<{
+    id: string;
+    email: string;
+    role: string;
+    created_at: string;
+    expires_at: string;
+  }>;
 }
 
 export default function AdminDashboard() {
@@ -179,6 +186,30 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleResendInvitation = async (invitationId: string, email: string) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('admin-resend-invitation', {
+        body: { invitationId }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Invitation Resent",
+        description: `Invitation email has been resent to ${email}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to resend invitation",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteHousehold = async () => {
     if (deleteConfirmName !== deleteHouseholdName) {
       toast({
@@ -283,6 +314,7 @@ export default function AdminDashboard() {
                   <TableRow>
                     <TableHead>Household Name</TableHead>
                     <TableHead>Owner Email</TableHead>
+                    <TableHead>Pending Invitations</TableHead>
                     <TableHead>Members</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -291,7 +323,7 @@ export default function AdminDashboard() {
                 <TableBody>
                   {households.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      <TableCell colSpan={6} className="text-center text-muted-foreground">
                         No households created yet
                       </TableCell>
                     </TableRow>
@@ -300,6 +332,29 @@ export default function AdminDashboard() {
                       <TableRow key={household.id}>
                         <TableCell className="font-medium">{household.name}</TableCell>
                         <TableCell>{household.ownerEmail || "Pending"}</TableCell>
+                        <TableCell>
+                          {household.pendingInvitations.length > 0 ? (
+                            <div className="space-y-1">
+                              {household.pendingInvitations.map((inv) => (
+                                <div key={inv.id} className="flex items-center gap-2 text-sm">
+                                  <span className="text-muted-foreground">{inv.email}</span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 px-2"
+                                    onClick={() => handleResendInvitation(inv.id, inv.email)}
+                                    disabled={loading}
+                                  >
+                                    <Mail className="h-3 w-3 mr-1" />
+                                    Resend
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">None</span>
+                          )}
+                        </TableCell>
                         <TableCell>{household.memberCount}</TableCell>
                         <TableCell>{new Date(household.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right space-x-2">
