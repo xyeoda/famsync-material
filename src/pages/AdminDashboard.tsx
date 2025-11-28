@@ -395,29 +395,31 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{household.memberCount}</TableCell>
                         <TableCell>{new Date(household.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          {household.ownerEmail && (
+                        <TableCell>
+                          <div className="flex justify-end gap-2">
+                            {household.ownerEmail && (
+                              <Button
+                                size="sm"
+                                variant="outlined"
+                                onClick={() => handleTriggerForgotPassword(household.ownerEmail!)}
+                              >
+                                <Mail className="h-4 w-4 mr-1" />
+                                Reset Email
+                              </Button>
+                            )}
                             <Button
                               size="sm"
-                              variant="outlined"
-                              onClick={() => handleTriggerForgotPassword(household.ownerEmail!)}
+                              variant="destructive"
+                              onClick={() => {
+                                setDeleteHouseholdId(household.id);
+                                setDeleteHouseholdName(household.name);
+                                setDeleteDialogOpen(true);
+                              }}
                             >
-                              <Mail className="h-4 w-4 mr-1" />
-                              Reset Email
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
                             </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => {
-                              setDeleteHouseholdId(household.id);
-                              setDeleteHouseholdName(household.name);
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
-                          </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
