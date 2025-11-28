@@ -14,6 +14,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,6 +32,8 @@ export default function Auth() {
   useEffect(() => {
     // Check if user is already logged in and if they need to change password
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setCheckingAuth(false);
+      
       if (session) {
         // Check if user is site admin
         const { data: systemRole } = await supabase
@@ -150,6 +153,18 @@ export default function Auth() {
       setLoading(false);
     }
   };
+
+  // Show loading spinner while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
