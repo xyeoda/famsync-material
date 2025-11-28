@@ -158,15 +158,9 @@ Deno.serve(async (req) => {
       console.error('Error updating profile:', profileError);
     }
 
-    // Delete the invitation
-    const { error: deleteError } = await supabaseAdmin
-      .from('pending_invitations')
-      .delete()
-      .eq('token', token);
-
-    if (deleteError) {
-      console.error('Error deleting invitation:', deleteError);
-    }
+    // Keep the invitation record so admins can see pending invites.
+    // It will automatically stop working after expires_at has passed.
+    console.log(`Invitation token ${token} remains valid until ${invitation.expires_at}`);
 
     console.log(`Magic invite processed successfully for ${email}`);
 
