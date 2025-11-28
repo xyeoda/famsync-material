@@ -38,19 +38,18 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Create client with user JWT for authentication
-    const jwt = authHeader.replace("Bearer ", "");
-    const supabaseUser = createClient(
+    // Create Supabase client for authentication
+    const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Verify the user
+    // Extract JWT token and verify user
+    const jwtToken = authHeader.replace("Bearer ", "");
     const {
       data: { user },
       error: userError,
-    } = await supabaseUser.auth.getUser();
+    } = await supabaseClient.auth.getUser(jwtToken);
 
     if (userError || !user) {
       console.error(`[${requestId}] send-invitation: Authentication failed -`, userError?.message || "No user found");
@@ -75,8 +74,8 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, role, householdId, householdName }: InvitationRequest = await req.json();
     console.log(`[${requestId}] send-invitation: Sending ${role} invitation to ${email} for household ${householdId}`);
 
-    // Verify user is a parent in this household using user client (respects RLS)
-    const { data: userRole, error: roleError } = await supabaseUser
+    // Verify user is a parent in this household using authenticated client
+    const { data: userRole, error: roleError } = await supabaseClient
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
