@@ -17,15 +17,19 @@ export function FamilyLayout({ children }: FamilyLayoutProps) {
 
   useEffect(() => {
     const checkAccess = async () => {
+      // Always wait for auth to finish loading first
+      if (authLoading) {
+        setLoading(true);
+        return;
+      }
+
       if (!householdId) {
         setHasAccess(false);
         setLoading(false);
         return;
       }
 
-      if (authLoading) return;
-
-      // If no user, they don't have access
+      // If no user after auth loaded, they don't have access
       if (!user) {
         setHasAccess(false);
         setLoading(false);
