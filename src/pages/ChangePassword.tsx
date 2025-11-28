@@ -30,7 +30,10 @@ export default function ChangePassword() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('[ChangePassword] Form submitted');
+    
     if (newPassword !== confirmPassword) {
+      console.log('[ChangePassword] Passwords do not match');
       toast({
         title: "Error",
         description: "Passwords do not match",
@@ -40,6 +43,7 @@ export default function ChangePassword() {
     }
 
     if (newPassword.length < 6) {
+      console.log('[ChangePassword] Password too short');
       toast({
         title: "Error",
         description: "Password must be at least 6 characters",
@@ -49,6 +53,7 @@ export default function ChangePassword() {
     }
 
     setLoading(true);
+    console.log('[ChangePassword] Updating password...');
 
     try {
       // Update password in auth
@@ -57,8 +62,10 @@ export default function ChangePassword() {
       });
 
       if (passwordError) {
+        console.error('[ChangePassword] Password update error:', passwordError);
         // Check for same password error
         if (passwordError.message?.includes('same password') || passwordError.message?.includes('should be different')) {
+          console.log('[ChangePassword] Same password detected');
           toast({
             title: "Password must be different",
             description: "Your new password must be different from your current password. Please choose a new one.",
@@ -69,6 +76,8 @@ export default function ChangePassword() {
         }
         throw passwordError;
       }
+
+      console.log('[ChangePassword] Password updated successfully');
 
       // Update must_change_password flag in profile
       if (userId) {
