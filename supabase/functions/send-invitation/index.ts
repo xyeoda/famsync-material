@@ -38,32 +38,62 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Create Supabase client for authentication
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
+    // Extract JWT token and decode user info (JWT is already verified by the Edge runtime)
+    const jwtToken = authHeader.replace("Bearer ", "").trim();
+    const jwtParts = jwtToken.split(".");
 
-    // Extract JWT token and verify user
-    const jwtToken = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser(jwtToken);
-
-    if (userError || !user) {
-      console.error(`[${requestId}] send-invitation: Authentication failed -`, userError?.message || "No user found");
+    if (jwtParts.length !== 3) {
+      console.error(`[${requestId}] send-invitation: Malformed JWT token`);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: "Unauthorized",
-          message: "Your session has expired. Please log in again.",
-          requestId 
+          message: "Your session is invalid. Please log in again.",
+          requestId,
         }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`[${requestId}] send-invitation: Authenticated user ${user.email} (${user.id})`);
+    let userId: string | undefined;
+    let userEmail: string | undefined;
+
+    try {
+      const payloadJson = atob(jwtParts[1].replace(/-/g, "+").replace(/_/g, "/"));
+      const payload = JSON.parse(payloadJson);
+
+      userId = payload.sub;
+      userEmail =
+        payload.email ||
+        payload.user_metadata?.email ||
+        payload.user_metadata?.email_address ||
+        payload["email"];
+    } catch (decodeError) {
+      console.error(`[${requestId}] send-invitation: Failed to decode JWT payload`, decodeError);
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "We could not verify your session. Please log in again.",
+          requestId,
+        }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!userId) {
+      console.error(`[${requestId}] send-invitation: JWT missing subject (user id)`);
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Your account could not be identified. Please log in again.",
+          requestId,
+        }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(
+      `[${requestId}] send-invitation: Authenticated user ${userEmail ?? "unknown email"} (${userId})`
+    );
 
     // Create service role client for privileged operations
     const supabaseAdmin = createClient(
@@ -72,19 +102,24 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     const { email, role, householdId, householdName }: InvitationRequest = await req.json();
-    console.log(`[${requestId}] send-invitation: Sending ${role} invitation to ${email} for household ${householdId}`);
+    console.log(
+      `[${requestId}] send-invitation: Sending ${role} invitation to ${email} for household ${householdId}`
+    );
 
-    // Verify user is a parent in this household using authenticated client
-    const { data: userRole, error: roleError } = await supabaseClient
+    // Verify user is a parent in this household
+    const { data: userRole, error: roleError } = await supabaseAdmin
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("household_id", householdId)
       .eq("role", "parent")
       .maybeSingle();
 
     if (roleError || !userRole) {
-      console.error(`[${requestId}] send-invitation: Permission denied - User ${user.email} is not a parent in household ${householdId}`, roleError?.message);
+      console.error(
+        `[${requestId}] send-invitation: Permission denied - User ${userEmail ?? "unknown email"} (${userId}) is not a parent in household ${householdId}`,
+        roleError?.message
+      );
       return new Response(
         JSON.stringify({ 
           error: "Permission denied",
@@ -110,7 +145,10 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("email", email.toLowerCase());
 
     if (deleteError) {
-      console.error(`[${requestId}] send-invitation: Error deleting old invitation for ${email}:`, deleteError.message);
+      console.error(
+        `[${requestId}] send-invitation: Error deleting old invitation for ${email}:`,
+        deleteError.message
+      );
     }
 
     // Store new invitation in database (needs admin for bypassing RLS)
@@ -120,7 +158,7 @@ const handler = async (req: Request): Promise<Response> => {
         household_id: householdId,
         email: email.toLowerCase(),
         role,
-        invited_by: user.id,
+        invited_by: userId,
         token,
       });
 
