@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       throw householdsError;
     }
 
-    // Get owner email and member count for each household
+    // Get owner email, member count, and pending invitations for each household
     const householdsWithDetails = await Promise.all(
       (households || []).map(async (household: any) => {
         // Get owner email
@@ -77,12 +77,21 @@ Deno.serve(async (req) => {
           .select('*', { count: 'exact', head: true })
           .eq('household_id', household.id);
 
+        // Get pending invitations
+        const { data: pendingInvitations } = await supabaseAdmin
+          .from('pending_invitations')
+          .select('id, email, role, created_at, expires_at')
+          .eq('household_id', household.id)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false });
+
         return {
           id: household.id,
           name: household.name,
           ownerEmail,
           memberCount: memberCount || 0,
-          createdAt: household.created_at
+          createdAt: household.created_at,
+          pendingInvitations: pendingInvitations || []
         };
       })
     );
