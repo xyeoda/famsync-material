@@ -19,7 +19,7 @@ const LandingPage = () => {
   const howItWorksRef = useScrollAnimation();
   const ctaRef = useScrollAnimation();
 
-  // Check if logged-in user has a household
+  // Check if logged-in user has a household and redirect if they do
   useEffect(() => {
     const checkHousehold = async () => {
       if (!user) {
@@ -34,11 +34,16 @@ const LandingPage = () => {
         .limit(1)
         .maybeSingle();
 
-      setHasHousehold(!!data?.household_id);
+      if (data?.household_id) {
+        // User has a household - redirect them there
+        navigate(`/family/${data.household_id}`);
+      } else {
+        setHasHousehold(false);
+      }
     };
 
     checkHousehold();
-  }, [user]);
+  }, [user, navigate]);
 
   const features = [
     {
