@@ -49,6 +49,10 @@ export default function AdminDashboard() {
   const [deleteHouseholdId, setDeleteHouseholdId] = useState<string | null>(null);
   const [deleteHouseholdName, setDeleteHouseholdName] = useState("");
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  
+  // Reset database dialog
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState("");
 
   useEffect(() => {
     if (!roleLoading && !isSiteAdmin) {
@@ -254,6 +258,40 @@ export default function AdminDashboard() {
     navigate('/auth');
   };
 
+  const handleResetDatabase = async () => {
+    if (resetConfirmText !== "RESET") {
+      toast({
+        title: "Error",
+        description: "Please type RESET exactly to confirm",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('reset-database');
+
+      if (error) throw error;
+
+      toast({
+        title: "Database Reset",
+        description: "All data has been wiped. You will be signed out.",
+      });
+
+      // Sign out and redirect to home
+      await supabase.auth.signOut();
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reset database",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
   if (roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -390,6 +428,44 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
+        {/* Danger Zone */}
+        <Card className="border-destructive">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Danger Zone
+            </CardTitle>
+            <CardDescription>
+              Irreversible actions that will permanently delete all data
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+              <h3 className="font-semibold mb-2">Reset All Data</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                This will permanently delete:
+              </p>
+              <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mb-4">
+                <li>All households and their members</li>
+                <li>All events and calendar data</li>
+                <li>All user accounts (including yours)</li>
+                <li>All pending invitations</li>
+              </ul>
+              <p className="text-sm font-semibold mb-4">
+                You will be signed out and redirected to set up a new admin account.
+              </p>
+              <Button 
+                variant="destructive" 
+                onClick={() => setResetDialogOpen(true)}
+                disabled={loading}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Reset All Data
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Create Household Dialog */}
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogContent>
@@ -505,6 +581,58 @@ export default function AdminDashboard() {
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Delete Household
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Reset Database Alert Dialog */}
+        <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>⚠️ Reset All Data</AlertDialogTitle>
+              <AlertDialogDescription className="space-y-4">
+                <p className="font-semibold text-destructive">
+                  WARNING: This action cannot be undone!
+                </p>
+                <p>
+                  This will permanently delete:
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li>All households and family data</li>
+                  <li>All events and calendar entries</li>
+                  <li>All user accounts including yours</li>
+                  <li>All pending invitations</li>
+                  <li>All system settings</li>
+                </ul>
+                <p className="font-semibold">
+                  After reset, you will be signed out and can set up a new admin account.
+                </p>
+                <div className="space-y-2 pt-4">
+                  <Label htmlFor="confirm-reset">Type <span className="font-mono font-bold">RESET</span> to confirm:</Label>
+                  <Input
+                    id="confirm-reset"
+                    placeholder="RESET"
+                    value={resetConfirmText}
+                    onChange={(e) => setResetConfirmText(e.target.value)}
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => {
+                setResetConfirmText("");
+                setResetDialogOpen(false);
+              }}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleResetDatabase}
+                disabled={loading || resetConfirmText !== "RESET"}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Reset All Data
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
