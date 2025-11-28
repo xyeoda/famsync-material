@@ -112,7 +112,19 @@ export default function AcceptInvite() {
       });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        // Handle specific error cases
+        if (data.error.includes('email address has already been registered') || 
+            data.error.includes('email_exists')) {
+          toast({
+            title: "Account Already Exists",
+            description: "This email already has an account. Please check your email for the magic link to sign in, or use the 'Forgot Password' option.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Success!",

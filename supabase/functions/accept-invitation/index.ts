@@ -64,33 +64,62 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log('Creating user account for:', invitation.email);
+    console.log('Checking if user exists:', invitation.email);
 
-    // Create user account using admin client
-    const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
-      email: invitation.email,
-      password,
-      email_confirm: true, // Auto-confirm email
-    });
+    // Check if user already exists
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = existingUsers?.users.find(u => u.email?.toLowerCase() === invitation.email.toLowerCase());
 
-    if (signUpError) {
-      console.error('Error creating user:', signUpError);
-      return new Response(
-        JSON.stringify({ error: signUpError.message }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    let userId: string;
+    let isNewUser = false;
+
+    if (existingUser) {
+      // User exists, update their password
+      userId = existingUser.id;
+      console.log(`User already exists: ${userId}, updating password`);
+      
+      const { error: passwordError } = await supabaseAdmin.auth.admin.updateUserById(
+        userId,
+        { password }
       );
-    }
 
-    const userId = authData.user?.id;
-    if (!userId) {
-      console.error('User ID not found after creation');
-      return new Response(
-        JSON.stringify({ error: 'Failed to create user account' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+      if (passwordError) {
+        console.error('Error updating password:', passwordError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to update password' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      // Create new user account
+      console.log('Creating new user account for:', invitation.email);
+      
+      const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
+        email: invitation.email,
+        password,
+        email_confirm: true, // Auto-confirm email
+      });
 
-    console.log('User created successfully:', userId);
+      if (signUpError) {
+        console.error('Error creating user:', signUpError);
+        return new Response(
+          JSON.stringify({ error: signUpError.message }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      userId = authData.user?.id;
+      if (!userId) {
+        console.error('User ID not found after creation');
+        return new Response(
+          JSON.stringify({ error: 'Failed to create user account' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      isNewUser = true;
+      console.log('User created successfully:', userId);
+    }
 
     // If this is the first parent, set them as household owner and create settings
     if (invitation.is_first_parent) {
@@ -119,21 +148,34 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Assigning user role...');
 
-    // Assign user role
-    const { error: roleError } = await supabaseAdmin
+    // Check if user already has role in this household
+    const { data: existingRole } = await supabaseAdmin
       .from('user_roles')
-      .insert({
-        user_id: userId,
-        household_id: invitation.household_id,
-        role: invitation.role,
-      });
+      .select('id')
+      .eq('user_id', userId)
+      .eq('household_id', invitation.household_id)
+      .maybeSingle();
 
-    if (roleError) {
-      console.error('Error assigning role:', roleError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to assign user role' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!existingRole) {
+      // Assign user role
+      const { error: roleError } = await supabaseAdmin
+        .from('user_roles')
+        .insert({
+          user_id: userId,
+          household_id: invitation.household_id,
+          role: invitation.role,
+        });
+
+      if (roleError) {
+        console.error('Error assigning role:', roleError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to assign user role' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.log(`Assigned role ${invitation.role} to user in household ${invitation.household_id}`);
+    } else {
+      console.log(`User already has role in household ${invitation.household_id}`);
     }
 
     console.log('Deleting used invitation...');

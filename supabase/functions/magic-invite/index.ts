@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
     const existingUser = existingUsers?.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
     let userId: string;
+    let isNewUser = false;
 
     if (existingUser) {
       // User exists, use their ID
@@ -73,6 +74,7 @@ Deno.serve(async (req) => {
       }
 
       userId = newUser.user.id;
+      isNewUser = true;
       console.log(`Created new user: ${userId}`);
     }
 
@@ -148,14 +150,20 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Mark user as needing password change
-    const { error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .update({ must_change_password: true })
-      .eq('id', userId);
+    // Mark user as needing password change ONLY if they're a new user
+    if (isNewUser) {
+      const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .update({ must_change_password: true })
+        .eq('id', userId);
 
-    if (profileError) {
-      console.error('Error updating profile:', profileError);
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+      } else {
+        console.log(`Set must_change_password for new user ${userId}`);
+      }
+    } else {
+      console.log(`Existing user ${userId}, not requiring password change`);
     }
 
     // Keep the invitation record so admins can see pending invites.

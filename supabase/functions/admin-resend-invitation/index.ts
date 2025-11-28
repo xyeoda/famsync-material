@@ -85,10 +85,9 @@ Deno.serve(async (req) => {
 
     const householdName = (invitation.households as any).name;
 
-    // Construct invitation URL using SITE_URL secret with fallback
-    const siteUrl = Deno.env.get('SITE_URL') || 
-      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
-    const inviteUrl = `${siteUrl}/accept-invite/${invitation.token}`;
+    // Construct magic invite URL to auto sign-in the user
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${invitation.token}`;
     
     console.log(`Resending invitation to ${invitation.email} with URL: ${inviteUrl}`);
 
@@ -132,9 +131,9 @@ Deno.serve(async (req) => {
                 <div class="content">
                   <p>Hello!</p>
                   <p>This is a reminder that you've been invited to join <strong>${householdName}</strong>'s family calendar as a parent.</p>
-                  <p>Click the button below to accept your invitation and set up your account:</p>
+                  <p>Click the button below to join - you'll be automatically signed in:</p>
                   <div style="text-align: center;">
-                    <a href="${inviteUrl}" class="button">Accept Invitation</a>
+                    <a href="${inviteUrl}" class="button">Join Now</a>
                   </div>
                   <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:<br>${inviteUrl}</p>
                   <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px;">
