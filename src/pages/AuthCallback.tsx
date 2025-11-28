@@ -13,45 +13,46 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the hash from the URL
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const type = hashParams.get('type');
-
-        if (!accessToken || type !== 'magiclink') {
+        // Get the hash from the URL - could be either hashed_token or access_token format
+        const hash = window.location.hash.substring(1);
+        
+        if (!hash) {
           setErrorMessage('Invalid authentication link');
           setStatus('error');
           return;
         }
 
-        // Set the session using the tokens
-        const { data: { session }, error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || '',
+        // Check if it's a hashed_token (from magic invite) or access_token format
+        const hashParams = new URLSearchParams(hash);
+        const hashedToken = hashParams.get('access_token') || hash; // If no params, treat whole hash as token
+        
+        // Verify the token and establish session
+        const { data, error: sessionError } = await supabase.auth.verifyOtp({
+          token_hash: hashedToken,
+          type: 'magiclink'
         });
 
-        if (sessionError || !session) {
+        if (sessionError || !data.session) {
           console.error('Session error:', sessionError);
-          setErrorMessage('Failed to establish session');
+          setErrorMessage('Invalid or expired authentication link');
           setStatus('error');
           return;
         }
 
-        console.log('Session established for user:', session.user.email);
+        console.log('Session established for user:', data.session.user.email);
 
         // Check if user needs to change password
         const { data: profile } = await supabase
           .from('profiles')
           .select('must_change_password')
-          .eq('id', session.user.id)
+          .eq('id', data.session.user.id)
           .single();
 
         // Get user's household
         const { data: userRole } = await supabase
           .from('user_roles')
           .select('household_id')
-          .eq('user_id', session.user.id)
+          .eq('user_id', data.session.user.id)
           .limit(1)
           .maybeSingle();
 
