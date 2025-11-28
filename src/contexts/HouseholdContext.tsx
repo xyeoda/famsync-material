@@ -27,25 +27,42 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const loadHousehold = async () => {
+      console.log('[HouseholdContext] Starting to load household, urlHouseholdId:', urlHouseholdId, 'user:', user?.email);
+      
       // Always use URL household ID when available (family routes)
       if (urlHouseholdId) {
         setHouseholdId(urlHouseholdId);
         
-        // Load household name and owner
-        const { data } = await supabase
-          .from('households')
-          .select('name, owner_id')
-          .eq('id', urlHouseholdId)
-          .single();
-        
-        if (data) {
-          setHouseholdName(data.name);
-          setIsOwner(user ? data.owner_id === user.id : false);
+        try {
+          // Load household name and owner
+          const { data, error } = await supabase
+            .from('households')
+            .select('name, owner_id')
+            .eq('id', urlHouseholdId)
+            .maybeSingle();
+          
+          console.log('[HouseholdContext] Household query result:', { data, error });
+          
+          if (error) {
+            console.error('[HouseholdContext] Error loading household:', error);
+          } else if (data) {
+            console.log('[HouseholdContext] Setting household name to:', data.name);
+            setHouseholdName(data.name);
+            const ownerStatus = user ? data.owner_id === user.id : false;
+            console.log('[HouseholdContext] Is owner:', ownerStatus, 'owner_id:', data.owner_id, 'user.id:', user?.id);
+            setIsOwner(ownerStatus);
+          } else {
+            console.warn('[HouseholdContext] No household found for ID:', urlHouseholdId);
+          }
+        } catch (err) {
+          console.error('[HouseholdContext] Exception loading household:', err);
         }
+        
         setLoading(false);
         return;
       }
       
+      console.log('[HouseholdContext] No urlHouseholdId, setting loading false');
       setLoading(false);
     };
 
@@ -55,6 +72,19 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   // Check if we're in display mode (URL path starts with /display/)
   const isDisplayMode = window.location.pathname.startsWith('/display/');
   const canEdit = !isDisplayMode && (roleCanEdit || isOwner);
+  
+  console.log('[HouseholdContext] Current state:', {
+    householdId,
+    householdName,
+    userRole,
+    roleCanEdit,
+    isOwner,
+    canEdit,
+    isDisplayMode,
+    loading,
+    roleLoading
+  });
+  
   const displayUrl = householdId
     ? `${window.location.origin}/display/${householdId}`
     : null;
