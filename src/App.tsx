@@ -12,6 +12,7 @@ import FamilyDashboard from "./pages/FamilyDashboard";
 import FamilyCalendar from "./pages/FamilyCalendar";
 import FamilySettings from "./pages/FamilySettings";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import Setup from "./pages/Setup";
 import ChangePassword from "./pages/ChangePassword";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -39,6 +40,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/setup" element={<Setup />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

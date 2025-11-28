@@ -75,7 +75,8 @@ const handler = async (req: Request): Promise<Response> => {
     const token = crypto.randomUUID();
     const siteUrl = Deno.env.get('SITE_URL') || 
       Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
-    const inviteUrl = `${siteUrl}/accept-invite?token=${token}`;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${token}`;
 
     // Delete any existing pending invitation for this email in this household
     const { error: deleteError } = await supabaseClient
@@ -150,15 +151,15 @@ const handler = async (req: Request): Promise<Response> => {
       <h1>You're Invited! 🎉</h1>
     </div>
     <div class="content">
-      <p>Hello!</p>
-      <p>You've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>${roleNames[role]}</strong>.</p>
-      <p>Click the button below to accept your invitation and create your account:</p>
-      <div style="text-align: center;">
-        <a href="${inviteUrl}" class="button">Accept Invitation</a>
-      </div>
-      <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
-      <p style="color: #666; font-size: 12px; word-break: break-all;">${inviteUrl}</p>
-      <p style="margin-top: 30px; color: #666; font-size: 14px;">This invitation will expire in 7 days.</p>
+          <p>Hello!</p>
+          <p>You've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>${roleNames[role]}</strong>.</p>
+          <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
+          <div style="text-align: center;">
+            <a href="${inviteUrl}" class="button">Join Calendar</a>
+          </div>
+          <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
+          <p style="color: #666; font-size: 12px; word-break: break-all;">${inviteUrl}</p>
+          <p style="margin-top: 30px; color: #666; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
     </div>
     <div class="footer">
       <p>This is an automated message from ${householdName}'s Family Calendar</p>
