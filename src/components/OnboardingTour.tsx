@@ -9,9 +9,10 @@ const ONBOARDING_STEP_STORAGE_KEY = "yeoda-onboarding-step";
 
 interface OnboardingTourProps {
   userId: string;
+  householdId?: string;
 }
 
-export function OnboardingTour({ userId }: OnboardingTourProps) {
+export function OnboardingTour({ userId, householdId }: OnboardingTourProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
@@ -64,15 +65,17 @@ export function OnboardingTour({ userId }: OnboardingTourProps) {
   };
 
   const handleAction = (action: string) => {
+    if (!householdId) return;
+    
     if (action === "calendar") {
       const nextStep = Math.min(currentStep + 1, steps.length - 1);
       setCurrentStep(nextStep);
       const stepKey = `${ONBOARDING_STEP_STORAGE_KEY}-${userId}`;
       localStorage.setItem(stepKey, String(nextStep));
-      navigate("/calendar");
+      navigate(`/family/${householdId}/calendar`);
     } else if (action === "settings") {
       handleDismiss(true);
-      navigate("/settings");
+      navigate(`/family/${householdId}/settings`);
     }
   };
 

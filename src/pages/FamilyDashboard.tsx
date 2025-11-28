@@ -312,7 +312,7 @@ const FamilyDashboard = () => {
         )}
       </main>
 
-      {user && <OnboardingTour userId={user.id} />}
+      {user && urlHouseholdId && <OnboardingTour userId={user.id} householdId={urlHouseholdId} />}
     </div>
   );
 };
