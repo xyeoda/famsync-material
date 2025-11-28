@@ -75,8 +75,20 @@ export default function ChangePassword() {
         description: "Password changed successfully. Redirecting to calendar...",
       });
 
+      // Get user's household and redirect there
+      const { data: userRole } = await supabase
+        .from('user_roles')
+        .select('household_id')
+        .eq('user_id', userId)
+        .limit(1)
+        .maybeSingle();
+
       setTimeout(() => {
-        navigate("/calendar");
+        if (userRole?.household_id) {
+          navigate(`/family/${userRole.household_id}`);
+        } else {
+          navigate("/auth");
+        }
       }, 1500);
     } catch (error: any) {
       toast({

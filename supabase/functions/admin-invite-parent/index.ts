@@ -86,9 +86,8 @@ Deno.serve(async (req) => {
     }
 
     // Send invitation email directly via SMTP
-    const siteUrl = Deno.env.get('SITE_URL') || 
-      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
-    const inviteUrl = `${siteUrl}/accept-invite/${token}`;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${token}`;
     
     try {
       const smtpClient = new SMTPClient({
@@ -129,13 +128,13 @@ Deno.serve(async (req) => {
                 <div class="content">
                   <p>Hello!</p>
                   <p>You've been invited by a site administrator to join <strong>${householdName}</strong>'s family calendar as a parent.</p>
-                  <p>Click the button below to accept your invitation and set up your account:</p>
+                  <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
                   <div style="text-align: center;">
-                    <a href="${inviteUrl}" class="button">Accept Invitation</a>
+                    <a href="${inviteUrl}" class="button">Join Calendar</a>
                   </div>
                   <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:<br>${inviteUrl}</p>
                   <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px;">
-                    This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+                    This invitation will expire in 7 days. You'll be asked to set your password after first sign-in. If you didn't expect this invitation, you can safely ignore this email.
                   </p>
                 </div>
                 <div class="footer">
