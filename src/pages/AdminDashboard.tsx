@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!roleLoading && !isSiteAdmin) {
-      navigate('/calendar');
+      navigate('/auth');
     } else if (isSiteAdmin) {
       fetchHouseholds();
     }

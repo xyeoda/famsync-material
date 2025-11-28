@@ -64,9 +64,29 @@ export default function ResetPassword() {
         description: "Your password has been reset successfully",
       });
 
-      setTimeout(() => {
-        navigate("/calendar");
-      }, 1500);
+      // Get user's household and redirect there
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: userRole } = await supabase
+          .from('user_roles')
+          .select('household_id')
+          .eq('user_id', user.id)
+          .limit(1)
+          .maybeSingle();
+
+        setTimeout(() => {
+          if (userRole?.household_id) {
+            navigate(`/family/${userRole.household_id}`);
+          } else {
+            navigate("/auth");
+          }
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          navigate("/auth");
+        }, 1500);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
