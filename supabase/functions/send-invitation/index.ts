@@ -29,18 +29,19 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Create Supabase client with service role key for database operations
-    const supabaseClient = createClient(
+    // Create client with user JWT for authentication
+    const jwt = authHeader.replace("Bearer ", "");
+    const supabaseUser = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Verify the JWT token and get the user
-    const jwt = authHeader.replace("Bearer ", "");
+    // Verify the user
     const {
       data: { user },
       error: userError,
-    } = await supabaseClient.auth.getUser(jwt);
+    } = await supabaseUser.auth.getUser();
 
     if (userError || !user) {
       console.error("Authentication error:", userError);
@@ -52,16 +53,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Authenticated user: ${user.email} (${user.id})`);
 
+    // Create service role client for privileged operations
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
     const { email, role, householdId, householdName }: InvitationRequest = await req.json();
 
-    // Verify user is a parent in this household
-    const { data: userRole, error: roleError } = await supabaseClient
+    // Verify user is a parent in this household using user client (respects RLS)
+    const { data: userRole, error: roleError } = await supabaseUser
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
       .eq("household_id", householdId)
       .eq("role", "parent")
-      .single();
+      .maybeSingle();
 
     if (roleError || !userRole) {
       console.error("Permission error:", roleError);
@@ -78,8 +85,8 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${token}`;
 
-    // Delete any existing pending invitation for this email in this household
-    const { error: deleteError } = await supabaseClient
+    // Delete any existing pending invitation for this email in this household (needs admin)
+    const { error: deleteError } = await supabaseAdmin
       .from("pending_invitations")
       .delete()
       .eq("household_id", householdId)
@@ -89,8 +96,8 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error deleting old invitation:", deleteError);
     }
 
-    // Store new invitation in database
-    const { error: inviteError } = await supabaseClient
+    // Store new invitation in database (needs admin for bypassing RLS)
+    const { error: inviteError } = await supabaseAdmin
       .from("pending_invitations")
       .insert({
         household_id: householdId,
