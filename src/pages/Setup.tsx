@@ -12,40 +12,11 @@ export default function Setup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [resetting, setResetting] = useState(false);
   const [email, setEmail] = useState("xyeoda@yeoda.space");
   
   const [defaultPassword, setDefaultPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const handleResetDatabase = async () => {
-    setResetting(true);
-    setErrorMessage("");
-
-    try {
-      const { error } = await supabase.functions.invoke("reset-database", {
-        body: { resetToken: "RESET_ALL_DATA_NOW" },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Database Reset Complete!",
-        description: "You can now create a fresh admin account.",
-      });
-      setErrorMessage("");
-    } catch (error: any) {
-      console.error("Error resetting database:", error);
-      toast({
-        title: "Failed to Reset Database",
-        description: error.message || "Please try again",
-        variant: "destructive",
-      });
-    } finally {
-      setResetting(false);
-    }
-  };
 
   const handleCreateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,23 +110,6 @@ export default function Setup() {
                 <div className="flex gap-2">
                   <Button
                     type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleResetDatabase}
-                    disabled={resetting}
-                    className="flex-1"
-                  >
-                    {resetting ? (
-                      <>
-                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                        Resetting...
-                      </>
-                    ) : (
-                      "Reset & Start Fresh"
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
                     variant="outlined"
                     size="sm"
                     onClick={() => navigate("/auth")}
@@ -224,22 +178,6 @@ export default function Setup() {
                   Sign in
                 </button>
               </p>
-            </div>
-
-            {/* Always-visible reset section */}
-            <div className="pt-4 border-t border-border/50">
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-2">Need to clear everything?</p>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate("/reset")}
-                  className="text-xs"
-                >
-                  Go to Reset Database
-                </Button>
-              </div>
             </div>
           </form>
         </CardContent>

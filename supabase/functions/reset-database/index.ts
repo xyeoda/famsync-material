@@ -16,30 +16,61 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { resetToken }: ResetRequest = await req.json();
+    console.log('[reset-database] Reset database request received');
 
-    // Verify reset token (you can change this to a secure value)
-    const RESET_TOKEN = Deno.env.get("RESET_DATABASE_TOKEN") || "RESET_ALL_DATA_NOW";
-    
-    if (resetToken !== RESET_TOKEN) {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('[reset-database] No authorization header provided');
       return new Response(
-        JSON.stringify({ error: "Invalid reset token" }),
-        { 
-          status: 403, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+    // Create client with user's JWT
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    // Verify user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      console.error('[reset-database] Invalid or expired token:', userError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if user is site admin using service role client
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
     });
+
+    const { data: adminRole, error: roleError } = await supabaseAdmin
+      .from('system_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'site_admin')
+      .maybeSingle();
+
+    if (roleError || !adminRole) {
+      console.error('[reset-database] User is not a site admin:', user.email);
+      return new Response(
+        JSON.stringify({ error: 'Only site administrators can reset the database' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('[reset-database] Site admin verified, proceeding with reset');
 
     console.log("Starting database reset...");
 
