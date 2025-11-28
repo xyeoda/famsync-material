@@ -49,7 +49,7 @@ export function CalendarHeader({
                 className="h-9 w-9 rounded-full"
                 title="Back to Dashboard"
               >
-                <Link to="/">
+                <Link to="..">
                   <Home className="h-4 w-4" />
                 </Link>
               </Button>
@@ -112,7 +112,7 @@ export function CalendarHeader({
                     className="h-9 w-9 rounded-full"
                     title="Settings"
                   >
-                    <Link to="/settings">
+                    <Link to="settings">
                       <Cog className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -141,7 +141,7 @@ export function CalendarHeader({
               className="h-9 w-9 rounded-full"
               title="Back to Dashboard"
             >
-              <Link to="/">
+              <Link to="..">
                 <Home className="h-4 w-4" />
               </Link>
             </Button>
@@ -206,7 +206,7 @@ export function CalendarHeader({
                   className="h-9 w-9 rounded-full"
                   title="Settings"
                 >
-                  <Link to="/settings">
+                  <Link to="settings">
                     <Cog className="h-4 w-4" />
                   </Link>
                 </Button>
