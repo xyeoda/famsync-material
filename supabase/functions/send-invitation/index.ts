@@ -15,16 +15,25 @@ interface InvitationRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const requestId = crypto.randomUUID();
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log(`[${requestId}] send-invitation: Request received`);
+    
     // Get the JWT token from the Authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      console.error(`[${requestId}] send-invitation: Missing authorization header`);
       return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
+        JSON.stringify({ 
+          error: "Authentication required",
+          message: "You must be logged in to send invitations",
+          requestId 
+        }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -44,14 +53,18 @@ const handler = async (req: Request): Promise<Response> => {
     } = await supabaseUser.auth.getUser();
 
     if (userError || !user) {
-      console.error("Authentication error:", userError);
+      console.error(`[${requestId}] send-invitation: Authentication failed -`, userError?.message || "No user found");
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ 
+          error: "Unauthorized",
+          message: "Your session has expired. Please log in again.",
+          requestId 
+        }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Authenticated user: ${user.email} (${user.id})`);
+    console.log(`[${requestId}] send-invitation: Authenticated user ${user.email} (${user.id})`);
 
     // Create service role client for privileged operations
     const supabaseAdmin = createClient(
@@ -60,6 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
     const { email, role, householdId, householdName }: InvitationRequest = await req.json();
+    console.log(`[${requestId}] send-invitation: Sending ${role} invitation to ${email} for household ${householdId}`);
 
     // Verify user is a parent in this household using user client (respects RLS)
     const { data: userRole, error: roleError } = await supabaseUser
@@ -71,9 +85,13 @@ const handler = async (req: Request): Promise<Response> => {
       .maybeSingle();
 
     if (roleError || !userRole) {
-      console.error("Permission error:", roleError);
+      console.error(`[${requestId}] send-invitation: Permission denied - User ${user.email} is not a parent in household ${householdId}`, roleError?.message);
       return new Response(
-        JSON.stringify({ error: "Only parents can send invitations" }),
+        JSON.stringify({ 
+          error: "Permission denied",
+          message: "Only parents can send invitations. Please contact a household parent for help.",
+          requestId 
+        }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -93,7 +111,7 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("email", email.toLowerCase());
 
     if (deleteError) {
-      console.error("Error deleting old invitation:", deleteError);
+      console.error(`[${requestId}] send-invitation: Error deleting old invitation for ${email}:`, deleteError.message);
     }
 
     // Store new invitation in database (needs admin for bypassing RLS)
@@ -108,9 +126,13 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
     if (inviteError) {
-      console.error("Error creating invitation:", inviteError);
+      console.error(`[${requestId}] send-invitation: Database error creating invitation:`, inviteError.message, inviteError.details);
       return new Response(
-        JSON.stringify({ error: "Failed to create invitation" }),
+        JSON.stringify({ 
+          error: "Failed to create invitation",
+          message: "Could not create invitation. Please try again or contact support.",
+          requestId 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -177,25 +199,38 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       await client.close();
+      console.log(`[${requestId}] send-invitation: Email sent successfully to ${email}`);
     } catch (emailError: any) {
-      console.error("Error sending email:", emailError);
+      console.error(`[${requestId}] send-invitation: SMTP error sending to ${email}:`, emailError.message, emailError.stack);
       await client.close();
       return new Response(
-        JSON.stringify({ error: "Failed to send invitation email" }),
+        JSON.stringify({ 
+          error: "Email delivery failed",
+          message: "Invitation was created but the email could not be sent. Please contact support.",
+          requestId 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Invitation sent to ${email} for household ${householdId}`);
+    console.log(`[${requestId}] send-invitation: Successfully completed invitation for ${email} to household ${householdId}`);
 
     return new Response(
-      JSON.stringify({ success: true, message: "Invitation sent successfully" }),
+      JSON.stringify({ 
+        success: true, 
+        message: "Invitation sent successfully",
+        requestId 
+      }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {
-    console.error("Error in send-invitation function:", error);
+    console.error(`[${requestId}] send-invitation: Unexpected error:`, error.message, error.stack);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: "Internal server error",
+        message: "An unexpected error occurred. Please try again or contact support.",
+        requestId 
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
