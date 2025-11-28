@@ -32,13 +32,14 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Create client with user's JWT
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    // Extract JWT token from Authorization header
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Create client to verify JWT
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-    // Verify user
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    // Verify user with the JWT token
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user) {
       console.error('[reset-database] Invalid or expired token:', userError);
       return new Response(
