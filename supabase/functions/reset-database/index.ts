@@ -11,19 +11,25 @@ interface ResetRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const requestId = crypto.randomUUID();
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('[reset-database] Reset database request received');
+    console.log(`[${requestId}] reset-database: Reset database request received`);
 
     // Verify authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      console.error('[reset-database] No authorization header provided');
+      console.error(`[${requestId}] reset-database: No authorization header provided`);
       return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
+        JSON.stringify({ 
+          error: 'Authentication required',
+          message: 'You must be logged in to reset the database',
+          requestId 
+        }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -41,12 +47,18 @@ const handler = async (req: Request): Promise<Response> => {
     // Verify user with the JWT token
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user) {
-      console.error('[reset-database] Invalid or expired token:', userError);
+      console.error(`[${requestId}] reset-database: Invalid or expired token -`, userError?.message);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ 
+          error: 'Unauthorized',
+          message: 'Your session has expired. Please log in again.',
+          requestId 
+        }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    console.log(`[${requestId}] reset-database: Authenticated user ${user.email}`);
 
     // Check if user is site admin using service role client
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
@@ -64,14 +76,18 @@ const handler = async (req: Request): Promise<Response> => {
       .maybeSingle();
 
     if (roleError || !adminRole) {
-      console.error('[reset-database] User is not a site admin:', user.email);
+      console.error(`[${requestId}] reset-database: Permission denied - User ${user.email} is not a site admin`, roleError?.message);
       return new Response(
-        JSON.stringify({ error: 'Only site administrators can reset the database' }),
+        JSON.stringify({ 
+          error: 'Permission denied',
+          message: 'Only site administrators can reset the database',
+          requestId 
+        }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('[reset-database] Site admin verified, proceeding with reset');
+    console.log(`[${requestId}] reset-database: Site admin ${user.email} verified, proceeding with reset`);
 
     console.log("Starting database reset...");
 
@@ -185,13 +201,14 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("No auth users to delete");
     }
 
-    console.log("Database reset complete - all data wiped", deletionResults);
+    console.log(`[${requestId}] reset-database: Complete - all data wiped`, deletionResults);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: "Database reset complete",
-        deletedCounts: deletionResults
+        deletedCounts: deletionResults,
+        requestId
       }),
       { 
         status: 200, 
@@ -199,9 +216,13 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
   } catch (error: any) {
-    console.error("Error in reset-database function:", error);
+    console.error(`[${requestId}] reset-database: Unexpected error:`, error.message, error.stack);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        message: 'Failed to reset database. Please try again or contact support.',
+        requestId 
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, "Content-Type": "application/json" } 

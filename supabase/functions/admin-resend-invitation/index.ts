@@ -11,14 +11,26 @@ interface ResendInvitationRequest {
 }
 
 Deno.serve(async (req) => {
+  const requestId = crypto.randomUUID();
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log(`[${requestId}] admin-resend-invitation: Request received`);
+    
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('No authorization header');
+      console.error(`[${requestId}] admin-resend-invitation: Missing authorization header`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Authentication required',
+          message: 'You must be logged in to resend invitations',
+          requestId 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
     }
 
     const supabaseClient = createClient(
@@ -30,8 +42,18 @@ Deno.serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user) {
-      throw new Error('Unauthorized');
+      console.error(`[${requestId}] admin-resend-invitation: Authentication failed -`, userError?.message);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Unauthorized',
+          message: 'Your session has expired. Please log in again.',
+          requestId 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
     }
+    
+    console.log(`[${requestId}] admin-resend-invitation: Authenticated user ${user.email}`);
 
     // Verify user is site admin
     const supabaseAdmin = createClient(
@@ -47,17 +69,28 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (roleError || !adminRole) {
+      console.error(`[${requestId}] admin-resend-invitation: Permission denied - User ${user.email} is not a site admin`, roleError?.message);
       return new Response(
-        JSON.stringify({ error: 'Only site administrators can resend invitations' }),
+        JSON.stringify({ 
+          error: 'Permission denied',
+          message: 'Only site administrators can resend invitations',
+          requestId 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
       );
     }
 
     const { invitationId } = await req.json() as ResendInvitationRequest;
+    console.log(`[${requestId}] admin-resend-invitation: Resending invitation ${invitationId}`);
 
     if (!invitationId) {
+      console.error(`[${requestId}] admin-resend-invitation: Missing invitation ID`);
       return new Response(
-        JSON.stringify({ error: 'Invitation ID is required' }),
+        JSON.stringify({ 
+          error: 'Invalid request',
+          message: 'Invitation ID is required',
+          requestId 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
@@ -76,9 +109,13 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (invitationError || !invitation) {
-      console.error('Error fetching invitation:', invitationError);
+      console.error(`[${requestId}] admin-resend-invitation: Invitation ${invitationId} not found -`, invitationError?.message);
       return new Response(
-        JSON.stringify({ error: 'Invitation not found or already used/expired' }),
+        JSON.stringify({ 
+          error: 'Invitation not found',
+          message: 'The invitation could not be found. It may have been used or expired.',
+          requestId 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
       );
     }
@@ -89,7 +126,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${invitation.token}`;
     
-    console.log(`Resending invitation to ${invitation.email} with URL: ${inviteUrl}`);
+    console.log(`[${requestId}] admin-resend-invitation: Sending email to ${invitation.email} for household ${householdName}`);
 
     // Send invitation email directly via SMTP
     try {
@@ -150,11 +187,15 @@ Deno.serve(async (req) => {
       });
 
       await smtpClient.close();
-      console.log('Invitation email resent successfully to:', invitation.email);
-    } catch (emailError) {
-      console.error('Error resending invitation email:', emailError);
+      console.log(`[${requestId}] admin-resend-invitation: Email sent successfully to ${invitation.email}`);
+    } catch (emailError: any) {
+      console.error(`[${requestId}] admin-resend-invitation: SMTP error sending to ${invitation.email}:`, emailError.message, emailError.stack);
       return new Response(
-        JSON.stringify({ error: 'Failed to resend invitation email' }),
+        JSON.stringify({ 
+          error: 'Email delivery failed',
+          message: 'Could not send the invitation email. Please check email configuration and try again.',
+          requestId 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
@@ -167,15 +208,25 @@ Deno.serve(async (req) => {
       metadata: { email: invitation.email, household_name: householdName }
     });
 
+    console.log(`[${requestId}] admin-resend-invitation: Successfully completed for ${invitation.email}`);
+    
     return new Response(
-      JSON.stringify({ success: true, message: 'Invitation resent successfully' }),
+      JSON.stringify({ 
+        success: true, 
+        message: 'Invitation resent successfully',
+        requestId 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
-    console.error('Error:', error);
+  } catch (error: any) {
+    console.error(`[${requestId}] admin-resend-invitation: Unexpected error:`, error.message, error.stack);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        message: 'An unexpected error occurred. Please try again or contact support.',
+        requestId 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
