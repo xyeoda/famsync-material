@@ -56,7 +56,19 @@ export default function ChangePassword() {
         password: newPassword,
       });
 
-      if (passwordError) throw passwordError;
+      if (passwordError) {
+        // Check for same password error
+        if (passwordError.message?.includes('same password') || passwordError.message?.includes('should be different')) {
+          toast({
+            title: "Password must be different",
+            description: "Your new password must be different from your current password. Please choose a new one.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+        throw passwordError;
+      }
 
       // Update must_change_password flag in profile
       if (userId) {
@@ -114,7 +126,7 @@ export default function ChangePassword() {
             <CardTitle className="text-2xl">Change Password</CardTitle>
           </div>
           <CardDescription>
-            You must change your password before continuing
+            You must change your password before continuing. Please choose a password different from your temporary one.
           </CardDescription>
         </CardHeader>
         <CardContent>
