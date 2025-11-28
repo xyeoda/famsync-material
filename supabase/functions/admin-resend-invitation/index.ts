@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     if (invitationError || !invitation) {
       console.error('Error fetching invitation:', invitationError);
       return new Response(
-        JSON.stringify({ error: 'Invitation not found' }),
+        JSON.stringify({ error: 'Invitation not found or already used/expired' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
       );
     }
