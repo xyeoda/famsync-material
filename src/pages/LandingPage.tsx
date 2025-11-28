@@ -1,17 +1,44 @@
 import { useNavigate } from "react-router-dom";
-import { Calendar, Users, Car, Repeat, Shield, Smartphone, ArrowRight, LogIn } from "lucide-react";
+import { Calendar, Users, Car, Repeat, Shield, Smartphone, ArrowRight, LogIn, LogOut, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminBootstrap } from "@/components/AdminBootstrap";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useAuth } from "@/hooks/useAuth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const [hasHousehold, setHasHousehold] = useState<boolean | null>(null);
   
   const featuresHeaderRef = useScrollAnimation();
   const howItWorksRef = useScrollAnimation();
   const ctaRef = useScrollAnimation();
+
+  // Check if logged-in user has a household
+  useEffect(() => {
+    const checkHousehold = async () => {
+      if (!user) {
+        setHasHousehold(null);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("user_roles")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      setHasHousehold(!!data?.household_id);
+    };
+
+    checkHousehold();
+  }, [user]);
 
   const features = [
     {
@@ -68,14 +95,30 @@ const LandingPage = () => {
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/auth")}
-                className="gap-2"
-              >
-                <LogIn className="h-4 w-4" />
-                Sign In
-              </Button>
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground hidden sm:inline">
+                    {user.email}
+                  </span>
+                  <Button
+                    variant="outlined"
+                    onClick={signOut}
+                    className="gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/auth")}
+                  className="gap-2"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -84,6 +127,15 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="py-20 md:py-32 relative">
         <div className="container mx-auto px-4 relative z-10">
+          {/* Warning for users without household */}
+          {user && hasHousehold === false && (
+            <Alert className="max-w-3xl mx-auto mb-8 border-destructive/50 bg-destructive/10">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Your account is not assigned to a household. Please contact your administrator or sign out and use a valid invitation link to complete setup.
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
             {/* Hero Text */}
             <div className="text-center lg:text-left space-y-8 animate-fade-in-up">

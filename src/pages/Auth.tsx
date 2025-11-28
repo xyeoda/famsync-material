@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle, LogOut } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -15,6 +16,17 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setBrokenUser(false);
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+  };
+
+  const [brokenUser, setBrokenUser] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in and if they need to change password
@@ -56,7 +68,8 @@ export default function Auth() {
         if (userRole?.household_id) {
           navigate(`/family/${userRole.household_id}`);
         } else {
-          navigate("/");
+          // User has no household - mark as broken
+          setBrokenUser(true);
         }
       }
     });
@@ -100,7 +113,8 @@ export default function Auth() {
           if (userRole?.household_id) {
             navigate(`/family/${userRole.household_id}`);
           } else {
-            navigate("/");
+            // User has no household - mark as broken
+            setBrokenUser(true);
           }
         }, 0);
       }
@@ -178,7 +192,34 @@ export default function Auth() {
           <CardDescription>Sign in or create an account to manage your family calendar</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4">
+          {brokenUser ? (
+            <Alert className="border-destructive/50 bg-destructive/10">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Account Setup Incomplete</AlertTitle>
+              <AlertDescription className="mt-2 space-y-4">
+                <p>
+                  Your account exists but is not assigned to a household. This usually means:
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  <li>You need to use a valid invitation link from your administrator</li>
+                  <li>Your invitation may have expired</li>
+                  <li>There was an error during the signup process</li>
+                </ul>
+                <p className="text-sm">
+                  Please contact your administrator for a new invitation or sign out to try again.
+                </p>
+                <Button
+                  onClick={handleSignOut}
+                  variant="outlined"
+                  className="w-full gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="signin-email">Email</Label>
               <Input
@@ -212,14 +253,15 @@ export default function Auth() {
                     Forgot your password?
                   </Link>
                 </div>
-              </form>
               
-              {/* UAT Reset Link */}
-              <div className="text-center mt-4 pt-4 border-t border-border/50">
-                <Link to="/reset" className="text-xs text-muted-foreground hover:text-primary">
-                  Need to reset the database for testing?
-                </Link>
-              </div>
+                {/* UAT Reset Link */}
+                <div className="text-center mt-4 pt-4 border-t border-border/50">
+                  <Link to="/reset" className="text-xs text-muted-foreground hover:text-primary">
+                    Need to reset the database for testing?
+                  </Link>
+                </div>
+              </form>
+          )}
         </CardContent>
       </Card>
     </div>
