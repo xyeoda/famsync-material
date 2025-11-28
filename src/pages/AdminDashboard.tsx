@@ -591,31 +591,33 @@ export default function AdminDashboard() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>⚠️ Reset All Data</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-4">
-                <p className="font-semibold text-destructive">
-                  WARNING: This action cannot be undone!
-                </p>
-                <p>
-                  This will permanently delete:
-                </p>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  <li>All households and family data</li>
-                  <li>All events and calendar entries</li>
-                  <li>All user accounts including yours</li>
-                  <li>All pending invitations</li>
-                  <li>All system settings</li>
-                </ul>
-                <p className="font-semibold">
-                  After reset, you will be signed out and can set up a new admin account.
-                </p>
-                <div className="space-y-2 pt-4">
-                  <Label htmlFor="confirm-reset">Type <span className="font-mono font-bold">RESET</span> to confirm:</Label>
-                  <Input
-                    id="confirm-reset"
-                    placeholder="RESET"
-                    value={resetConfirmText}
-                    onChange={(e) => setResetConfirmText(e.target.value)}
-                  />
+              <AlertDialogDescription asChild>
+                <div className="space-y-4">
+                  <p className="font-semibold text-destructive">
+                    WARNING: This action cannot be undone!
+                  </p>
+                  <p>
+                    This will permanently delete:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    <li>All households and family data</li>
+                    <li>All events and calendar entries</li>
+                    <li>All user accounts including yours</li>
+                    <li>All pending invitations</li>
+                    <li>All system settings</li>
+                  </ul>
+                  <p className="font-semibold">
+                    After reset, you will be signed out and can set up a new admin account.
+                  </p>
+                  <div className="space-y-2 pt-4">
+                    <Label htmlFor="confirm-reset">Type <span className="font-mono font-bold">RESET</span> to confirm:</Label>
+                    <Input
+                      id="confirm-reset"
+                      placeholder="RESET"
+                      value={resetConfirmText}
+                      onChange={(e) => setResetConfirmText(e.target.value)}
+                    />
+                  </div>
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
