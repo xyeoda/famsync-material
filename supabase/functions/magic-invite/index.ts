@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
 
     // Redirect to auth callback with the magic link hash
     const siteUrl = Deno.env.get('SITE_URL') || Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
-    const redirectUrl = `${siteUrl}/auth/callback${linkData.properties.hashed_token}`;
+    const redirectUrl = `${siteUrl}/auth/callback#${linkData.properties.hashed_token}`;
     
     return Response.redirect(redirectUrl, 302);
 
