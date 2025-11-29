@@ -52,6 +52,79 @@ export type Database = {
           },
         ]
       }
+      email_tracking: {
+        Row: {
+          accepted_at: string | null
+          clicked_at: string | null
+          created_at: string
+          email_type: string
+          household_id: string
+          id: string
+          invitation_id: string | null
+          metadata: Json | null
+          opened_at: string | null
+          recipient_email: string
+          role: string | null
+          sent_at: string
+          sent_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          email_type: string
+          household_id: string
+          id?: string
+          invitation_id?: string | null
+          metadata?: Json | null
+          opened_at?: string | null
+          recipient_email: string
+          role?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          email_type?: string
+          household_id?: string
+          id?: string
+          invitation_id?: string | null
+          metadata?: Json | null
+          opened_at?: string | null
+          recipient_email?: string
+          role?: string | null
+          sent_at?: string
+          sent_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_tracking_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_tracking_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pending_invitations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_tracking_sent_by_fkey"
+            columns: ["sent_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_instances: {
         Row: {
           cancelled: boolean | null

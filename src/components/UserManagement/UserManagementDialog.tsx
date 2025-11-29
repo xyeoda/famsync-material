@@ -18,7 +18,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, UserPlus, Loader2, Mail, Copy } from "lucide-react";
+import { EmailPreview } from "@/components/Admin/EmailPreview";
+import { EmailTracking } from "@/components/Admin/EmailTracking";
+import { Trash2, UserPlus, Loader2, Mail, Copy, Eye, Activity } from "lucide-react";
 
 interface UserManagementDialogProps {
   open: boolean;
@@ -56,6 +58,8 @@ export function UserManagementDialog({
   const [sending, setSending] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
+  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
+  const [emailTrackingOpen, setEmailTrackingOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -329,6 +333,24 @@ export function UserManagementDialog({
                 </>
               )}
             </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setEmailPreviewOpen(true)}
+                variant="outlined" 
+                className="flex-1 gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Preview
+              </Button>
+              <Button 
+                onClick={() => setEmailTrackingOpen(true)}
+                variant="outlined" 
+                className="flex-1 gap-2"
+              >
+                <Activity className="h-4 w-4" />
+                Tracking
+              </Button>
+            </div>
           </div>
 
           {/* Current members */}
@@ -447,6 +469,20 @@ export function UserManagementDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Email Preview Dialog */}
+      <EmailPreview
+        open={emailPreviewOpen}
+        onOpenChange={setEmailPreviewOpen}
+        householdName={householdName}
+      />
+
+      {/* Email Tracking Dialog */}
+      <EmailTracking
+        open={emailTrackingOpen}
+        onOpenChange={setEmailTrackingOpen}
+        householdId={householdId}
+      />
     </Dialog>
   );
 }

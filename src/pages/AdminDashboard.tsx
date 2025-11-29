@@ -10,7 +10,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut } from "lucide-react";
+import { EmailPreview } from "@/components/Admin/EmailPreview";
+import { EmailTracking } from "@/components/Admin/EmailTracking";
+import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity } from "lucide-react";
 
 interface Household {
   id: string;
@@ -53,6 +55,11 @@ export default function AdminDashboard() {
   // Reset database dialog
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
+  
+  // Email preview and tracking
+  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
+  const [emailTrackingOpen, setEmailTrackingOpen] = useState(false);
+  const [previewHouseholdName, setPreviewHouseholdName] = useState("");
 
   useEffect(() => {
     if (!roleLoading && !isSiteAdmin) {
@@ -330,6 +337,38 @@ export default function AdminDashboard() {
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Family
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Email Management Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Email Management
+            </CardTitle>
+            <CardDescription>
+              Preview invitation emails and track delivery status
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex gap-3">
+            <Button 
+              onClick={() => {
+                setPreviewHouseholdName("Example Family");
+                setEmailPreviewOpen(true);
+              }}
+              variant="outlined"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Preview Email
+            </Button>
+            <Button 
+              onClick={() => setEmailTrackingOpen(true)}
+              variant="outlined"
+            >
+              <Activity className="h-4 w-4 mr-2" />
+              View Email Tracking
             </Button>
           </CardContent>
         </Card>
@@ -641,6 +680,19 @@ export default function AdminDashboard() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Email Preview Dialog */}
+        <EmailPreview
+          open={emailPreviewOpen}
+          onOpenChange={setEmailPreviewOpen}
+          householdName={previewHouseholdName}
+        />
+
+        {/* Email Tracking Dialog */}
+        <EmailTracking
+          open={emailTrackingOpen}
+          onOpenChange={setEmailTrackingOpen}
+        />
       </div>
     </div>
   );
