@@ -36,7 +36,12 @@ Deno.serve(async (req) => {
 
     if (inviteError || !invitation) {
       console.error('Invalid or expired invitation:', inviteError);
-      const siteUrl = Deno.env.get('SITE_URL') || Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+      let siteUrl = Deno.env.get('SITE_URL');
+      if (!siteUrl) {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+        const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+        siteUrl = projectId ? `https://caf67139-0008-42b6-a9e1-3adeb6f8ab76.lovableproject.com` : supabaseUrl;
+      }
       return Response.redirect(`${siteUrl}/auth?error=invalid_invitation`, 302);
     }
 
@@ -187,14 +192,27 @@ Deno.serve(async (req) => {
     console.log(`Magic invite processed successfully for ${email}`);
 
     // Redirect to auth callback with the magic link hash
-    const siteUrl = Deno.env.get('SITE_URL') || Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    // Use SITE_URL if set, otherwise construct from Supabase URL
+    let siteUrl = Deno.env.get('SITE_URL');
+    if (!siteUrl) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+      // Extract project ID from Supabase URL and construct lovableproject.com URL
+      const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+      siteUrl = projectId ? `https://caf67139-0008-42b6-a9e1-3adeb6f8ab76.lovableproject.com` : supabaseUrl;
+    }
     const redirectUrl = `${siteUrl}/auth/callback#${linkData.properties.hashed_token}`;
     
+    console.log(`Redirecting to: ${redirectUrl}`);
     return Response.redirect(redirectUrl, 302);
 
   } catch (error) {
     console.error('Error in magic-invite:', error);
-    const siteUrl = Deno.env.get('SITE_URL') || Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    let siteUrl = Deno.env.get('SITE_URL');
+    if (!siteUrl) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+      const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1];
+      siteUrl = projectId ? `https://caf67139-0008-42b6-a9e1-3adeb6f8ab76.lovableproject.com` : supabaseUrl;
+    }
     return Response.redirect(`${siteUrl}/auth?error=invitation_failed`, 302);
   }
 });
