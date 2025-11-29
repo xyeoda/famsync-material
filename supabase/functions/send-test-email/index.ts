@@ -72,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
                 background-color: #ffffff;
               }
               .header {
-                background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%);
+                background: #000000;
                 color: white;
                 padding: 40px 30px;
                 border-radius: 10px 10px 0 0;
