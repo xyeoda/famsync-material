@@ -13,6 +13,7 @@ import { addWeeks, subWeeks, addMonths, subMonths } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useAuth } from "@/hooks/useAuth";
+import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import dashboardBg from "@/assets/dashboard-bg.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
 
@@ -28,6 +29,7 @@ const FamilyCalendar = () => {
   const [selectedInstance, setSelectedInstance] = useState<EventInstance | undefined>(undefined);
   const { canEdit, userRole } = useHousehold();
   const { user } = useAuth();
+  const { settings } = useFamilySettingsDB();
   const location = useLocation();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents } = useEventsDB();
   const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances } = useEventInstancesDB();
@@ -191,11 +193,11 @@ const FamilyCalendar = () => {
         <div className="mt-4 surface-elevation-2 rounded-3xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(var(--kid1-color))` }} />
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(${settings.kid1Color})` }} />
               <span className="text-sm text-foreground">K1</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(var(--kid2-color))` }} />
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(${settings.kid2Color})` }} />
               <span className="text-sm text-foreground">K2</span>
             </div>
           </div>
