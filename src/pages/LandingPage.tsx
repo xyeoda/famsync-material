@@ -235,22 +235,22 @@ const LandingPage = () => {
                   <img 
                     src={swimmingLogo} 
                     alt="Swimming" 
-                    className="w-14 h-14 opacity-40"
+                    className="w-20 h-20 opacity-40"
                   />
                   <img 
                     src={judoLogo} 
                     alt="Judo" 
-                    className="w-14 h-14 opacity-40"
+                    className="w-20 h-20 opacity-40"
                   />
                   <img 
                     src={fencingLogo} 
                     alt="Fencing" 
-                    className="w-14 h-14 opacity-40"
+                    className="w-20 h-20 opacity-40"
                   />
                   <img 
                     src={bjjLogo} 
                     alt="Brazilian Jiu-Jitsu" 
-                    className="w-14 h-14 opacity-40"
+                    className="w-20 h-20 opacity-40"
                   />
                 </div>
               </div>
