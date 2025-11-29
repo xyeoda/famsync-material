@@ -238,36 +238,44 @@ const LandingPage = () => {
                 {/* Activity Badges - Outside Calendar, Left Aligned */}
                 <div className="mt-3 flex gap-4 items-end">
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                    <img 
-                      src={bjjBadge} 
-                      alt="BJJ Badge" 
-                      className="relative h-24 w-24 object-contain drop-shadow-2xl"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-secondary/40 dark:from-primary/30 dark:to-secondary/30 rounded-full blur-xl opacity-70 dark:opacity-60 group-hover:opacity-90 transition-opacity" />
+                    <div className="relative bg-white/70 dark:bg-transparent rounded-full p-2 shadow-lg dark:shadow-none border border-gray-200/50 dark:border-transparent">
+                      <img 
+                        src={bjjBadge} 
+                        alt="BJJ Badge" 
+                        className="h-20 w-20 object-contain drop-shadow-2xl"
+                      />
+                    </div>
                   </div>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-tertiary/30 to-accent/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                    <img 
-                      src={fencingBadge} 
-                      alt="Fencing Badge" 
-                      className="relative h-24 w-24 object-contain drop-shadow-2xl"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-tertiary/40 to-accent/40 dark:from-tertiary/30 dark:to-accent/30 rounded-full blur-xl opacity-70 dark:opacity-60 group-hover:opacity-90 transition-opacity" />
+                    <div className="relative bg-white/70 dark:bg-transparent rounded-full p-2 shadow-lg dark:shadow-none border border-gray-200/50 dark:border-transparent">
+                      <img 
+                        src={fencingBadge} 
+                        alt="Fencing Badge" 
+                        className="h-20 w-20 object-contain drop-shadow-2xl"
+                      />
+                    </div>
                   </div>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                    <img 
-                      src={roboticsBadge} 
-                      alt="Robotics Badge" 
-                      className="relative h-24 w-24 object-contain drop-shadow-2xl"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/40 to-accent/40 dark:from-primary/30 dark:to-accent/30 rounded-full blur-xl opacity-70 dark:opacity-60 group-hover:opacity-90 transition-opacity" />
+                    <div className="relative bg-white/70 dark:bg-transparent rounded-full p-2 shadow-lg dark:shadow-none border border-gray-200/50 dark:border-transparent">
+                      <img 
+                        src={roboticsBadge} 
+                        alt="Robotics Badge" 
+                        className="h-20 w-20 object-contain drop-shadow-2xl"
+                      />
+                    </div>
                   </div>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/30 to-primary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                    <img 
-                      src={swimmingBadge} 
-                      alt="Swimming Badge" 
-                      className="relative h-24 w-24 object-contain drop-shadow-2xl"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/40 to-primary/40 dark:from-secondary/30 dark:to-primary/30 rounded-full blur-xl opacity-70 dark:opacity-60 group-hover:opacity-90 transition-opacity" />
+                    <div className="relative bg-white/70 dark:bg-transparent rounded-full p-2 shadow-lg dark:shadow-none border border-gray-200/50 dark:border-transparent">
+                      <img 
+                        src={swimmingBadge} 
+                        alt="Swimming Badge" 
+                        className="h-20 w-20 object-contain drop-shadow-2xl"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
