@@ -52,19 +52,19 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="surface-elevation-2 rounded-3xl overflow-hidden border border-border">
+    <div className="surface-elevation-2 rounded-3xl overflow-hidden border-2 border-border dark:border-border/60">
       {/* Desktop: 7 columns, Tablet: 4 columns, Mobile: 1 column */}
-      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-px bg-border">
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-px bg-border dark:bg-border/40">
         {days.map((day) => {
           const dayEvents = getEventsForDay(day);
           const today = isToday(day);
 
           return (
-            <div key={day.toISOString()} className="min-h-[300px] lg:min-h-[500px] bg-surface flex flex-col">
+            <div key={day.toISOString()} className="min-h-[300px] lg:min-h-[500px] bg-surface dark:bg-surface-container flex flex-col">
               <div
                 className={cn(
-                  "p-2 lg:p-3 text-center border-b border-border flex-shrink-0",
-                  today && "bg-primary-container"
+                  "p-2 lg:p-3 text-center border-b border-border dark:border-border/40 flex-shrink-0",
+                  today && "bg-primary-container dark:bg-primary-container/80"
                 )}
               >
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
