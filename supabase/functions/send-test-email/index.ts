@@ -72,7 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
                 background-color: #ffffff;
               }
               .header {
-                background: #000000;
+                background: #1f2937;
                 color: white;
                 padding: 40px 30px;
                 border-radius: 10px 10px 0 0;
