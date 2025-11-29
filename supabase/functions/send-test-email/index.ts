@@ -21,6 +21,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending test email to ${recipientEmail}`);
 
+    const siteUrl = Deno.env.get('SITE_URL') || 
+      Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
+    const logoUrl = `${siteUrl}/kinsynch-logo.png`;
+
     const smtpHost = Deno.env.get("SMTP_HOST");
     const smtpPort = parseInt(Deno.env.get("SMTP_PORT") || "587");
     const smtpUser = Deno.env.get("SMTP_USER");
@@ -55,60 +59,97 @@ const handler = async (req: Request): Promise<Response> => {
         <html>
           <head>
             <meta charset="utf-8">
+            <meta name="color-scheme" content="light dark">
+            <meta name="supported-color-schemes" content="light dark">
             <style>
               body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.6;
-                color: #333;
+                color: #1a1a1a;
                 max-width: 600px;
                 margin: 0 auto;
                 padding: 20px;
+                background-color: #ffffff;
               }
               .header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%);
                 color: white;
-                padding: 30px;
+                padding: 40px 30px;
                 border-radius: 10px 10px 0 0;
                 text-align: center;
               }
+              .logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 20px;
+              }
               .content {
-                background: #f7f7f7;
+                background: #ffffff;
                 padding: 30px;
                 border-radius: 0 0 10px 10px;
+                border: 1px solid #e5e7eb;
+                border-top: none;
               }
-              .button {
-                display: inline-block;
-                padding: 12px 24px;
-                background: #667eea;
-                color: white;
-                text-decoration: none;
-                border-radius: 6px;
+              .status-box {
+                background: #f0fdf4;
+                border: 2px solid #10b981;
+                padding: 20px;
+                border-radius: 8px;
                 margin: 20px 0;
+              }
+              .status-box h3 {
+                margin-top: 0;
+                color: #065f46;
+              }
+              .status-box ul {
+                list-style: none;
+                padding: 0;
+                margin: 10px 0 0 0;
+              }
+              .status-box li {
+                color: #047857;
+                padding: 5px 0;
               }
               .footer {
                 text-align: center;
                 margin-top: 20px;
-                color: #666;
+                color: #9ca3af;
                 font-size: 12px;
               }
-              .check-icon {
-                font-size: 48px;
-                color: #10b981;
+              @media (prefers-color-scheme: dark) {
+                body {
+                  color: #e5e7eb;
+                  background-color: #1f2937;
+                }
+                .content {
+                  background: #1f2937;
+                  border-color: #374151;
+                }
+                .status-box {
+                  background: #064e3b;
+                  border-color: #10b981;
+                }
+                .status-box h3 {
+                  color: #6ee7b7;
+                }
+                .status-box li {
+                  color: #a7f3d0;
+                }
               }
             </style>
           </head>
           <body>
             <div class="header">
-              <h1>📧 Test Email Successful!</h1>
+              <img src="${logoUrl}" alt="KinSync Logo" class="logo" />
+              <h1 style="margin: 0; font-size: 28px;">Test Email Successful!</h1>
             </div>
             <div class="content">
-              <p class="check-icon">✅</p>
               <h2>Hello${displayName !== recipientEmail ? ` ${displayName}` : ''}!</h2>
               <p>This is a test email from your KinSync application.</p>
               <p>If you're seeing this message, it means your SMTP configuration is working correctly!</p>
-              <div style="background: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
-                <h3 style="margin-top: 0;">SMTP Configuration Status</h3>
-                <ul style="list-style: none; padding: 0;">
+              <div class="status-box">
+                <h3>SMTP Configuration Status</h3>
+                <ul>
                   <li>✅ SMTP Host: Connected</li>
                   <li>✅ Authentication: Successful</li>
                   <li>✅ Email Delivery: Working</li>
