@@ -136,6 +136,7 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com');
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=${token}`;
+    const logoUrl = `${siteUrl}/kinsynch-logo.png`;
 
     // Delete any existing pending invitation for this email in this household (needs admin)
     const { error: deleteError } = await supabaseAdmin
@@ -202,19 +203,30 @@ const handler = async (req: Request): Promise<Response> => {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; }
-    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
-    .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
+    .header { background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%); color: white; padding: 40px 30px; border-radius: 10px 10px 0 0; text-align: center; }
+    .logo { width: 80px; height: 80px; margin-bottom: 20px; }
+    .content { background: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb; border-top: none; }
+    .button { display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; }
+    .link-text { color: #6b7280; font-size: 14px; word-break: break-all; background: #f9fafb; padding: 12px; border-radius: 6px; margin: 10px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px; }
+    @media (prefers-color-scheme: dark) {
+      body { color: #e5e7eb; }
+      .container { background-color: #1f2937; }
+      .content { background: #1f2937; border-color: #374151; }
+      .link-text { background: #111827; color: #9ca3af; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>You're Invited! 🎉</h1>
+      <img src="${logoUrl}" alt="KinSync Logo" class="logo" />
+      <h1 style="margin: 0; font-size: 28px;">You're Invited!</h1>
     </div>
     <div class="content">
           <p>Hello!</p>
@@ -223,9 +235,9 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="text-align: center;">
             <a href="${inviteUrl}" class="button">Join Calendar</a>
           </div>
-          <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
-          <p style="color: #666; font-size: 12px; word-break: break-all;">${inviteUrl}</p>
-          <p style="margin-top: 30px; color: #666; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
+          <p style="color: #6b7280; font-size: 14px;">Or copy and paste this link into your browser:</p>
+          <p class="link-text">${inviteUrl}</p>
+          <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
     </div>
     <div class="footer">
       <p>This is an automated message from ${householdName}'s Family Calendar</p>
