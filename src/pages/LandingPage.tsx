@@ -240,7 +240,7 @@ const LandingPage = () => {
                     <img 
                       src={bjjBadge} 
                       alt="BJJ Badge" 
-                      className="relative h-22 w-22 object-contain drop-shadow-2xl"
+                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
                     />
                   </div>
                   <div className="relative group">
