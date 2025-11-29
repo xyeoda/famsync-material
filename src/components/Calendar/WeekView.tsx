@@ -52,7 +52,7 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="surface-elevation-2 rounded-3xl overflow-hidden">
+    <div className="surface-elevation-2 rounded-3xl overflow-hidden border border-border">
       {/* Desktop: 7 columns, Tablet: 4 columns, Mobile: 1 column */}
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-px bg-border">
         {days.map((day) => {

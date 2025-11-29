@@ -38,7 +38,7 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="surface-elevation-2 rounded-3xl overflow-hidden">
+    <div className="surface-elevation-2 rounded-3xl overflow-hidden border border-border">
       <div className="grid grid-cols-7 gap-px bg-border">
         {weekDays.map(day => (
           <div key={day} className="bg-surface-container p-4 text-center">
