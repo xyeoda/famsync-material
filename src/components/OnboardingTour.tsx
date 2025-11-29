@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
-const ONBOARDING_STORAGE_KEY = "yeoda-onboarding-completed";
-const ONBOARDING_STEP_STORAGE_KEY = "yeoda-onboarding-step";
+const ONBOARDING_STORAGE_KEY = "kinsync-onboarding-completed";
+const ONBOARDING_STEP_STORAGE_KEY = "kinsync-onboarding-step";
 
 interface OnboardingTourProps {
   userId: string;
@@ -82,7 +82,7 @@ export function OnboardingTour({ userId, householdId }: OnboardingTourProps) {
   const steps = [
     {
       icon: Calendar,
-      title: "Welcome to YeoDa Family Calendar! 🎉",
+      title: "Welcome to KinSync! 🎉",
       description: "Let's get you started with a quick tour of the main features. You can skip this at any time.",
       action: null,
     },

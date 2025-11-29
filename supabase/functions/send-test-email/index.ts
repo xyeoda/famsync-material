@@ -48,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
     await client.send({
       from: smtpFrom,
       to: recipientEmail,
-      subject: "YeoDa Calendar - Test Email",
+      subject: "KinSync - Test Email",
       content: "auto",
       html: `
         <!DOCTYPE html>
@@ -104,7 +104,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div class="content">
               <p class="check-icon">✅</p>
               <h2>Hello${displayName !== recipientEmail ? ` ${displayName}` : ''}!</h2>
-              <p>This is a test email from your YeoDa Family Calendar application.</p>
+              <p>This is a test email from your KinSync application.</p>
               <p>If you're seeing this message, it means your SMTP configuration is working correctly!</p>
               <div style="background: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">SMTP Configuration Status</h3>
@@ -121,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
               </p>
             </div>
             <div class="footer">
-              <p>This is an automated test email from YeoDa Family Calendar</p>
+              <p>This is an automated test email from KinSync</p>
               <p>Sent at ${new Date().toLocaleString()}</p>
             </div>
           </body>
