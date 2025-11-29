@@ -257,7 +257,7 @@ const LandingPage = () => {
                     <img 
                       src={roboticsBadge} 
                       alt="Robotics Badge" 
-                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
+                      className="relative h-24 w-24 object-contain drop-shadow-2xl"
                     />
                   </div>
                 </div>
