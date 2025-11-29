@@ -33,8 +33,8 @@ export function EmailPreview({ open, onOpenChange, householdName }: EmailPreview
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
-    .header { background: #1f2937; color: white; padding: 40px 30px; border-radius: 10px 10px 0 0; text-align: center; }
-    .logo { width: 80px; height: 80px; margin-bottom: 20px; }
+    .header { background: #1a1a1a; color: white; padding: 40px 30px; border-radius: 10px 10px 0 0; text-align: center; }
+    .logo { width: 48px; height: 48px; margin-bottom: 20px; }
     .content { background: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb; border-top: none; }
     .button { display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; }
     .link-text { color: #6b7280; font-size: 14px; word-break: break-all; background: #f9fafb; padding: 12px; border-radius: 6px; margin: 10px 0; }
@@ -50,7 +50,7 @@ export function EmailPreview({ open, onOpenChange, householdName }: EmailPreview
 <body>
   <div class="container">
     <div class="header">
-      <img src="${logoUrl}" alt="KinSync Logo" class="logo" />
+      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 48px; height: 48px;" width="48" height="48" />
       <h1 style="margin: 0; font-size: 28px;">You're Invited!</h1>
     </div>
     <div class="content">

@@ -72,15 +72,15 @@ const handler = async (req: Request): Promise<Response> => {
                 background-color: #ffffff;
               }
               .header {
-                background: #1f2937;
+                background: #1a1a1a;
                 color: white;
                 padding: 40px 30px;
                 border-radius: 10px 10px 0 0;
                 text-align: center;
               }
               .logo {
-                width: 80px;
-                height: 80px;
+                width: 48px;
+                height: 48px;
                 margin-bottom: 20px;
               }
               .content {
@@ -140,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
           </head>
           <body>
             <div class="header">
-              <img src="${logoUrl}" alt="KinSync Logo" class="logo" />
+              <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 48px; height: 48px;" width="48" height="48" />
               <h1 style="margin: 0; font-size: 28px;">Test Email Successful!</h1>
             </div>
             <div class="content">
