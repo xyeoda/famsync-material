@@ -21,8 +21,11 @@ export function EmailPreview({ open, onOpenChange, householdName }: EmailPreview
   };
 
   const getEmailHTML = () => {
-    const inviteUrl = `${window.location.origin}/accept-invite/[TOKEN]`;
-    const logoUrl = `${window.location.origin}/kinsynch-logo.png`;
+    // Match the actual URL format used in send-invitation edge function
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    const inviteUrl = `${supabaseUrl}/functions/v1/magic-invite?token=[TOKEN]`;
+    const siteUrl = window.location.origin;
+    const logoUrl = `${siteUrl}/kinsynch-logo.png`;
     
     return `<!DOCTYPE html>
 <html>
