@@ -229,18 +229,18 @@ const LandingPage = () => {
                   {/* Family Avatars */}
                   <div className="flex items-center gap-2 pt-4 border-t border-border/30">
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white font-medium" style={{ background: 'linear-gradient(to right, #8834ff 0%, #8834ff 100%)' }}>K1</div>
-                    <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white font-medium" style={{ background: 'linear-gradient(to right, #ffa514 0%, #ffa514 100%)' }}>K2</div>
                   </div>
                 </div>
                 
                 {/* Activity Badges - Outside Calendar, Left Aligned */}
-                <div className="mt-3 flex gap-4">
+                <div className="mt-3 flex gap-4 items-end">
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
                     <img 
                       src={bjjBadge} 
                       alt="BJJ Badge" 
-                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
+                      className="relative h-22 w-22 object-contain drop-shadow-2xl"
                     />
                   </div>
                   <div className="relative group">
