@@ -139,25 +139,25 @@ const LandingPage = () => {
         <img 
           src={swimmingLogo} 
           alt="" 
-          className="absolute top-12 left-8 w-8 h-8 opacity-20 pointer-events-none hidden md:block animate-float-slow"
+          className="absolute top-12 left-8 w-10 h-10 opacity-30 pointer-events-none hidden md:block animate-float-slow"
           style={{ animationDelay: '0s' }}
         />
         <img 
           src={judoLogo} 
           alt="" 
-          className="absolute top-20 right-16 w-10 h-10 opacity-15 pointer-events-none hidden lg:block animate-float-medium"
+          className="absolute top-20 right-16 w-12 h-12 opacity-25 pointer-events-none hidden lg:block animate-float-medium"
           style={{ animationDelay: '1s', transform: 'rotate(-12deg)' }}
         />
         <img 
           src={fencingLogo} 
           alt="" 
-          className="absolute bottom-32 left-12 w-9 h-9 opacity-20 pointer-events-none hidden md:block animate-float-slow"
+          className="absolute bottom-32 left-12 w-10 h-10 opacity-30 pointer-events-none hidden md:block animate-float-slow"
           style={{ animationDelay: '2s' }}
         />
         <img 
           src={bjjLogo} 
           alt="" 
-          className="absolute bottom-20 right-20 w-8 h-8 opacity-18 pointer-events-none hidden lg:block animate-float-medium"
+          className="absolute bottom-20 right-20 w-10 h-10 opacity-30 pointer-events-none hidden lg:block animate-float-medium"
           style={{ animationDelay: '1.5s', transform: 'rotate(8deg)' }}
         />
         
@@ -270,22 +270,22 @@ const LandingPage = () => {
         <img 
           src={judoLogo} 
           alt="" 
-          className="absolute top-16 right-8 w-6 h-6 opacity-10 pointer-events-none hidden lg:block blur-[0.5px]"
+          className="absolute top-16 right-8 w-8 h-8 opacity-15 pointer-events-none hidden lg:block"
         />
         <img 
           src={swimmingLogo} 
           alt="" 
-          className="absolute bottom-24 left-16 w-5 h-5 opacity-12 pointer-events-none hidden md:block blur-[0.5px]"
+          className="absolute bottom-24 left-16 w-7 h-7 opacity-20 pointer-events-none hidden md:block"
         />
         <img 
           src={bjjLogo} 
           alt="" 
-          className="absolute top-1/3 right-1/4 w-5 h-5 opacity-8 pointer-events-none hidden xl:block blur-[0.5px]"
+          className="absolute top-1/3 right-1/4 w-7 h-7 opacity-15 pointer-events-none hidden xl:block"
         />
         <img 
           src={fencingLogo} 
           alt="" 
-          className="absolute bottom-16 right-12 w-6 h-6 opacity-10 pointer-events-none hidden lg:block blur-[0.5px]"
+          className="absolute bottom-16 right-12 w-8 h-8 opacity-15 pointer-events-none hidden lg:block"
         />
         
         <div className="container mx-auto px-4 relative z-10">
