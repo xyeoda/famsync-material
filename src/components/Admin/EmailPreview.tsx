@@ -50,7 +50,7 @@ export function EmailPreview({ open, onOpenChange, householdName }: EmailPreview
 <body>
   <div class="container">
     <div class="header">
-      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 48px; height: 48px;" width="48" height="48" />
+      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 48px; height: 48px; background-color: #ffffff; padding: 8px; border-radius: 8px;" width="48" height="48" />
       <h1 style="margin: 0; font-size: 28px;">You're Invited!</h1>
     </div>
     <div class="content">
