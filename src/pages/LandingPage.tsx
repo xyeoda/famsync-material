@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
+import bjjBadge from "@/assets/activities/bjj_badge.png";
 import swimmingLogo from "@/assets/activities/swimming_logo.png";
 import fencingLogo from "@/assets/activities/fencing_logo.png";
 
@@ -225,9 +226,16 @@ const LandingPage = () => {
                   </div>
 
                   {/* Family Avatars */}
-                  <div className="flex items-center gap-2 pt-4 border-t border-border/30">
-                    <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
-                    <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
+                  <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
+                      <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
+                    </div>
+                    <img 
+                      src={bjjBadge} 
+                      alt="BJJ Badge" 
+                      className="h-10 w-10 object-contain"
+                    />
                   </div>
                 </div>
               </div>
