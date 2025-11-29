@@ -28,7 +28,7 @@ const FamilyDashboard = () => {
       title: "Signed out",
       description: "You have been signed out successfully.",
     });
-    navigate("/");
+    navigate("/auth");
   };
   
   const { events, loadEvents } = useEventsDB();

@@ -111,7 +111,10 @@ const LandingPage = () => {
                   </span>
                   <Button
                     variant="outlined"
-                    onClick={signOut}
+                    onClick={async () => {
+                      await signOut();
+                      navigate("/auth");
+                    }}
                     className="gap-2"
                   >
                     <LogOut className="h-4 w-4" />

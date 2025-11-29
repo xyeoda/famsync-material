@@ -29,6 +29,7 @@ const Dashboard = () => {
       title: "Signed out",
       description: "You have been signed out successfully.",
     });
+    navigate("/auth");
   };
   
   const { events, loadEvents } = useEventsDB();
