@@ -72,8 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
                 background-color: #ffffff;
               }
               .header {
-                background: #1a1a1a;
-                color: white;
+                background: #f3f4f6;
+                color: #1a1a1a;
                 padding: 40px 30px;
                 border-radius: 10px 10px 0 0;
                 text-align: center;
