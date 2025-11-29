@@ -221,56 +221,28 @@ const LandingPage = () => {
                     </div>
                   </div>
 
-                  {/* Family Avatars */}
-                  <div className="flex items-center gap-2 pt-4 border-t border-border/30">
-                    <div className="w-8 h-8 rounded-full bg-family-parent1 flex items-center justify-center text-xs text-white font-medium">P1</div>
-                    <div className="w-8 h-8 rounded-full bg-family-parent2 flex items-center justify-center text-xs text-white font-medium">P2</div>
-                    <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
-                    <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
-                  </div>
-                </div>
-                
-                {/* Activity logos under calendar */}
-                <div className="flex items-center justify-center gap-8 mt-8">
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
-                      <img 
-                        src={bjjLogo} 
-                        alt="Brazilian Jiu-Jitsu" 
-                        className="w-24 h-24 object-contain transition-all duration-300 group-hover:scale-105"
-                      />
+                  {/* Family Avatars and Activity Logos */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-family-parent1 flex items-center justify-center text-xs text-white font-medium">P1</div>
+                      <div className="w-8 h-8 rounded-full bg-family-parent2 flex items-center justify-center text-xs text-white font-medium">P2</div>
+                      <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
+                      <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                     </div>
-                    <span className="text-sm font-medium text-foreground">BJJ</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
-                      <img 
-                        src={fencingLogo} 
-                        alt="Fencing" 
-                        className="w-24 h-24 object-contain transition-all duration-300 group-hover:scale-105"
-                      />
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-card shadow-sm flex items-center justify-center">
+                        <img src={bjjLogo} alt="BJJ" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-card shadow-sm flex items-center justify-center">
+                        <img src={fencingLogo} alt="Fencing" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-card shadow-sm flex items-center justify-center">
+                        <img src={roboticsLogo} alt="Robotics" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-card shadow-sm flex items-center justify-center">
+                        <img src={swimmingLogo} alt="Swimming" className="w-6 h-6 object-contain" />
+                      </div>
                     </div>
-                    <span className="text-sm font-medium text-foreground">Fencing</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
-                      <img 
-                        src={roboticsLogo} 
-                        alt="Robotics" 
-                        className="w-24 h-24 object-contain transition-all duration-300 group-hover:scale-105"
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">Robotics</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
-                      <img 
-                        src={swimmingLogo} 
-                        alt="Swimming" 
-                        className="w-24 h-24 object-contain transition-all duration-300 group-hover:scale-105"
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">Swimming</span>
                   </div>
                 </div>
               </div>
