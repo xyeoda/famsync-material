@@ -233,43 +233,35 @@ const LandingPage = () => {
                 {/* Activity logos under calendar */}
                 <div className="flex items-center justify-center gap-8 mt-8">
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 p-4 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50">
-                      <img 
-                        src={bjjLogo} 
-                        alt="Brazilian Jiu-Jitsu" 
-                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-110"
-                      />
-                    </div>
+                    <img 
+                      src={bjjLogo} 
+                      alt="Brazilian Jiu-Jitsu" 
+                      className="w-40 h-40 object-contain transition-all duration-300 group-hover:scale-105"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 p-4 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50">
-                      <img 
-                        src={fencingLogo} 
-                        alt="Fencing" 
-                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-110"
-                      />
-                    </div>
+                    <img 
+                      src={fencingLogo} 
+                      alt="Fencing" 
+                      className="w-40 h-40 object-contain transition-all duration-300 group-hover:scale-105"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 p-4 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50">
-                      <img 
-                        src={roboticsLogo} 
-                        alt="Robotics" 
-                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-110"
-                      />
-                    </div>
+                    <img 
+                      src={roboticsLogo} 
+                      alt="Robotics" 
+                      className="w-40 h-40 object-contain transition-all duration-300 group-hover:scale-105"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 p-4 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:border-primary/50">
-                      <img 
-                        src={swimmingLogo} 
-                        alt="Swimming" 
-                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-110"
-                      />
-                    </div>
+                    <img 
+                      src={swimmingLogo} 
+                      alt="Swimming" 
+                      className="w-40 h-40 object-contain transition-all duration-300 group-hover:scale-105"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
                   </div>
                 </div>
