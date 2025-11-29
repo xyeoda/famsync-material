@@ -28,6 +28,10 @@ export function useAuth() {
   }, []);
 
   const signOut = async () => {
+    // Clear state first
+    setSession(null);
+    setUser(null);
+    // Then sign out from Supabase
     await supabase.auth.signOut();
   };
 
