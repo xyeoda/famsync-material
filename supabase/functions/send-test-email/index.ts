@@ -66,29 +66,28 @@ const handler = async (req: Request): Promise<Response> => {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.6;
                 color: #1a1a1a;
+                margin: 0;
+                padding: 0;
+                background-color: #f9fafb;
+              }
+              .container {
                 max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #ffffff;
-              }
-              .header {
-                background: #ffffff;
-                color: #1a1a1a;
-                padding: 40px 30px;
-                border-radius: 10px 10px 0 0;
-                text-align: center;
-              }
-              .logo {
-                width: 48px;
-                height: 48px;
-                margin-bottom: 20px;
+                margin: 40px auto;
+                padding: 0 20px;
               }
               .content {
                 background: #ffffff;
-                padding: 30px;
-                border-radius: 0 0 10px 10px;
+                padding: 40px;
+                border-radius: 10px;
                 border: 1px solid #e5e7eb;
-                border-top: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+              }
+              .title {
+                font-size: 28px;
+                font-weight: 700;
+                margin: 0 0 24px 0;
+                color: #1a1a1a;
+                text-align: center;
               }
               .status-box {
                 background: #f0fdf4;
@@ -119,11 +118,14 @@ const handler = async (req: Request): Promise<Response> => {
               @media (prefers-color-scheme: dark) {
                 body {
                   color: #e5e7eb;
-                  background-color: #1f2937;
+                  background-color: #111827;
                 }
                 .content {
                   background: #1f2937;
                   border-color: #374151;
+                }
+                .title {
+                  color: #f9fafb;
                 }
                 .status-box {
                   background: #064e3b;
@@ -139,31 +141,29 @@ const handler = async (req: Request): Promise<Response> => {
             </style>
           </head>
           <body>
-            <div class="header">
-              <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 96px; height: 96px; background-color: #ffffff; padding: 12px; border-radius: 12px;" width="96" height="96" />
-              <h1 style="margin: 0; font-size: 28px;">Test Email Successful!</h1>
-            </div>
-            <div class="content">
-              <h2>Hello${displayName !== recipientEmail ? ` ${displayName}` : ''}!</h2>
-              <p>This is a test email from your KinSync application.</p>
-              <p>If you're seeing this message, it means your SMTP configuration is working correctly!</p>
-              <div class="status-box">
-                <h3>SMTP Configuration Status</h3>
-                <ul>
-                  <li>✅ SMTP Host: Connected</li>
-                  <li>✅ Authentication: Successful</li>
-                  <li>✅ Email Delivery: Working</li>
-                </ul>
+            <div class="container">
+              <div class="content">
+                <h1 class="title">Test Email Successful</h1>
+                <p>Hello${displayName !== recipientEmail ? ` ${displayName}` : ''}!</p>
+                <p>This is a test email from your KinSync application using the same layout and styling as your invitation emails.</p>
+                <div class="status-box">
+                  <h3>SMTP Configuration Status</h3>
+                  <ul>
+                    <li>✅ SMTP Host: Connected</li>
+                    <li>✅ Authentication: Successful</li>
+                    <li>✅ Email Delivery: Working</li>
+                  </ul>
+                </div>
+                <p>You can now safely send invitation emails to your family members.</p>
+                <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                  <strong>Need help?</strong><br>
+                  If you have any questions about setting up your family calendar, please contact your administrator.
+                </p>
               </div>
-              <p>You can now safely send invitation emails to your family members.</p>
-              <p style="margin-top: 30px;">
-                <strong>Need help?</strong><br>
-                If you have any questions about setting up your family calendar, please contact your administrator.
-              </p>
-            </div>
-            <div class="footer">
-              <p>This is an automated test email from KinSync</p>
-              <p>Sent at ${new Date().toLocaleString()}</p>
+              <div class="footer">
+                <p>This is an automated test email from KinSync</p>
+                <p>Sent at ${new Date().toLocaleString()}</p>
+              </div>
             </div>
           </body>
         </html>
