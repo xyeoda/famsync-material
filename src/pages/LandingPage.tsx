@@ -231,49 +231,37 @@ const LandingPage = () => {
                 </div>
                 
                 {/* Activity logos under calendar */}
-                <div className="flex items-center justify-center gap-6 mt-8">
+                <div className="flex items-center justify-center gap-8 mt-8">
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                      <img 
-                        src={bjjLogo} 
-                        alt="Brazilian Jiu-Jitsu" 
-                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
-                      />
-                    </div>
+                    <img 
+                      src={bjjLogo} 
+                      alt="Brazilian Jiu-Jitsu" 
+                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                      <img 
-                        src={fencingLogo} 
-                        alt="Fencing" 
-                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
-                      />
-                    </div>
+                    <img 
+                      src={fencingLogo} 
+                      alt="Fencing" 
+                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                      <img 
-                        src={roboticsLogo} 
-                        alt="Robotics" 
-                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
-                      />
-                    </div>
+                    <img 
+                      src={roboticsLogo} 
+                      alt="Robotics" 
+                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
-                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                      <img 
-                        src={swimmingLogo} 
-                        alt="Swimming" 
-                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
-                      />
-                    </div>
+                    <img 
+                      src={swimmingLogo} 
+                      alt="Swimming" 
+                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                    />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
                   </div>
                 </div>
