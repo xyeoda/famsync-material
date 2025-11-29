@@ -232,37 +232,49 @@ const LandingPage = () => {
                 
                 {/* Activity logos under calendar */}
                 <div className="flex items-center justify-center gap-6 mt-8">
-                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                    <img 
-                      src={bjjLogo} 
-                      alt="Brazilian Jiu-Jitsu" 
-                      className="w-22 h-22 opacity-70 relative z-10"
-                    />
+                  <div className="flex flex-col items-center gap-2 group">
+                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
+                      <img 
+                        src={bjjLogo} 
+                        alt="Brazilian Jiu-Jitsu" 
+                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
                   </div>
-                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                    <img 
-                      src={fencingLogo} 
-                      alt="Fencing" 
-                      className="w-22 h-22 opacity-70 relative z-10"
-                    />
+                  <div className="flex flex-col items-center gap-2 group">
+                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
+                      <img 
+                        src={fencingLogo} 
+                        alt="Fencing" 
+                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
                   </div>
-                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                    <img 
-                      src={judoLogo} 
-                      alt="Judo" 
-                      className="w-22 h-22 opacity-70 relative z-10"
-                    />
+                  <div className="flex flex-col items-center gap-2 group">
+                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
+                      <img 
+                        src={judoLogo} 
+                        alt="Judo" 
+                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Judo</span>
                   </div>
-                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                    <img 
-                      src={swimmingLogo} 
-                      alt="Swimming" 
-                      className="w-22 h-22 opacity-70 relative z-10"
-                    />
+                  <div className="flex flex-col items-center gap-2 group">
+                    <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
+                      <img 
+                        src={swimmingLogo} 
+                        alt="Swimming" 
+                        className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
                   </div>
                 </div>
               </div>
