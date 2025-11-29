@@ -235,17 +235,9 @@ const LandingPage = () => {
                   <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
                     <img 
-                      src={swimmingLogo} 
-                      alt="Swimming" 
-                      className="w-20 h-20 opacity-70 relative z-10"
-                    />
-                  </div>
-                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
-                    <img 
-                      src={judoLogo} 
-                      alt="Judo" 
-                      className="w-20 h-20 opacity-70 relative z-10"
+                      src={bjjLogo} 
+                      alt="Brazilian Jiu-Jitsu" 
+                      className="w-22 h-22 opacity-70 relative z-10"
                     />
                   </div>
                   <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
@@ -253,15 +245,23 @@ const LandingPage = () => {
                     <img 
                       src={fencingLogo} 
                       alt="Fencing" 
-                      className="w-20 h-20 opacity-70 relative z-10"
+                      className="w-22 h-22 opacity-70 relative z-10"
                     />
                   </div>
                   <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
                     <img 
-                      src={bjjLogo} 
-                      alt="Brazilian Jiu-Jitsu" 
-                      className="w-20 h-20 opacity-70 relative z-10"
+                      src={judoLogo} 
+                      alt="Judo" 
+                      className="w-22 h-22 opacity-70 relative z-10"
+                    />
+                  </div>
+                  <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-shadow">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
+                    <img 
+                      src={swimmingLogo} 
+                      alt="Swimming" 
+                      className="w-22 h-22 opacity-70 relative z-10"
                     />
                   </div>
                 </div>
