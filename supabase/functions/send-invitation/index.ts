@@ -227,7 +227,7 @@ const handler = async (req: Request): Promise<Response> => {
 <body>
   <div class="container">
     <div class="header">
-      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 96px; height: 96px; background-color: #ffffff; padding: 12px; border-radius: 12px;" width="96" height="96" />
+      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 96px; height: 96px;" width="96" height="96" />
       <h1 style="margin: 0; font-size: 28px;">You're Invited!</h1>
     </div>
     <div class="content">
