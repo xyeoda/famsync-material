@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { EmailPreview } from "@/components/Admin/EmailPreview";
 import { EmailTracking } from "@/components/Admin/EmailTracking";
 import { InvitationAnalytics } from "@/components/Admin/InvitationAnalytics";
-import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity, TrendingUp } from "lucide-react";
+import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity, TrendingUp, Database } from "lucide-react";
 
 interface Household {
   id: string;
@@ -373,6 +373,28 @@ export default function AdminDashboard() {
             >
               <Activity className="h-4 w-4 mr-2" />
               View Email Tracking
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Bulk Event Management Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              Bulk Event Management
+            </CardTitle>
+            <CardDescription>
+              Export, edit, and re-import events with smart duplicate detection
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => navigate('/admin/bulk-events')}
+              variant="outlined"
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Manage Events in Bulk
             </Button>
           </CardContent>
         </Card>
