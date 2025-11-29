@@ -233,7 +233,7 @@ const LandingPage = () => {
                 {/* Activity logos under calendar */}
                 <div className="flex items-center justify-center gap-8 mt-8">
                   <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card border border-border p-6 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg">
+                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
                       <img 
                         src={bjjLogo} 
                         alt="Brazilian Jiu-Jitsu" 
@@ -243,7 +243,7 @@ const LandingPage = () => {
                     <span className="text-sm font-medium text-foreground">BJJ</span>
                   </div>
                   <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card border border-border p-6 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg">
+                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
                       <img 
                         src={fencingLogo} 
                         alt="Fencing" 
@@ -253,7 +253,7 @@ const LandingPage = () => {
                     <span className="text-sm font-medium text-foreground">Fencing</span>
                   </div>
                   <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card border border-border p-6 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg">
+                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
                       <img 
                         src={roboticsLogo} 
                         alt="Robotics" 
@@ -263,7 +263,7 @@ const LandingPage = () => {
                     <span className="text-sm font-medium text-foreground">Robotics</span>
                   </div>
                   <div className="flex flex-col items-center gap-3 group">
-                    <div className="rounded-2xl bg-card border border-border p-6 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-lg">
+                    <div className="rounded-2xl bg-card p-6 shadow-[0_8px_16px_rgba(0,0,0,0.1)] transition-all duration-300 group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.15)] group-hover:-translate-y-1">
                       <img 
                         src={swimmingLogo} 
                         alt="Swimming" 
