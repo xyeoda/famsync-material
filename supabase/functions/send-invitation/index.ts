@@ -208,38 +208,34 @@ const handler = async (req: Request): Promise<Response> => {
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; }
-    .header { background: #ffffff; color: #1a1a1a; padding: 40px 30px; border-radius: 10px 10px 0 0; text-align: center; }
-    .logo { width: 48px; height: 48px; margin-bottom: 20px; }
-    .content { background: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb; border-top: none; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; margin: 0; padding: 0; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 40px auto; }
+    .content { background: #ffffff; padding: 40px; border-radius: 10px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .title { font-size: 28px; font-weight: 700; margin: 0 0 24px 0; color: #1a1a1a; text-align: center; }
     .button { display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; }
     .link-text { color: #6b7280; font-size: 14px; word-break: break-all; background: #f9fafb; padding: 12px; border-radius: 6px; margin: 10px 0; }
     .footer { text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px; }
     @media (prefers-color-scheme: dark) {
-      body { color: #e5e7eb; }
-      .container { background-color: #1f2937; }
+      body { background-color: #111827; color: #e5e7eb; }
       .content { background: #1f2937; border-color: #374151; }
+      .title { color: #f9fafb; }
       .link-text { background: #111827; color: #9ca3af; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <img src="${logoUrl}" alt="KinSync Logo" class="logo" style="width: 96px; height: 96px;" width="96" height="96" />
-      <h1 style="margin: 0; font-size: 28px;">You're Invited!</h1>
-    </div>
     <div class="content">
-          <p>Hello!</p>
-          <p>You've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>${roleNames[role]}</strong>.</p>
-          <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
-          <div style="text-align: center;">
-            <a href="${inviteUrl}" class="button">Join Calendar</a>
-          </div>
-          <p style="color: #6b7280; font-size: 14px;">Or copy and paste this link into your browser:</p>
-          <p class="link-text">${inviteUrl}</p>
-          <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
+      <h1 class="title">You're Invited!</h1>
+      <p>Hello!</p>
+      <p>You've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>${roleNames[role]}</strong>.</p>
+      <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
+      <div style="text-align: center;">
+        <a href="${inviteUrl}" class="button">Join Calendar</a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">Or copy and paste this link into your browser:</p>
+      <p class="link-text">${inviteUrl}</p>
+      <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
     </div>
     <div class="footer">
       <p>This is an automated message from ${householdName}'s Family Calendar</p>

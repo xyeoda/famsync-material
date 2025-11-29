@@ -12,7 +12,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { EmailPreview } from "@/components/Admin/EmailPreview";
 import { EmailTracking } from "@/components/Admin/EmailTracking";
-import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity } from "lucide-react";
+import { InvitationAnalytics } from "@/components/Admin/InvitationAnalytics";
+import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity, TrendingUp } from "lucide-react";
 
 interface Household {
   id: string;
@@ -340,6 +341,9 @@ export default function AdminDashboard() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Invitation Analytics */}
+        <InvitationAnalytics />
 
         {/* Email Management Card */}
         <Card>

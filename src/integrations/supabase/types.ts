@@ -359,6 +359,54 @@ export type Database = {
           },
         ]
       }
+      invitation_errors: {
+        Row: {
+          created_at: string
+          email: string
+          error_details: Json | null
+          error_message: string | null
+          error_type: string
+          household_id: string | null
+          id: string
+          invitation_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          error_details?: Json | null
+          error_message?: string | null
+          error_type: string
+          household_id?: string | null
+          id?: string
+          invitation_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          error_details?: Json | null
+          error_message?: string | null
+          error_type?: string
+          household_id?: string | null
+          id?: string
+          invitation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_errors_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitation_errors_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pending_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pending_invitations: {
         Row: {
           created_at: string
