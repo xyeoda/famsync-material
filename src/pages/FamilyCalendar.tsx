@@ -193,12 +193,24 @@ const FamilyCalendar = () => {
         <div className="mt-4 surface-elevation-2 rounded-3xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(${settings.kid1Color})` }} />
-              <span className="text-sm text-foreground">K1</span>
+              <div 
+                className="w-4 h-4 rounded-full border-2" 
+                style={{ 
+                  backgroundColor: `hsl(${settings.kid1Color.split(' ')[0]} ${settings.kid1Color.split(' ')[1]} 45%)`,
+                  borderColor: `hsl(${settings.kid1Color})`
+                }} 
+              />
+              <span className="text-sm font-medium text-foreground">K1</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(${settings.kid2Color})` }} />
-              <span className="text-sm text-foreground">K2</span>
+              <div 
+                className="w-4 h-4 rounded-full border-2" 
+                style={{ 
+                  backgroundColor: `hsl(${settings.kid2Color.split(' ')[0]} ${settings.kid2Color.split(' ')[1]} 45%)`,
+                  borderColor: `hsl(${settings.kid2Color})`
+                }} 
+              />
+              <span className="text-sm font-medium text-foreground">K2</span>
             </div>
           </div>
           <div className="flex items-center">
