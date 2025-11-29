@@ -228,7 +228,7 @@ const LandingPage = () => {
 
                   {/* Family Avatars */}
                   <div className="flex items-center gap-2 pt-4 border-t border-border/30">
-                    <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs text-white font-medium" style={{ background: 'linear-gradient(to right, #8834ff 0%, #8834ff 100%)' }}>K1</div>
                     <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                   </div>
                 </div>
