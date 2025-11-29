@@ -235,26 +235,22 @@ const LandingPage = () => {
                   <img 
                     src={swimmingLogo} 
                     alt="Swimming" 
-                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-slow"
-                    style={{ animationDelay: '0s' }}
+                    className="w-14 h-14 opacity-40"
                   />
                   <img 
                     src={judoLogo} 
                     alt="Judo" 
-                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-medium"
-                    style={{ animationDelay: '0.5s' }}
+                    className="w-14 h-14 opacity-40"
                   />
                   <img 
                     src={fencingLogo} 
                     alt="Fencing" 
-                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity"
-                    style={{ animation: 'float 4s ease-in-out infinite', animationDelay: '1s' }}
+                    className="w-14 h-14 opacity-40"
                   />
                   <img 
                     src={bjjLogo} 
                     alt="Brazilian Jiu-Jitsu" 
-                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-slow"
-                    style={{ animationDelay: '1.5s' }}
+                    className="w-14 h-14 opacity-40"
                   />
                 </div>
               </div>
