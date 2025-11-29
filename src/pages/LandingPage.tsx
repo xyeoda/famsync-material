@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import judoLogo from "@/assets/activities/judo_logo.png";
+import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
 import swimmingLogo from "@/assets/activities/swimming_logo.png";
 import fencingLogo from "@/assets/activities/fencing_logo.png";
@@ -258,12 +258,12 @@ const LandingPage = () => {
                     <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl" />
                       <img 
-                        src={judoLogo} 
-                        alt="Judo" 
+                        src={roboticsLogo} 
+                        alt="Robotics" 
                         className="w-22 h-22 opacity-70 group-hover:opacity-90 relative z-10 transition-opacity duration-300"
                       />
                     </div>
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Judo</span>
+                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 group">
                     <div className="relative p-3 bg-gradient-to-br from-card to-muted border border-border/50 rounded-xl shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 hover:-translate-y-1 hover:scale-105">
