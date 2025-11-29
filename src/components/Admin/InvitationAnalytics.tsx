@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, CheckCircle2, Mail, MousePointerClick, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

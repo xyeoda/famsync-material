@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, CheckCircle2, Mail, MousePointerClick, RefreshCw, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -39,22 +39,22 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
       loadTracking();
       
       // Set up realtime subscription for email_tracking changes
-      const channel = supabase
-        .channel('email-tracking-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'email_tracking',
-            filter: householdId ? `household_id=eq.${householdId}` : undefined,
-          },
-          () => {
-            // Reload tracking data when changes occur
-            loadTracking();
-          }
-        )
-        .subscribe();
+        const channel = supabase
+          .channel('email-tracking-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'email_tracking',
+              filter: householdId ? `household_id=eq.${householdId}` : undefined,
+            },
+            () => {
+              // Reload tracking data when changes occur
+              loadTracking();
+            }
+          )
+          .subscribe();
 
       return () => {
         supabase.removeChannel(channel);

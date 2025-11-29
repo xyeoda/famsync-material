@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 import { EmailPreview } from "@/components/Admin/EmailPreview";
 import { EmailTracking } from "@/components/Admin/EmailTracking";
 import { Trash2, UserPlus, Loader2, Mail, Copy, Eye, Activity } from "lucide-react";
