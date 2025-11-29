@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
+import fencingBadge from "@/assets/activities/fencing_badge.png";
 import swimmingLogo from "@/assets/activities/swimming_logo.png";
 import fencingLogo from "@/assets/activities/fencing_logo.png";
 
@@ -232,13 +233,21 @@ const LandingPage = () => {
                   </div>
                 </div>
                 
-                {/* BJJ Badge - Outside Calendar */}
-                <div className="mt-6 flex justify-center">
+                {/* Activity Badges - Outside Calendar, Left Aligned */}
+                <div className="mt-3 flex gap-4">
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
                     <img 
                       src={bjjBadge} 
                       alt="BJJ Badge" 
+                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
+                    />
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-tertiary/30 to-accent/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <img 
+                      src={fencingBadge} 
+                      alt="Fencing Badge" 
                       className="relative h-20 w-20 object-contain drop-shadow-2xl"
                     />
                   </div>
