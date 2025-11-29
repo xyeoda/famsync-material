@@ -13,6 +13,7 @@ import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
 import fencingBadge from "@/assets/activities/fencing_badge.png";
+import roboticsBadge from "@/assets/activities/robotics_badge.png";
 import swimmingLogo from "@/assets/activities/swimming_logo.png";
 import fencingLogo from "@/assets/activities/fencing_logo.png";
 
@@ -248,6 +249,14 @@ const LandingPage = () => {
                     <img 
                       src={fencingBadge} 
                       alt="Fencing Badge" 
+                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
+                    />
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                    <img 
+                      src={roboticsBadge} 
+                      alt="Robotics Badge" 
                       className="relative h-20 w-20 object-contain drop-shadow-2xl"
                     />
                   </div>
