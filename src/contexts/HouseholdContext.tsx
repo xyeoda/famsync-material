@@ -2,7 +2,7 @@ import { createContext, useContext, ReactNode, useEffect, useState } from "react
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 
 interface HouseholdContextType {
   householdId: string | null;

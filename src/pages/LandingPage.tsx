@@ -8,7 +8,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useAuth } from "@/hooks/useAuth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";

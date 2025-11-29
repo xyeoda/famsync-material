@@ -1,0 +1,19 @@
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from './types';
+
+// Custom application Supabase client.
+// Uses environment variables when available, with safe fallbacks for Lovable Cloud preview.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL ?? 'https://cxiceumycfzofrrbwgwr.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4aWNldW15Y2Z6b2ZycmJ3Z3dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4Njc2MTIsImV4cCI6MjA3OTQ0MzYxMn0.hdLwXXjDP2bFMgu2SbFiPRo3NRFPBubXYNKQy8vhjc4';
+
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});

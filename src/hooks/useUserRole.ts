@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/app-client";
 import { useAuth } from "./useAuth";
 
 export type AppRole = "parent" | "helper" | "kid";
