@@ -28,11 +28,9 @@ export function useAuth() {
   }, []);
 
   const signOut = async () => {
-    // Clear state first
-    setSession(null);
-    setUser(null);
-    // Then sign out from Supabase
+    // Sign out from Supabase first (this clears localStorage and server session)
     await supabase.auth.signOut();
+    // State will be cleared by the auth state change listener
   };
 
   return {
