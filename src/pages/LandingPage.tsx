@@ -236,7 +236,7 @@ const LandingPage = () => {
                     <img 
                       src={bjjLogo} 
                       alt="Brazilian Jiu-Jitsu" 
-                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                      className="w-32 h-32 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
                     />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
                   </div>
@@ -244,7 +244,7 @@ const LandingPage = () => {
                     <img 
                       src={fencingLogo} 
                       alt="Fencing" 
-                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                      className="w-32 h-32 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
                     />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
                   </div>
@@ -252,7 +252,7 @@ const LandingPage = () => {
                     <img 
                       src={roboticsLogo} 
                       alt="Robotics" 
-                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                      className="w-32 h-32 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
                     />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
                   </div>
@@ -260,7 +260,7 @@ const LandingPage = () => {
                     <img 
                       src={swimmingLogo} 
                       alt="Swimming" 
-                      className="w-16 h-16 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
+                      className="w-32 h-32 transition-all duration-300 hover:scale-110 hover:opacity-100 opacity-75"
                     />
                     <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
                   </div>
