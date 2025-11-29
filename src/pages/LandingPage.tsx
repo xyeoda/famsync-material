@@ -9,6 +9,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import judoLogo from "@/assets/activities/judo_logo.png";
+import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
+import swimmingLogo from "@/assets/activities/swimming_logo.png";
+import fencingLogo from "@/assets/activities/fencing_logo.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -131,6 +135,32 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <section className="py-20 md:py-32 relative">
+        {/* Floating activity logos in hero */}
+        <img 
+          src={swimmingLogo} 
+          alt="" 
+          className="absolute top-12 left-8 w-8 h-8 opacity-20 pointer-events-none hidden md:block animate-float-slow"
+          style={{ animationDelay: '0s' }}
+        />
+        <img 
+          src={judoLogo} 
+          alt="" 
+          className="absolute top-20 right-16 w-10 h-10 opacity-15 pointer-events-none hidden lg:block animate-float-medium"
+          style={{ animationDelay: '1s', transform: 'rotate(-12deg)' }}
+        />
+        <img 
+          src={fencingLogo} 
+          alt="" 
+          className="absolute bottom-32 left-12 w-9 h-9 opacity-20 pointer-events-none hidden md:block animate-float-slow"
+          style={{ animationDelay: '2s' }}
+        />
+        <img 
+          src={bjjLogo} 
+          alt="" 
+          className="absolute bottom-20 right-20 w-8 h-8 opacity-18 pointer-events-none hidden lg:block animate-float-medium"
+          style={{ animationDelay: '1.5s', transform: 'rotate(8deg)' }}
+        />
+        
         <div className="container mx-auto px-4 relative z-10">
           {/* Warning for users without household */}
           {user && hasHousehold === false && (
@@ -235,6 +265,28 @@ const LandingPage = () => {
       <section className="py-20 bg-muted/30 relative">
         {/* Decorative orb */}
         <div className="absolute left-10 top-1/2 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl animate-float-slow" />
+        
+        {/* Subtle activity logos in features background */}
+        <img 
+          src={judoLogo} 
+          alt="" 
+          className="absolute top-16 right-8 w-6 h-6 opacity-10 pointer-events-none hidden lg:block blur-[0.5px]"
+        />
+        <img 
+          src={swimmingLogo} 
+          alt="" 
+          className="absolute bottom-24 left-16 w-5 h-5 opacity-12 pointer-events-none hidden md:block blur-[0.5px]"
+        />
+        <img 
+          src={bjjLogo} 
+          alt="" 
+          className="absolute top-1/3 right-1/4 w-5 h-5 opacity-8 pointer-events-none hidden xl:block blur-[0.5px]"
+        />
+        <img 
+          src={fencingLogo} 
+          alt="" 
+          className="absolute bottom-16 right-12 w-6 h-6 opacity-10 pointer-events-none hidden lg:block blur-[0.5px]"
+        />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
