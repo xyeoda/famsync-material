@@ -20,6 +20,7 @@ import ResetPassword from "./pages/ResetPassword";
 import AcceptInvite from "./pages/AcceptInvite";
 import InviteError from "./pages/InviteError";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminBulkEvents from "./pages/AdminBulkEvents";
 import NotFound from "./pages/NotFound";
 import { initializeSampleData } from "./lib/initSampleData";
 
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/accept-invite/:token" element={<AcceptInvite />} />
             <Route path="/invite-error" element={<InviteError />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/bulk-events" element={<AdminBulkEvents />} />
             
             {/* Family-scoped routes with household context */}
             <Route
