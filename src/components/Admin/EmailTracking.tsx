@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, CheckCircle2, Mail, MousePointerClick, X } from "lucide-react";
+import { Activity, CheckCircle2, Mail, MousePointerClick, RefreshCw, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface EmailTrackingProps {
@@ -23,12 +23,15 @@ interface EmailTrackingRecord {
   opened_at: string | null;
   clicked_at: string | null;
   accepted_at: string | null;
+  invitation_id: string | null;
+  household_id: string;
   household_name?: string;
 }
 
 export function EmailTracking({ open, onOpenChange, householdId }: EmailTrackingProps) {
   const [tracking, setTracking] = useState<EmailTrackingRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -123,6 +126,43 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
     }
   };
 
+  const handleResendInvitation = async (invitationId: string, email: string) => {
+    setResending(invitationId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("Not authenticated");
+      }
+
+      const { error } = await supabase.functions.invoke("admin-resend-invitation", {
+        body: { invitationId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Invitation resent to ${email}`,
+      });
+      
+      // Refresh the tracking list
+      await loadTracking();
+    } catch (error: any) {
+      console.error("Error resending invitation:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to resend invitation",
+        variant: "destructive",
+      });
+    } finally {
+      setResending(null);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -158,6 +198,7 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
                     <TableHead>Status</TableHead>
                     <TableHead>Sent</TableHead>
                     <TableHead>Activity</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -199,6 +240,28 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
                             <div>Accepted: {formatDistanceToNow(new Date(record.accepted_at), { addSuffix: true })}</div>
                           )}
                         </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {record.email_type === "invitation" && 
+                         record.role === "parent" && 
+                         !record.accepted_at && 
+                         record.invitation_id && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleResendInvitation(record.invitation_id!, record.recipient_email)}
+                            disabled={resending === record.invitation_id}
+                          >
+                            {resending === record.invitation_id ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-1" />
+                                Resend
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
