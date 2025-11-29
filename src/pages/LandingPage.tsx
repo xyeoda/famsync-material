@@ -221,28 +221,12 @@ const LandingPage = () => {
                     </div>
                   </div>
 
-                  {/* Family Avatars and Activity Logos */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border/30">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-family-parent1 flex items-center justify-center text-xs text-white font-medium">P1</div>
-                      <div className="w-8 h-8 rounded-full bg-family-parent2 flex items-center justify-center text-xs text-white font-medium">P2</div>
-                      <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
-                      <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-16 h-16 rounded-lg bg-card shadow-sm flex items-center justify-center p-2">
-                        <img src={bjjLogo} alt="BJJ" className="w-full h-full object-contain" />
-                      </div>
-                      <div className="w-16 h-16 rounded-lg bg-card shadow-sm flex items-center justify-center p-2">
-                        <img src={fencingLogo} alt="Fencing" className="w-full h-full object-contain" />
-                      </div>
-                      <div className="w-16 h-16 rounded-lg bg-card shadow-sm flex items-center justify-center p-2">
-                        <img src={roboticsLogo} alt="Robotics" className="w-full h-full object-contain" />
-                      </div>
-                      <div className="w-16 h-16 rounded-lg bg-card shadow-sm flex items-center justify-center p-2">
-                        <img src={swimmingLogo} alt="Swimming" className="w-full h-full object-contain" />
-                      </div>
-                    </div>
+                  {/* Family Avatars */}
+                  <div className="flex items-center gap-2 pt-4 border-t border-border/30">
+                    <div className="w-8 h-8 rounded-full bg-family-parent1 flex items-center justify-center text-xs text-white font-medium">P1</div>
+                    <div className="w-8 h-8 rounded-full bg-family-parent2 flex items-center justify-center text-xs text-white font-medium">P2</div>
+                    <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
+                    <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                   </div>
                 </div>
               </div>
