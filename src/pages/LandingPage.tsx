@@ -226,8 +226,6 @@ const LandingPage = () => {
 
                   {/* Family Avatars */}
                   <div className="flex items-center gap-2 pt-4 border-t border-border/30">
-                    <div className="w-8 h-8 rounded-full bg-family-parent1 flex items-center justify-center text-xs text-white font-medium">P1</div>
-                    <div className="w-8 h-8 rounded-full bg-family-parent2 flex items-center justify-center text-xs text-white font-medium">P2</div>
                     <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
                     <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                   </div>
