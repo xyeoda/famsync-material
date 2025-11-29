@@ -208,7 +208,7 @@ const LandingPage = () => {
                 <div className="relative bg-card/80 backdrop-blur-md border border-border/50 rounded-2xl shadow-elevation-3 p-6 space-y-4">
                   {/* Calendar Header */}
                   <div className="flex items-center justify-between pb-4 border-b border-border/30">
-                    <h3 className="text-lg font-semibold text-foreground">December 2024</h3>
+                    <h3 className="text-lg font-semibold text-foreground">December 2026</h3>
                     <div className="flex gap-2">
                       <div className="w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center text-xs text-muted-foreground">&lt;</div>
                       <div className="w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center text-xs text-muted-foreground">&gt;</div>
