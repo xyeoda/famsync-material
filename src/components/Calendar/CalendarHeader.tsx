@@ -106,13 +106,13 @@ export function CalendarHeader({
               {canEdit && (
                 <>
                   <Button
-                    variant="text"
+                    variant="outlined"
                     size="icon"
                     asChild
-                    className="h-9 w-9 rounded-full"
+                    className="h-9 w-9"
                     title="Settings"
                   >
-                    <Link to="settings">
+                    <Link to="../settings">
                       <Cog className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -200,13 +200,13 @@ export function CalendarHeader({
             {canEdit && (
               <>
                 <Button
-                  variant="text"
+                  variant="outlined"
                   size="icon"
                   asChild
-                  className="h-9 w-9 rounded-full"
+                  className="h-9 w-9"
                   title="Settings"
                 >
-                  <Link to="settings">
+                  <Link to="../settings">
                     <Cog className="h-4 w-4" />
                   </Link>
                 </Button>

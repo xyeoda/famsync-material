@@ -153,7 +153,7 @@ const FamilyCalendar = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8 relative">
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.15] dark:opacity-[0.08] pointer-events-none"
         style={{ backgroundImage: `url(${dashboardBg})` }}
       />
       <div className="mx-auto max-w-[1800px] relative z-10">
