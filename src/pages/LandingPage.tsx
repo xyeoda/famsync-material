@@ -226,15 +226,20 @@ const LandingPage = () => {
                   </div>
 
                   {/* Family Avatars */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border/30">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
-                      <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
-                    </div>
+                  <div className="flex items-center gap-2 pt-4 border-t border-border/30">
+                    <div className="w-8 h-8 rounded-full bg-kid-kid1 flex items-center justify-center text-xs text-white font-medium">K1</div>
+                    <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
+                  </div>
+                </div>
+                
+                {/* BJJ Badge - Outside Calendar */}
+                <div className="mt-6 flex justify-center">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
                     <img 
                       src={bjjBadge} 
                       alt="BJJ Badge" 
-                      className="h-20 w-20 object-contain"
+                      className="relative h-20 w-20 object-contain drop-shadow-2xl"
                     />
                   </div>
                 </div>
