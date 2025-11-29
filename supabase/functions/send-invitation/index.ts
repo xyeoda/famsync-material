@@ -153,7 +153,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Store new invitation in database (needs admin for bypassing RLS)
-    const { error: inviteError } = await supabaseAdmin
+    const { data: inviteData, error: inviteError } = await supabaseAdmin
       .from("pending_invitations")
       .insert({
         household_id: householdId,
@@ -161,7 +161,9 @@ const handler = async (req: Request): Promise<Response> => {
         role,
         invited_by: userId,
         token,
-      });
+      })
+      .select()
+      .single();
 
     if (inviteError) {
       console.error(`[${requestId}] send-invitation: Database error creating invitation:`, inviteError.message, inviteError.details);
@@ -249,6 +251,18 @@ const handler = async (req: Request): Promise<Response> => {
 
       await client.close();
       console.log(`[${requestId}] send-invitation: Email sent successfully to ${email}`);
+      
+      // Track email send
+      await supabaseAdmin
+        .from("email_tracking")
+        .insert({
+          household_id: householdId,
+          recipient_email: email.toLowerCase(),
+          email_type: "invitation",
+          role,
+          invitation_id: inviteData.id,
+          sent_by: userId,
+        });
     } catch (emailError: any) {
       console.error(`[${requestId}] send-invitation: SMTP error sending to ${email}:`, emailError.message, emailError.stack);
       await client.close();

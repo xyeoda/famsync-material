@@ -43,6 +43,13 @@ Deno.serve(async (req) => {
     const { email, household_id, role, is_first_parent } = invitation;
     console.log(`Processing magic invite for ${email} to household ${household_id}`);
 
+    // Track email click
+    await supabaseAdmin
+      .from("email_tracking")
+      .update({ clicked_at: new Date().toISOString() })
+      .eq("invitation_id", invitation.id)
+      .is("clicked_at", null);
+
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const existingUser = existingUsers?.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
@@ -169,6 +176,13 @@ Deno.serve(async (req) => {
     // Keep the invitation record so admins can see pending invites.
     // It will automatically stop working after expires_at has passed.
     console.log(`Invitation token ${token} remains valid until ${invitation.expires_at}`);
+
+    // Track acceptance (mark as accepted since user successfully joined)
+    await supabaseAdmin
+      .from("email_tracking")
+      .update({ accepted_at: new Date().toISOString() })
+      .eq("invitation_id", invitation.id)
+      .is("accepted_at", null);
 
     console.log(`Magic invite processed successfully for ${email}`);
 
