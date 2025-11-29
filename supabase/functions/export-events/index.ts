@@ -28,18 +28,19 @@ Deno.serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    // Check if user is site admin
+    // Check if user is site admin or parent
     const { data: adminCheck } = await supabase.rpc('is_site_admin', { _user_id: user.id });
-    if (!adminCheck) {
-      throw new Error('Only site admins can export events');
-    }
-
-    // Get all households user has access to
+    
+    // Get all households user has access to as parent
     const { data: userRoles } = await supabase
       .from('user_roles')
       .select('household_id')
       .eq('user_id', user.id)
       .eq('role', 'parent');
+
+    if (!adminCheck && (!userRoles || userRoles.length === 0)) {
+      throw new Error('Access denied: must be site admin or parent');
+    }
 
     if (!userRoles || userRoles.length === 0) {
       throw new Error('No households found');

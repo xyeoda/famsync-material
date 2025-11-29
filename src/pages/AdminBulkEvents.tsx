@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Upload, FileJson, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BulkEventReviewDialog } from "@/components/Admin/BulkEventReviewDialog";
+import { useSystemRole } from "@/hooks/useSystemRole";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface DuplicateConflict {
   uploadedEvent: any;
@@ -16,14 +18,37 @@ interface DuplicateConflict {
 }
 
 export default function AdminBulkEvents() {
+  const { householdId } = useParams<{ householdId?: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isSiteAdmin, loading: adminLoading } = useSystemRole();
+  const { isParent, loading: roleLoading } = useUserRole(householdId || null);
   const [isExporting, setIsExporting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<any>(null);
   const [conflicts, setConflicts] = useState<DuplicateConflict[]>([]);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [uploadedData, setUploadedData] = useState<any>(null);
+
+  // Check access permissions
+  useEffect(() => {
+    if (!adminLoading && !roleLoading && !isSiteAdmin && !isParent) {
+      toast({
+        title: "Access Denied",
+        description: "You must be a site admin or parent to access bulk event management",
+        variant: "destructive",
+      });
+      navigate(householdId ? `/family/${householdId}` : '/');
+    }
+  }, [isSiteAdmin, isParent, adminLoading, roleLoading, navigate, householdId, toast]);
+
+  if (adminLoading || roleLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -141,8 +166,11 @@ export default function AdminBulkEvents() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <div className="mb-6">
-        <Button variant="outlined" onClick={() => navigate('/admin')}>
-          ← Back to Admin
+        <Button 
+          variant="outlined" 
+          onClick={() => navigate(isSiteAdmin ? '/admin' : `/family/${householdId}/settings`)}
+        >
+          ← Back to {isSiteAdmin ? 'Admin' : 'Settings'}
         </Button>
       </div>
 
