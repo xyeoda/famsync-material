@@ -64,6 +64,7 @@ const App = () => {
               <Route index element={<FamilyDashboard />} />
               <Route path="calendar" element={<FamilyCalendar />} />
               <Route path="settings" element={<FamilySettings />} />
+              <Route path="bulk-events" element={<AdminBulkEvents />} />
             </Route>
             
             {/* Display mode (read-only) still needs household context for name, but editing stays disabled */}

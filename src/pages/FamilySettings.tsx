@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Home, Users, Palette, Trash2, Shield, Copy } from "lucide-react";
+import { ArrowLeft, Home, Users, Palette, Trash2, Shield, Copy, FileJson } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
@@ -431,6 +431,27 @@ export default function FamilySettings() {
               <Button onClick={() => setUserManagementOpen(true)} variant="outlined" className="w-full">
                 <Users className="mr-2 h-4 w-4" />
                 Manage Users
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Bulk Event Management */}
+          <Card className="bg-card/80 backdrop-blur-md border-border/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <FileJson className="h-5 w-5 text-primary" />
+                <CardTitle>Bulk Event Management</CardTitle>
+              </div>
+              <CardDescription>Export and import events in bulk with smart duplicate detection</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => navigate(`/family/${urlHouseholdId}/bulk-events`)} 
+                variant="outlined" 
+                className="w-full"
+              >
+                <FileJson className="mr-2 h-4 w-4" />
+                Manage Events in Bulk
               </Button>
             </CardContent>
           </Card>
