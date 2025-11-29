@@ -38,6 +38,17 @@ Deno.serve(async (req) => {
       console.error('Invalid or expired invitation:', inviteError);
       const siteUrl = Deno.env.get('SITE_URL') || '';
       const errorType = !invitation ? 'invalid_invitation' : 'expired_invitation';
+      
+      // Log error to database
+      await supabaseAdmin
+        .from('invitation_errors')
+        .insert({
+          email: 'unknown',
+          error_type: errorType,
+          error_message: inviteError?.message || 'Invitation not found or expired',
+          error_details: { token }
+        });
+      
       return Response.redirect(`${siteUrl}/invite-error?error=${errorType}`, 302);
     }
 
@@ -107,6 +118,18 @@ Deno.serve(async (req) => {
 
     if (existingRole) {
       console.log(`User ${userId} already has role in household ${household_id}`);
+      
+      // Log error
+      await supabaseAdmin
+        .from('invitation_errors')
+        .insert({
+          invitation_id: invitation.id,
+          household_id: household_id,
+          email: email,
+          error_type: 'already_member',
+          error_message: 'User is already a member of this household'
+        });
+      
       // User is already a member, redirect to sign in
       const siteUrl = Deno.env.get('SITE_URL') || '';
       return Response.redirect(`${siteUrl}/invite-error?error=already_member`, 302);
@@ -201,6 +224,27 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Error in magic-invite:', error);
+    
+    // Log error to database
+    try {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+      
+      await supabaseAdmin
+        .from('invitation_errors')
+        .insert({
+          email: 'unknown',
+          error_type: 'invitation_failed',
+          error_message: errorMessage,
+          error_details: { error: String(error) }
+        });
+    } catch (logError) {
+      console.error('Failed to log invitation error:', logError);
+    }
+    
     const siteUrl = Deno.env.get('SITE_URL') || '';
     return Response.redirect(`${siteUrl}/invite-error?error=invitation_failed`, 302);
   }
