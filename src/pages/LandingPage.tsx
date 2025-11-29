@@ -232,37 +232,45 @@ const LandingPage = () => {
                 
                 {/* Activity logos under calendar */}
                 <div className="flex items-center justify-center gap-8 mt-8">
-                  <div className="flex flex-col items-center gap-2 group">
-                    <img 
-                      src={bjjLogo} 
-                      alt="Brazilian Jiu-Jitsu" 
-                      className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
-                    />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
+                  <div className="flex flex-col items-center gap-1 group">
+                    <div className="rounded-lg bg-background/80 backdrop-blur-sm border border-border p-3 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-md">
+                      <img 
+                        src={bjjLogo} 
+                        alt="Brazilian Jiu-Jitsu" 
+                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">BJJ</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2 group">
-                    <img 
-                      src={fencingLogo} 
-                      alt="Fencing" 
-                      className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
-                    />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
+                  <div className="flex flex-col items-center gap-1 group">
+                    <div className="rounded-lg bg-background/80 backdrop-blur-sm border border-border p-3 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-md">
+                      <img 
+                        src={fencingLogo} 
+                        alt="Fencing" 
+                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">Fencing</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2 group">
-                    <img 
-                      src={roboticsLogo} 
-                      alt="Robotics" 
-                      className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
-                    />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
+                  <div className="flex flex-col items-center gap-1 group">
+                    <div className="rounded-lg bg-background/80 backdrop-blur-sm border border-border p-3 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-md">
+                      <img 
+                        src={roboticsLogo} 
+                        alt="Robotics" 
+                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">Robotics</span>
                   </div>
-                  <div className="flex flex-col items-center gap-2 group">
-                    <img 
-                      src={swimmingLogo} 
-                      alt="Swimming" 
-                      className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
-                    />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
+                  <div className="flex flex-col items-center gap-1 group">
+                    <div className="rounded-lg bg-background/80 backdrop-blur-sm border border-border p-3 transition-all duration-300 group-hover:border-primary/50 group-hover:shadow-md">
+                      <img 
+                        src={swimmingLogo} 
+                        alt="Swimming" 
+                        className="w-32 h-32 object-contain transition-all duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">Swimming</span>
                   </div>
                 </div>
               </div>
