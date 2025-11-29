@@ -135,32 +135,6 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <section className="py-20 md:py-32 relative">
-        {/* Floating activity logos in hero */}
-        <img 
-          src={swimmingLogo} 
-          alt="" 
-          className="absolute top-12 left-8 w-10 h-10 opacity-30 pointer-events-none hidden md:block animate-float-slow"
-          style={{ animationDelay: '0s' }}
-        />
-        <img 
-          src={judoLogo} 
-          alt="" 
-          className="absolute top-20 right-16 w-12 h-12 opacity-25 pointer-events-none hidden lg:block animate-float-medium"
-          style={{ animationDelay: '1s', transform: 'rotate(-12deg)' }}
-        />
-        <img 
-          src={fencingLogo} 
-          alt="" 
-          className="absolute bottom-32 left-12 w-10 h-10 opacity-30 pointer-events-none hidden md:block animate-float-slow"
-          style={{ animationDelay: '2s' }}
-        />
-        <img 
-          src={bjjLogo} 
-          alt="" 
-          className="absolute bottom-20 right-20 w-10 h-10 opacity-30 pointer-events-none hidden lg:block animate-float-medium"
-          style={{ animationDelay: '1.5s', transform: 'rotate(8deg)' }}
-        />
-        
         <div className="container mx-auto px-4 relative z-10">
           {/* Warning for users without household */}
           {user && hasHousehold === false && (
@@ -255,6 +229,34 @@ const LandingPage = () => {
                     <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                   </div>
                 </div>
+                
+                {/* Activity logos under calendar */}
+                <div className="flex items-center justify-center gap-6 mt-8">
+                  <img 
+                    src={swimmingLogo} 
+                    alt="Swimming" 
+                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-slow"
+                    style={{ animationDelay: '0s' }}
+                  />
+                  <img 
+                    src={judoLogo} 
+                    alt="Judo" 
+                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-medium"
+                    style={{ animationDelay: '0.5s' }}
+                  />
+                  <img 
+                    src={fencingLogo} 
+                    alt="Fencing" 
+                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity"
+                    style={{ animation: 'float 4s ease-in-out infinite', animationDelay: '1s' }}
+                  />
+                  <img 
+                    src={bjjLogo} 
+                    alt="Brazilian Jiu-Jitsu" 
+                    className="w-10 h-10 opacity-40 hover:opacity-70 transition-opacity animate-float-slow"
+                    style={{ animationDelay: '1.5s' }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -265,28 +267,6 @@ const LandingPage = () => {
       <section className="py-20 bg-muted/30 relative">
         {/* Decorative orb */}
         <div className="absolute left-10 top-1/2 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl animate-float-slow" />
-        
-        {/* Subtle activity logos in features background */}
-        <img 
-          src={judoLogo} 
-          alt="" 
-          className="absolute top-16 right-8 w-8 h-8 opacity-15 pointer-events-none hidden lg:block"
-        />
-        <img 
-          src={swimmingLogo} 
-          alt="" 
-          className="absolute bottom-24 left-16 w-7 h-7 opacity-20 pointer-events-none hidden md:block"
-        />
-        <img 
-          src={bjjLogo} 
-          alt="" 
-          className="absolute top-1/3 right-1/4 w-7 h-7 opacity-15 pointer-events-none hidden xl:block"
-        />
-        <img 
-          src={fencingLogo} 
-          alt="" 
-          className="absolute bottom-16 right-12 w-8 h-8 opacity-15 pointer-events-none hidden lg:block"
-        />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
