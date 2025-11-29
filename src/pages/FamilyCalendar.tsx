@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useAuth } from "@/hooks/useAuth";
 import dashboardBg from "@/assets/dashboard-bg.png";
+import bjjBadge from "@/assets/activities/bjj_badge.png";
 
 const FamilyCalendar = () => {
   const { householdId: urlHouseholdId } = useParams<{ householdId: string }>();
@@ -185,6 +186,27 @@ const FamilyCalendar = () => {
             onEventClick={handleEventClick}
           />
         )}
+
+        {/* Legend Row */}
+        <div className="mt-4 surface-elevation-2 rounded-3xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(var(--kid1-color))` }} />
+              <span className="text-sm text-foreground">K1</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `hsl(var(--kid2-color))` }} />
+              <span className="text-sm text-foreground">K2</span>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <img 
+              src={bjjBadge} 
+              alt="BJJ Badge" 
+              className="h-10 w-10 object-contain"
+            />
+          </div>
+        </div>
 
         <EventDialog
           open={eventDialogOpen}
