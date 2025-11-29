@@ -230,17 +230,17 @@ const LandingPage = () => {
                       <div className="w-8 h-8 rounded-full bg-kid-kid2 flex items-center justify-center text-xs text-white font-medium">K2</div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 h-20 rounded-lg bg-card shadow-sm flex items-center justify-center">
-                        <img src={bjjLogo} alt="BJJ" className="w-18 h-18 object-contain" />
+                      <div className="w-12 h-12 rounded-lg bg-card shadow-sm flex items-center justify-center p-1">
+                        <img src={bjjLogo} alt="BJJ" className="w-full h-full object-contain" />
                       </div>
-                      <div className="w-20 h-20 rounded-lg bg-card shadow-sm flex items-center justify-center">
-                        <img src={fencingLogo} alt="Fencing" className="w-18 h-18 object-contain" />
+                      <div className="w-12 h-12 rounded-lg bg-card shadow-sm flex items-center justify-center p-1">
+                        <img src={fencingLogo} alt="Fencing" className="w-full h-full object-contain" />
                       </div>
-                      <div className="w-20 h-20 rounded-lg bg-card shadow-sm flex items-center justify-center">
-                        <img src={roboticsLogo} alt="Robotics" className="w-18 h-18 object-contain" />
+                      <div className="w-12 h-12 rounded-lg bg-card shadow-sm flex items-center justify-center p-1">
+                        <img src={roboticsLogo} alt="Robotics" className="w-full h-full object-contain" />
                       </div>
-                      <div className="w-20 h-20 rounded-lg bg-card shadow-sm flex items-center justify-center">
-                        <img src={swimmingLogo} alt="Swimming" className="w-18 h-18 object-contain" />
+                      <div className="w-12 h-12 rounded-lg bg-card shadow-sm flex items-center justify-center p-1">
+                        <img src={swimmingLogo} alt="Swimming" className="w-full h-full object-contain" />
                       </div>
                     </div>
                   </div>
