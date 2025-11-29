@@ -10,6 +10,9 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const rawSiteUrl = Deno.env.get('SITE_URL') || '';
+  const siteUrl = rawSiteUrl.replace(/\/+$/, '');
+
   try {
     const url = new URL(req.url);
     const token = url.searchParams.get('token');
@@ -36,7 +39,6 @@ Deno.serve(async (req) => {
 
     if (inviteError || !invitation) {
       console.error('Invalid or expired invitation:', inviteError);
-      const siteUrl = Deno.env.get('SITE_URL') || '';
       const errorType = !invitation ? 'invalid_invitation' : 'expired_invitation';
       
       // Log error to database
@@ -131,7 +133,6 @@ Deno.serve(async (req) => {
         });
       
       // User is already a member, redirect to sign in
-      const siteUrl = Deno.env.get('SITE_URL') || '';
       return Response.redirect(`${siteUrl}/invite-error?error=already_member`, 302);
     }
     
@@ -216,7 +217,6 @@ Deno.serve(async (req) => {
     console.log(`Magic invite processed successfully for ${email}`);
 
     // Redirect to auth callback with the magic link hash
-    const siteUrl = Deno.env.get('SITE_URL') || '';
     const redirectUrl = `${siteUrl}/auth/callback#${linkData.properties.hashed_token}`;
     
     console.log(`Redirecting to: ${redirectUrl}`);
@@ -245,7 +245,6 @@ Deno.serve(async (req) => {
       console.error('Failed to log invitation error:', logError);
     }
     
-    const siteUrl = Deno.env.get('SITE_URL') || '';
     return Response.redirect(`${siteUrl}/invite-error?error=invitation_failed`, 302);
   }
 });
