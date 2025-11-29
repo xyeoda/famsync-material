@@ -18,6 +18,7 @@ import ChangePassword from "./pages/ChangePassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AcceptInvite from "./pages/AcceptInvite";
+import InviteError from "./pages/InviteError";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import { initializeSampleData } from "./lib/initSampleData";
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/accept-invite/:token" element={<AcceptInvite />} />
+            <Route path="/invite-error" element={<InviteError />} />
             <Route path="/admin" element={<AdminDashboard />} />
             
             {/* Family-scoped routes with household context */}

@@ -37,7 +37,8 @@ Deno.serve(async (req) => {
     if (inviteError || !invitation) {
       console.error('Invalid or expired invitation:', inviteError);
       const siteUrl = Deno.env.get('SITE_URL') || '';
-      return Response.redirect(`${siteUrl}/auth?error=invalid_invitation`, 302);
+      const errorType = !invitation ? 'invalid_invitation' : 'expired_invitation';
+      return Response.redirect(`${siteUrl}/invite-error?error=${errorType}`, 302);
     }
 
     const { email, household_id, role, is_first_parent } = invitation;
@@ -104,22 +105,27 @@ Deno.serve(async (req) => {
       .eq('household_id', household_id)
       .maybeSingle();
 
-    if (!existingRole) {
-      // Assign role to household
-      const { error: roleError } = await supabaseAdmin
-        .from('user_roles')
-        .insert({
-          user_id: userId,
-          household_id: household_id,
-          role: role
-        });
-
-      if (roleError) {
-        console.error('Error assigning role:', roleError);
-        throw new Error('Failed to assign household role');
-      }
-      console.log(`Assigned role ${role} to user in household ${household_id}`);
+    if (existingRole) {
+      console.log(`User ${userId} already has role in household ${household_id}`);
+      // User is already a member, redirect to sign in
+      const siteUrl = Deno.env.get('SITE_URL') || '';
+      return Response.redirect(`${siteUrl}/invite-error?error=already_member`, 302);
     }
+    
+    // Assign role to household
+    const { error: roleError } = await supabaseAdmin
+      .from('user_roles')
+      .insert({
+        user_id: userId,
+        household_id: household_id,
+        role: role
+      });
+
+    if (roleError) {
+      console.error('Error assigning role:', roleError);
+      throw new Error('Failed to assign household role');
+    }
+    console.log(`Assigned role ${role} to user in household ${household_id}`);
 
     // If first parent, set as household owner and create family settings
     if (is_first_parent) {
@@ -196,6 +202,6 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error in magic-invite:', error);
     const siteUrl = Deno.env.get('SITE_URL') || '';
-    return Response.redirect(`${siteUrl}/auth?error=invitation_failed`, 302);
+    return Response.redirect(`${siteUrl}/invite-error?error=invitation_failed`, 302);
   }
 });
