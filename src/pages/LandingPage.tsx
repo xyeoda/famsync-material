@@ -13,7 +13,7 @@ import roboticsLogo from "@/assets/activities/robotics_logo.png";
 import bjjLogo from "@/assets/activities/bjj_jiu-jitsu_logo.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
 import fencingBadge from "@/assets/activities/fencing_badge.png";
-import roboticsBadge from "@/assets/activities/robotics_badge_cropped.png";
+import roboticsBadge from "@/assets/activities/robotics_badge.png";
 import swimmingLogo from "@/assets/activities/swimming_logo.png";
 import fencingLogo from "@/assets/activities/fencing_logo.png";
 
