@@ -174,8 +174,8 @@ export default function Auth() {
       />
       <Card className="w-full max-w-md mx-4 bg-card/80 backdrop-blur-md border-border/50 relative z-10">
         <CardHeader>
-          <CardTitle className="text-2xl">YeoDa Family Calendar</CardTitle>
-          <CardDescription>Sign in to your account to manage your family calendar</CardDescription>
+          <CardTitle className="text-2xl">KinSync</CardTitle>
+          <CardDescription>Sign in to your account to manage your family calendar with KinSync</CardDescription>
         </CardHeader>
         <CardContent>
           {brokenUser ? (
