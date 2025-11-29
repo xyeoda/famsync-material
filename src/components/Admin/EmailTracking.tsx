@@ -37,6 +37,28 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
   useEffect(() => {
     if (open) {
       loadTracking();
+      
+      // Set up realtime subscription for email_tracking changes
+      const channel = supabase
+        .channel('email-tracking-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'email_tracking',
+            filter: householdId ? `household_id=eq.${householdId}` : undefined,
+          },
+          () => {
+            // Reload tracking data when changes occur
+            loadTracking();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [open, householdId]);
 
@@ -149,8 +171,7 @@ export function EmailTracking({ open, onOpenChange, householdId }: EmailTracking
         description: `Invitation resent to ${email}`,
       });
       
-      // Refresh the tracking list
-      await loadTracking();
+      // No need to manually refresh - realtime subscription will handle it
     } catch (error: any) {
       console.error("Error resending invitation:", error);
       toast({
