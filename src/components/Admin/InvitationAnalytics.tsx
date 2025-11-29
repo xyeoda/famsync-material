@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, CheckCircle2, Mail, MousePointerClick, AlertTriangle, TrendingUp } from "lucide-react";
+import { Activity, CheckCircle2, Mail, MousePointerClick, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDistanceToNow } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 
 interface AnalyticsData {
   totalSent: number;
@@ -33,6 +34,50 @@ export function InvitationAnalytics() {
 
   useEffect(() => {
     loadAnalytics();
+    
+    // Set up realtime subscription for invitation errors
+    const errorsChannel = supabase
+      .channel('invitation-errors-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'invitation_errors',
+        },
+        (payload) => {
+          const error = payload.new as any;
+          
+          // Show toast notification for new errors
+          toast({
+            title: "⚠️ Invitation Error",
+            description: `Error for ${error.email}: ${error.error_type}`,
+            variant: "destructive",
+          });
+          
+          // Request desktop notification permission if not granted
+          if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+          }
+          
+          // Show desktop notification if permission granted
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Invitation Error', {
+              body: `${error.error_type}: ${error.error_message}`,
+              icon: '/kinsynch-logo.png',
+              badge: '/kinsynch-logo.png',
+            });
+          }
+          
+          // Reload analytics to show new error
+          loadAnalytics();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(errorsChannel);
+    };
   }, []);
 
   const loadAnalytics = async () => {
@@ -114,6 +159,34 @@ export function InvitationAnalytics() {
 
   if (!analytics) return null;
 
+  // Prepare funnel data
+  const funnelData = [
+    {
+      stage: "Sent",
+      count: analytics.totalSent,
+      percentage: 100,
+      color: "#3b82f6",
+    },
+    {
+      stage: "Opened",
+      count: analytics.totalOpened,
+      percentage: analytics.openRate,
+      color: "#8b5cf6",
+    },
+    {
+      stage: "Clicked",
+      count: analytics.totalClicked,
+      percentage: analytics.clickRate,
+      color: "#f59e0b",
+    },
+    {
+      stage: "Accepted",
+      count: analytics.totalAccepted,
+      percentage: analytics.acceptanceRate,
+      color: "#10b981",
+    },
+  ];
+
   const getErrorTypeBadge = (errorType: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
       invalid_invitation: { variant: "destructive", label: "Invalid" },
@@ -178,6 +251,77 @@ export function InvitationAnalytics() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Invitation Funnel */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingDown className="h-5 w-5" />
+            Invitation Funnel
+          </CardTitle>
+          <CardDescription>
+            Conversion rates through the invitation process
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={funnelData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" domain={[0, 100]} />
+              <YAxis dataKey="stage" type="category" width={80} />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-background border rounded-lg p-3 shadow-lg">
+                        <p className="font-semibold">{data.stage}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {data.count} emails ({data.percentage.toFixed(1)}%)
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Bar dataKey="percentage" radius={[0, 8, 8, 0]}>
+                {funnelData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          
+          {/* Conversion Metrics */}
+          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground">
+                {analytics.totalSent > 0 
+                  ? ((analytics.totalOpened / analytics.totalSent) * 100).toFixed(1)
+                  : 0}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Sent → Opened</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground">
+                {analytics.totalOpened > 0
+                  ? ((analytics.totalClicked / analytics.totalOpened) * 100).toFixed(1)
+                  : 0}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Opened → Clicked</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-muted-foreground">
+                {analytics.totalClicked > 0
+                  ? ((analytics.totalAccepted / analytics.totalClicked) * 100).toFixed(1)
+                  : 0}%
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">Clicked → Accepted</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Errors */}
       {analytics.recentErrors.length > 0 && (
