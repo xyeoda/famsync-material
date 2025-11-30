@@ -2,7 +2,7 @@ import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember } from "@/type
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Car, Bus, PersonStanding, Bike, MapPin, ArrowDown, ArrowUp } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 
 interface EventCardProps {
@@ -12,13 +12,6 @@ interface EventCardProps {
   endTime: string;
   onClick?: () => void;
 }
-
-const transportIcons = {
-  car: Car,
-  bus: Bus,
-  walk: PersonStanding,
-  bike: Bike,
-};
 
 export function EventCard({ event, instance, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsContext();
@@ -52,9 +45,6 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
 
   const borderColor = getBorderColor();
   const isGradient = kidsInvolved.length === 2;
-
-  const DropOffIcon = transportation?.dropOffMethod ? transportIcons[transportation.dropOffMethod] : null;
-  const PickUpIcon = transportation?.pickUpMethod ? transportIcons[transportation.pickUpMethod] : null;
 
   const dropOffColor = transportation?.dropOffPerson
     ? getMemberColor(transportation.dropOffPerson)
@@ -116,38 +106,21 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
           })}
         </div>
 
-        {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
-          <div className="flex items-center gap-2 pt-1.5 border-t border-border/30 flex-wrap">
-            {transportation.dropOffPerson && DropOffIcon && dropOffColor && (
-              <div className="flex items-center gap-1">
-                {DropOffIcon && <DropOffIcon className="h-3 w-3 text-muted-foreground" />}
-                <div 
-                  className="w-3 h-3 rounded-full border-2 border-background"
-                  style={{ backgroundColor: `hsl(${dropOffColor})` }}
-                />
-                <ArrowDown className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs lg:text-[10px] font-medium">
-                  {getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]}
-                </span>
-              </div>
-            )}
-            
-            {transportation.pickUpPerson && PickUpIcon && pickUpColor && (
-              <div className="flex items-center gap-1">
-                <ArrowUp className="h-3 w-3 text-muted-foreground" />
-                <div 
-                  className="w-3 h-3 rounded-full border-2 border-background"
-                  style={{ backgroundColor: `hsl(${pickUpColor})` }}
-                />
-                {PickUpIcon && <PickUpIcon className="h-3 w-3 text-muted-foreground" />}
-                <span className="text-xs lg:text-[10px] font-medium">
-                  {getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* Bottom transportation strip */}
+      {(dropOffColor || pickUpColor) && (
+        <div className="flex h-1 -mx-2 -mb-2 rounded-b overflow-hidden">
+          <div 
+            className="flex-1"
+            style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'transparent' }}
+          />
+          <div 
+            className="flex-1"
+            style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'transparent' }}
+          />
+        </div>
+      )}
     </Card>
   );
 }

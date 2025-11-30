@@ -1,7 +1,7 @@
 import { FamilyEvent, EventInstance, FamilyMember } from "@/types/event";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, startOfWeek, endOfWeek, isSameDay, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
-import { MapPin, Car, Bus, PersonStanding, Bike } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 
 interface MonthViewProps {
@@ -20,13 +20,6 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
   
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const transportIcons = {
-    car: Car,
-    bus: Bus,
-    walk: PersonStanding,
-    bike: Bike,
-  };
 
   const getMemberColor = (member: FamilyMember) => {
     if (member === "parent1") return settings.parent1Color;
@@ -115,8 +108,6 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                   const instance = getInstanceForDate(event.id, day);
                   const transportation = instance?.transportation || event.transportation;
                   
-                  const DropOffIcon = transportation?.dropOffMethod ? transportIcons[transportation.dropOffMethod] : null;
-                  const PickUpIcon = transportation?.pickUpMethod ? transportIcons[transportation.pickUpMethod] : null;
                   const dropOffColor = transportation?.dropOffPerson ? getMemberColor(transportation.dropOffPerson) : null;
                   const pickUpColor = transportation?.pickUpPerson ? getMemberColor(transportation.pickUpPerson) : null;
 
@@ -147,26 +138,17 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                           <span className="truncate">{event.location}</span>
                         </div>
                       )}
+                      {/* Bottom transportation strip */}
                       {(dropOffColor || pickUpColor) && (
-                        <div className="flex items-center gap-1 pt-1 mt-1 border-t border-border/20">
-                          {dropOffColor && DropOffIcon && (
-                            <div className="flex items-center gap-0.5">
-                              <DropOffIcon className="h-2.5 w-2.5 text-muted-foreground/70" />
-                              <div 
-                                className="w-2.5 h-2.5 rounded-full border border-background shadow-sm"
-                                style={{ backgroundColor: `hsl(${dropOffColor})` }}
-                              />
-                            </div>
-                          )}
-                          {pickUpColor && PickUpIcon && (
-                            <div className="flex items-center gap-0.5">
-                              <div 
-                                className="w-2.5 h-2.5 rounded-full border border-background shadow-sm"
-                                style={{ backgroundColor: `hsl(${pickUpColor})` }}
-                              />
-                              <PickUpIcon className="h-2.5 w-2.5 text-muted-foreground/70" />
-                            </div>
-                          )}
+                        <div className="flex h-0.5 mt-1 -mx-1.5 -mb-1.5 rounded-b overflow-hidden">
+                          <div 
+                            className="flex-1"
+                            style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'transparent' }}
+                          />
+                          <div 
+                            className="flex-1"
+                            style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'transparent' }}
+                          />
                         </div>
                       )}
                     </div>
