@@ -62,13 +62,6 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
     ? getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]
     : null;
 
-  console.log("EventCard transportation", {
-    eventId: event.id,
-    transportation,
-    dropOffColor,
-    pickUpColor,
-  });
-
   return (
     <Card
       onClick={onClick}
