@@ -146,19 +146,15 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
 
       {/* Bottom transportation strip */}
       {(dropOffColor || pickUpColor) && (
-        <div className="absolute bottom-0 left-0 right-0 flex h-2 rounded-b-lg overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 flex h-1 rounded-b-lg overflow-hidden">
           <div 
-            className="flex-1 flex items-center justify-center text-[8px] font-bold text-white"
+            className="flex-1"
             style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted))' }}
-          >
-            {dropOffName && dropOffName.charAt(0)}
-          </div>
+          />
           <div 
-            className="flex-1 flex items-center justify-center text-[8px] font-bold text-white"
+            className="flex-1"
             style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted))' }}
-          >
-            {pickUpName && pickUpName.charAt(0)}
-          </div>
+          />
         </div>
       )}
     </Card>
