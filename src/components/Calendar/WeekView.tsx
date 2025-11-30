@@ -34,9 +34,14 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
     const dayEvents: DayEvent[] = [];
 
     events.forEach(event => {
-      // Check if event is active on this date
-      if (event.startDate > date) return;
-      if (event.endDate && event.endDate < date) return;
+      // Check if event is active on this date (using date-only comparison for timezone safety)
+      const eventStartDate = new Date(event.startDate.toISOString().split('T')[0]);
+      const compareDate = new Date(date.toISOString().split('T')[0]);
+      if (eventStartDate > compareDate) return;
+      if (event.endDate) {
+        const eventEndDate = new Date(event.endDate.toISOString().split('T')[0]);
+        if (eventEndDate < compareDate) return;
+      }
 
       // Find matching recurrence slots for this day
       event.recurrenceSlots.forEach(slot => {

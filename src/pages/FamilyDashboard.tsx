@@ -159,13 +159,14 @@ const FamilyDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {todayEvents.map((event) => {
                   const instance = getInstanceForDate(event.id, today);
-                  const transportation = instance?.transportation || event.transportation;
-                  const dropOffPerson = transportation?.dropOffPerson;
-                  const pickUpPerson = transportation?.pickUpPerson;
 
                   // Get today's time slot
                   const dayOfWeek = getDay(today);
                   const todaySlot = event.recurrenceSlots.find((slot) => slot.dayOfWeek === dayOfWeek);
+                  
+                  const transportation = instance?.transportation || todaySlot?.transportation || event.transportation;
+                  const dropOffPerson = transportation?.dropOffPerson;
+                  const pickUpPerson = transportation?.pickUpPerson;
 
                   // Determine border color based on participants
                   const participants = event.participants;
