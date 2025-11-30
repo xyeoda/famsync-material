@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import { FamilyEvent, FamilyMember, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
 import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike, ChevronDown, GripVertical } from "lucide-react";
@@ -34,6 +35,12 @@ const DAYS_OF_WEEK = [
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
   const { getFamilyMemberName } = useFamilySettingsContext();
+  
+  // Detect if existing event is single-day
+  const isExistingSingleDay = event?.startDate && event?.endDate && 
+    event.startDate.toDateString() === event.endDate.toDateString();
+  
+  const [isRecurring, setIsRecurring] = useState(!isExistingSingleDay);
   const [title, setTitle] = useState(event?.title || "");
   const [category, setCategory] = useState<ActivityCategory>(event?.category || "other");
   const [location, setLocation] = useState(event?.location || "");
@@ -42,6 +49,12 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   );
   const [endDate, setEndDate] = useState(
     event?.endDate ? event.endDate.toISOString().split("T")[0] : ""
+  );
+  const [singleDayStartTime, setSingleDayStartTime] = useState(
+    event?.recurrenceSlots?.[0]?.startTime || "09:00"
+  );
+  const [singleDayEndTime, setSingleDayEndTime] = useState(
+    event?.recurrenceSlots?.[0]?.endTime || "10:00"
   );
   const [recurrenceSlots, setRecurrenceSlots] = useState<RecurrenceSlot[]>(
     event?.recurrenceSlots || [{ dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]
@@ -55,6 +68,10 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   // Sync form state with event prop when it changes or dialog opens
   useEffect(() => {
     if (open) {
+      const isExistingSingleDay = event?.startDate && event?.endDate && 
+        event.startDate.toDateString() === event.endDate.toDateString();
+      
+      setIsRecurring(!isExistingSingleDay);
       setTitle(event?.title || "");
       setCategory(event?.category || "other");
       setLocation(event?.location || "");
@@ -62,6 +79,8 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
         event?.startDate ? event.startDate.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
       );
       setEndDate(event?.endDate ? event.endDate.toISOString().split("T")[0] : "");
+      setSingleDayStartTime(event?.recurrenceSlots?.[0]?.startTime || "09:00");
+      setSingleDayEndTime(event?.recurrenceSlots?.[0]?.endTime || "10:00");
       setRecurrenceSlots(
         event?.recurrenceSlots || [{ dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]
       );
@@ -140,14 +159,33 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
   const handleSave = () => {
     const now = new Date();
+    
+    let finalRecurrenceSlots = recurrenceSlots;
+    let finalEndDate = endDate ? new Date(endDate) : undefined;
+    
+    // For single-day events, auto-generate the recurrence slot and set end date
+    if (!isRecurring) {
+      const eventDate = new Date(startDate);
+      const dayOfWeek = eventDate.getDay();
+      
+      finalRecurrenceSlots = [{
+        dayOfWeek,
+        startTime: singleDayStartTime,
+        endTime: singleDayEndTime,
+      }];
+      
+      // Critical: Set end date equal to start date for single-day events
+      finalEndDate = new Date(startDate);
+    }
+    
     const newEvent: FamilyEvent = {
       id: event?.id || uuidv4(),
       title,
       category,
       location: location || undefined,
       startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : undefined,
-      recurrenceSlots,
+      endDate: finalEndDate,
+      recurrenceSlots: finalRecurrenceSlots,
       participants,
       createdAt: event?.createdAt || now,
       updatedAt: now,
@@ -156,7 +194,9 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     onOpenChange(false);
   };
 
-  const isValid = title && recurrenceSlots.length > 0 && participants.length > 0;
+  const isValid = title && participants.length > 0 && (
+    isRecurring ? recurrenceSlots.length > 0 : (singleDayStartTime && singleDayEndTime)
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -167,6 +207,29 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
         <div className="grid lg:grid-cols-[1fr,350px] gap-6 py-6">
           <div className="space-y-5">
+          
+          {/* Event Type Toggle */}
+          <div className="flex items-center justify-between p-5 rounded-2xl bg-surface-container border border-outline/20">
+            <div className="space-y-1">
+              <Label className="text-base font-semibold">Event Type</Label>
+              <p className="text-sm text-on-surface-variant">
+                {isRecurring ? "This event repeats weekly on selected days" : "This event occurs on one specific date"}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={cn("text-sm font-medium", !isRecurring && "text-on-surface-variant")}>
+                Recurring
+              </span>
+              <Switch
+                checked={!isRecurring}
+                onCheckedChange={(checked) => setIsRecurring(!checked)}
+              />
+              <span className={cn("text-sm font-medium", isRecurring && "text-on-surface-variant")}>
+                Single Day
+              </span>
+            </div>
+          </div>
+          
           {/* Participants - at the very top */}
           <div className="space-y-3 p-6 rounded-2xl bg-primary/5 border border-primary/20">
             <h3 className="font-semibold text-base text-primary">Which kids are attending?</h3>
@@ -239,34 +302,82 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
-          {/* Date Range */}
-          <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
-            <h3 className="font-semibold text-base text-on-surface">Date Range</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-surface h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="endDate" className="text-sm font-medium">End Date (Optional)</Label>
-                <Input
-                  id="endDate"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-surface h-11"
-                />
+          {/* Date Range for Recurring OR Single Day Date + Times */}
+          {isRecurring ? (
+            <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
+              <h3 className="font-semibold text-base text-on-surface">Date Range</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-surface h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="endDate" className="text-sm font-medium">End Date (Optional)</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-surface h-11"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
+              <h3 className="font-semibold text-base text-on-surface">Event Date & Time</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="singleDate" className="text-sm font-medium">Date</Label>
+                  <Input
+                    id="singleDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-surface h-11"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="singleStartTime" className="text-sm font-medium">Start Time</Label>
+                    <Input
+                      id="singleStartTime"
+                      type="time"
+                      value={singleDayStartTime}
+                      onChange={(e) => {
+                        setSingleDayStartTime(e.target.value);
+                        // Auto-compute end time (1 hour later)
+                        const [hours, minutes] = e.target.value.split(':').map(Number);
+                        const endHours = (hours + 1) % 24;
+                        const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                        setSingleDayEndTime(endTime);
+                      }}
+                      className="bg-surface h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="singleEndTime" className="text-sm font-medium">End Time</Label>
+                    <Input
+                      id="singleEndTime"
+                      type="time"
+                      value={singleDayEndTime}
+                      onChange={(e) => setSingleDayEndTime(e.target.value)}
+                      className="bg-surface h-11"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-          {/* Recurrence Slots */}
+          {/* Recurrence Slots - Only show for recurring events */}
+          {isRecurring && (
           <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-base text-on-surface">Weekly Schedule</h3>
@@ -486,6 +597,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
               })}
             </div>
           </div>
+          )}
           </div>
 
           {/* Event Preview Panel */}
@@ -497,9 +609,13 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             {title && participants.length > 0 ? (
               <div className="space-y-3">
                 <p className="text-xs text-on-surface-variant mb-3">
-                  Preview of how your events will appear:
+                  Preview of how your event will appear:
                 </p>
-                {recurrenceSlots.map((slot, index) => {
+                {(isRecurring ? recurrenceSlots : [{
+                  dayOfWeek: new Date(startDate).getDay(),
+                  startTime: singleDayStartTime,
+                  endTime: singleDayEndTime,
+                }]).map((slot, index) => {
                   const previewEvent: FamilyEvent = {
                     id: `preview-${index}`,
                     title: title || "Event Title",
