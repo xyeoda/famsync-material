@@ -240,8 +240,7 @@ const FamilyCalendar = () => {
               onSave={handleSaveInstance}
               onEditSeries={handleEditSeries}
               onDeleteAll={handleBulkDelete}
-              eventId={selectedEvent.id}
-              eventTitle={selectedEvent.title}
+              event={selectedEvent}
               date={selectedDate}
               slotDayOfWeek={matchingSlot?.dayOfWeek}
               slotTransportation={matchingSlot?.transportation}
