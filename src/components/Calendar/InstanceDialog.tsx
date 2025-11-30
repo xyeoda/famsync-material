@@ -18,6 +18,7 @@ interface InstanceDialogProps {
   onSave: (instance: EventInstance) => void;
   onEditSeries?: () => void;
   onDeleteAll?: () => void;
+  onDeleteInstance?: () => void;
   event: FamilyEvent;
   date: Date;
   slotDayOfWeek?: number;
@@ -30,7 +31,8 @@ export function InstanceDialog({
   onOpenChange, 
   onSave,
   onEditSeries,
-  onDeleteAll, 
+  onDeleteAll,
+  onDeleteInstance,
   event,
   date,
   slotDayOfWeek,
@@ -250,14 +252,27 @@ export function InstanceDialog({
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {onEditSeries && (
               <Button variant="outlined" onClick={onEditSeries} className="flex-1 sm:flex-initial">
                 Edit Series
               </Button>
             )}
+            {onDeleteInstance && instance && (
+              <Button 
+                variant="outlined" 
+                onClick={onDeleteInstance} 
+                className="flex-1 sm:flex-initial text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                Delete This Instance
+              </Button>
+            )}
             {onDeleteAll && (
-              <Button variant="outlined" onClick={onDeleteAll} className="flex-1 sm:flex-initial text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground">
+              <Button 
+                variant="outlined" 
+                onClick={onDeleteAll} 
+                className="flex-1 sm:flex-initial text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
                 Delete All
               </Button>
             )}

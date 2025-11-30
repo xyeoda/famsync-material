@@ -29,7 +29,7 @@ const Index = () => {
   const { user } = useAuth();
   const location = useLocation();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents, loading: eventsLoading } = useEventsDB();
-  const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances, loading: instancesLoading } = useEventInstancesDB();
+  const { instances, addInstance, updateInstance, deleteInstance, getInstanceForDate, loadInstances, loading: instancesLoading } = useEventInstancesDB();
   const { toast } = useToast();
 
   // Load data when household ID is available
@@ -152,6 +152,17 @@ const Index = () => {
     }
   };
 
+  const handleDeleteInstance = () => {
+    if (selectedInstance) {
+      deleteInstance(selectedInstance.id);
+      toast({
+        title: "Instance Deleted",
+        description: "This occurrence has been cancelled and removed.",
+      });
+      setInstanceDialogOpen(false);
+    }
+  };
+
   if (householdLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -214,6 +225,7 @@ const Index = () => {
               onSave={handleSaveInstance}
               onEditSeries={handleEditSeries}
               onDeleteAll={handleBulkDelete}
+              onDeleteInstance={handleDeleteInstance}
               event={selectedEvent}
               date={selectedDate}
               slotDayOfWeek={matchingSlot?.dayOfWeek}
