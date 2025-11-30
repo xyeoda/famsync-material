@@ -127,20 +127,6 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
           })}
         </div>
 
-        {(dropOffName || pickUpName) && (
-          <div className="flex justify-between items-center mt-1 text-[10px] font-medium">
-            {dropOffName && (
-              <span style={{ color: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted-foreground))' }}>
-                Drop: {dropOffName}
-              </span>
-            )}
-            {pickUpName && (
-              <span style={{ color: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted-foreground))' }}>
-                Pick: {pickUpName}
-              </span>
-            )}
-          </div>
-        )}
 
       </div>
 
