@@ -83,20 +83,18 @@ const FamilyDashboard = () => {
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
           {/* Header - matching Calendar header style */}
-          <div className="surface-elevation-2 rounded-3xl p-4 mb-4 bg-card/80 backdrop-blur-md">
+          <div className="surface-elevation-2 rounded-3xl p-4 mb-4 bg-card/80 backdrop-blur-md animate-fade-in">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              {/* Left side: Family Name */}
-              <h2 className="text-2xl font-bold text-foreground">{householdName}</h2>
+              {/* Left side: Family Name with Badge */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className="text-2xl font-bold text-foreground">{householdName}</h2>
+                {userRole && <UserRoleBadge role={userRole} />}
+              </div>
 
               {/* Right side: User Controls */}
               <div className="flex items-center gap-3">
                 {user && (
                   <>
-                    {/* User Info Section */}
-                    {userRole && <UserRoleBadge role={userRole} />}
-
-                    {/* Divider */}
-                    <div className="h-6 w-px bg-border hidden md:block" />
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
@@ -143,7 +141,7 @@ const FamilyDashboard = () => {
           </div>
         </div>
 
-        <Card className="surface-elevation-1 mb-8 bg-card/80 backdrop-blur-md border-border/50">
+        <Card className="surface-elevation-1 mb-8 bg-card/80 backdrop-blur-md border-border/50 animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
           <CardHeader>
             <CardTitle>Today's Schedule</CardTitle>
             <CardDescription>{format(today, "EEEE, MMMM d")}</CardDescription>
@@ -153,7 +151,7 @@ const FamilyDashboard = () => {
               <p className="text-sm text-muted-foreground py-4">No events scheduled for today</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {todayEvents.map((event) => {
+                {todayEvents.map((event, index) => {
                   const instance = getInstanceForDate(event.id, today);
 
                   // Get today's time slot
@@ -185,8 +183,12 @@ const FamilyDashboard = () => {
                   return (
                     <Card 
                       key={event.id} 
-                      className={`surface-elevation-2 bg-card/70 backdrop-blur-md border-border/40 ${bothKids ? 'relative overflow-hidden' : 'border-l-4'}`}
-                      style={!bothKids ? { borderLeftColor: borderColorStyle } : undefined}
+                      className={`surface-elevation-2 bg-card/70 backdrop-blur-md border-border/40 animate-fade-in ${bothKids ? 'relative overflow-hidden' : 'border-l-4'}`}
+                      style={{
+                        ...(bothKids ? undefined : { borderLeftColor: borderColorStyle }),
+                        animationDelay: `${0.15 + index * 0.05}s`,
+                        animationFillMode: 'backwards'
+                      }}
                     >
                       {bothKids && (
                         <div 
@@ -245,8 +247,8 @@ const FamilyDashboard = () => {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
               <CardDescription>Manage your family calendar</CardDescription>
@@ -271,10 +273,82 @@ const FamilyDashboard = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Activity Distribution Chart */}
+          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50 animate-fade-in" style={{ animationDelay: '0.25s', animationFillMode: 'backwards' }}>
+            <CardHeader>
+              <CardTitle>Activity Distribution</CardTitle>
+              <CardDescription>Events per family member this week</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                // Calculate events per family member for this week
+                const memberCounts = {
+                  parent1: 0,
+                  parent2: 0,
+                  kid1: 0,
+                  kid2: 0,
+                  housekeeper: 0,
+                };
+
+                events.forEach((event) => {
+                  if (!event.startDate) return;
+                  const isThisWeek = isWithinInterval(new Date(event.startDate), { 
+                    start: weekStart, 
+                    end: weekEnd 
+                  });
+                  
+                  if (isThisWeek) {
+                    event.participants.forEach((participant) => {
+                      if (participant in memberCounts) {
+                        memberCounts[participant]++;
+                      }
+                    });
+                  }
+                });
+
+                const maxCount = Math.max(...Object.values(memberCounts), 1);
+                const members = [
+                  { key: 'parent1', name: settings.parent1Name, count: memberCounts.parent1, color: settings.parent1Color },
+                  { key: 'parent2', name: settings.parent2Name, count: memberCounts.parent2, color: settings.parent2Color },
+                  { key: 'kid1', name: settings.kid1Name, count: memberCounts.kid1, color: settings.kid1Color },
+                  { key: 'kid2', name: settings.kid2Name, count: memberCounts.kid2, color: settings.kid2Color },
+                  { key: 'housekeeper', name: settings.housekeeperName, count: memberCounts.housekeeper, color: settings.housekeeperColor },
+                ].filter(member => member.count > 0);
+
+                if (members.length === 0) {
+                  return <p className="text-sm text-muted-foreground py-4">No events scheduled this week</p>;
+                }
+
+                return (
+                  <div className="space-y-4">
+                    {members.map((member, index) => (
+                      <div key={member.key} className="space-y-2 animate-fade-in" style={{ animationDelay: `${0.3 + index * 0.05}s`, animationFillMode: 'backwards' }}>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium text-foreground">{member.name}</span>
+                          <span className="text-muted-foreground">{member.count} {member.count === 1 ? 'event' : 'events'}</span>
+                        </div>
+                        <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-1000 ease-out"
+                            style={{ 
+                              width: `${(member.count / maxCount) * 100}%`,
+                              backgroundColor: `hsl(${member.color})`,
+                              transitionDelay: `${0.3 + index * 0.05}s`
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
+          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50 animate-fade-in" style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Events This Week</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -287,7 +361,7 @@ const FamilyDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
+          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Events</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
