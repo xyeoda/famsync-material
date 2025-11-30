@@ -123,14 +123,14 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
 
       {/* Bottom transportation strip */}
       {(dropOffColor || pickUpColor) && (
-        <div className="absolute bottom-0 left-0 right-0 flex h-1 rounded-b-lg overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 flex h-1.5 rounded-b-lg overflow-hidden">
           <div 
             className="flex-1"
-            style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'transparent' }}
+            style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted))' }}
           />
           <div 
             className="flex-1"
-            style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'transparent' }}
+            style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted))' }}
           />
         </div>
       )}

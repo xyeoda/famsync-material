@@ -155,7 +155,6 @@ export function CalendarHeader({
               {title}
             </Button>
             {user && userRole && <UserRoleBadge role={userRole} />}
-            <ThemeToggle />
           </div>
 
           <div className="flex items-center gap-2">
@@ -222,6 +221,9 @@ export function CalendarHeader({
                 </Button>
               </>
             )}
+            
+            <div className="h-6 w-px bg-border" />
+            <ThemeToggle />
           </div>
         </div>
       </div>
