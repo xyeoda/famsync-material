@@ -8,6 +8,7 @@ export interface RecurrenceSlot {
   dayOfWeek: number; // 0 = Sunday, 6 = Saturday
   startTime: string; // HH:mm format
   endTime: string; // HH:mm format
+  transportation?: TransportationDetails; // Per-slot transportation defaults
 }
 
 export interface TransportationDetails {

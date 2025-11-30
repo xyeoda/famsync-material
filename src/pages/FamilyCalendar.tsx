@@ -89,6 +89,11 @@ const FamilyCalendar = () => {
       setSelectedDate(date);
       const instance = getInstanceForDate(event.id, date);
       setSelectedInstance(instance);
+      
+      // Find the matching slot for this day of week to get slot-specific transportation
+      const clickedDayOfWeek = date.getDay();
+      const matchingSlot = event.recurrenceSlots.find(slot => slot.dayOfWeek === clickedDayOfWeek);
+      
       setInstanceDialogOpen(true);
     } else {
       setSelectedEvent(event);
@@ -224,20 +229,26 @@ const FamilyCalendar = () => {
           event={selectedEvent}
         />
 
-        {selectedEvent && selectedDate && (
-          <InstanceDialog
-            open={instanceDialogOpen}
-            onOpenChange={setInstanceDialogOpen}
-            onSave={handleSaveInstance}
-            onEditSeries={handleEditSeries}
-            onDeleteAll={handleBulkDelete}
-            eventId={selectedEvent.id}
-            eventTitle={selectedEvent.title}
-            date={selectedDate}
-            instance={selectedInstance}
-            defaultTransportation={selectedEvent.transportation}
-          />
-        )}
+        {selectedEvent && selectedDate && (() => {
+          const clickedDayOfWeek = selectedDate.getDay();
+          const matchingSlot = selectedEvent.recurrenceSlots.find(slot => slot.dayOfWeek === clickedDayOfWeek);
+          
+          return (
+            <InstanceDialog
+              open={instanceDialogOpen}
+              onOpenChange={setInstanceDialogOpen}
+              onSave={handleSaveInstance}
+              onEditSeries={handleEditSeries}
+              onDeleteAll={handleBulkDelete}
+              eventId={selectedEvent.id}
+              eventTitle={selectedEvent.title}
+              date={selectedDate}
+              slotDayOfWeek={matchingSlot?.dayOfWeek}
+              slotTransportation={matchingSlot?.transportation}
+              instance={selectedInstance}
+            />
+          );
+        })()}
 
         {selectedEvent && (
           <BulkDeleteDialog
