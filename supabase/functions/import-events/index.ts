@@ -175,8 +175,20 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // If no ID, it's a new event - check for duplicates
-      if (!event.id) {
+      // Check if event with this ID already exists
+      const existsInDb = event.id && existingEvents?.some(e => e.id === event.id);
+      
+      if (existsInDb) {
+        // Event already exists in database - treat as conflict
+        const existing = existingEvents?.find(e => e.id === event.id);
+        conflicts.push({
+          uploadedEvent: event,
+          existingEvent: existing,
+          matchScore: 100,
+          matchReasons: ['Exact ID match - event already exists in database'],
+        });
+      } else {
+        // Check for fuzzy duplicates based on title, date, and participants
         let bestMatch = null;
         let bestScore = 0;
 
@@ -199,8 +211,6 @@ Deno.serve(async (req) => {
         } else {
           validEvents.push(event);
         }
-      } else {
-        validEvents.push(event);
       }
     }
 
