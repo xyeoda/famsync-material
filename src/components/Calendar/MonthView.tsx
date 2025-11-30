@@ -1,4 +1,4 @@
-import { FamilyEvent, EventInstance } from "@/types/event";
+import { FamilyEvent, EventInstance, FamilyMember } from "@/types/event";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, startOfWeek, endOfWeek, isSameDay, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,16 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
       if (event.endDate && event.endDate < date) return false;
       return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
     });
+  };
+
+  const getEventBorderColor = (event: FamilyEvent) => {
+    const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
+    if (kidsInvolved.length === 2) {
+      return 'linear-gradient(to bottom, hsl(var(--kid1-color)), hsl(var(--kid2-color)))';
+    } else if (kidsInvolved.length === 1) {
+      return `hsl(var(--${kidsInvolved[0]}-color))`;
+    }
+    return `hsl(var(--category-${event.category}))`;
   };
 
   const isToday = (date: Date) => isSameDay(date, new Date());
@@ -81,20 +91,35 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
               </div>
 
               <div className="space-y-0.5">
-                {dayEvents.slice(0, 3).map(event => (
-                  <div
-                    key={event.id}
-                    onClick={() => onEventClick(event, day)}
-                    className={cn(
-                      "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard truncate state-layer border-l-2 bg-surface-container dark:bg-surface-container-high",
-                      `category-${event.category}`,
-                      "font-medium dark:text-foreground/90"
-                    )}
-                    style={{ borderLeftColor: `hsl(var(--category-${event.category}))` }}
-                  >
-                    {event.title}
-                  </div>
-                ))}
+                {dayEvents.slice(0, 3).map(event => {
+                  const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
+                  const borderColor = getEventBorderColor(event);
+                  const isGradient = kidsInvolved.length === 2;
+                  
+                  return (
+                    <div
+                      key={event.id}
+                      onClick={() => onEventClick(event, day)}
+                      className={cn(
+                        "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard truncate state-layer bg-surface-container dark:bg-surface-container-high relative",
+                        `category-${event.category}`,
+                        "font-medium dark:text-foreground/90",
+                        !isGradient && "border-l-2"
+                      )}
+                      style={!isGradient ? { borderLeftColor: borderColor } : undefined}
+                    >
+                      {isGradient && (
+                        <div 
+                          className="absolute left-0 top-0 bottom-0 w-0.5"
+                          style={{ 
+                            background: borderColor
+                          }}
+                        />
+                      )}
+                      {event.title}
+                    </div>
+                  );
+                })}
                 {dayEvents.length > 3 && (
                   <div className="text-[10px] text-muted-foreground dark:text-muted-foreground/80 pl-1.5 font-normal">
                     +{dayEvents.length - 3} more

@@ -72,7 +72,9 @@ const App = () => {
               path="/display/:householdId"
               element={(
                 <HouseholdProvider>
-                  <FamilyCalendar />
+                  <FamilySettingsProvider>
+                    <FamilyCalendar />
+                  </FamilySettingsProvider>
                 </HouseholdProvider>
               )}
             />

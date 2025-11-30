@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 
 interface EventCardProps {
   event: FamilyEvent;
@@ -21,7 +21,7 @@ const transportIcons = {
 };
 
 export function EventCard({ event, instance, startTime, endTime, onClick }: EventCardProps) {
-  const { getFamilyMemberName, settings } = useFamilySettings();
+  const { getFamilyMemberName, settings } = useFamilySettingsContext();
   
   const getMemberColor = (member: FamilyMember) => {
     if (member === "parent1") return settings.parent1Color;
