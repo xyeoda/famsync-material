@@ -19,14 +19,16 @@ Deno.serve(async (req) => {
 
     console.log('Auth header present, validating user...');
 
+    // Create client with user's auth token for RLS
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Get current user from JWT token
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Get user from JWT token using the auth client
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError) {
       console.error('User auth error:', userError);
