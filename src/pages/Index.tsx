@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useAuth } from "@/hooks/useAuth";
 import dashboardBg from "@/assets/dashboard-bg.png";
+import { v4 as uuidv4 } from "uuid";
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -153,14 +154,33 @@ const Index = () => {
   };
 
   const handleDeleteInstance = () => {
+    if (!householdId || !selectedEvent || !selectedDate) return;
+    
     if (selectedInstance) {
+      // If instance exists, delete it
       deleteInstance(selectedInstance.id);
       toast({
-        title: "Instance Deleted",
+        title: "Instance Cancelled",
         description: "This occurrence has been cancelled and removed.",
       });
-      setInstanceDialogOpen(false);
+    } else {
+      // If no instance exists, create a cancelled instance
+      const now = new Date();
+      const cancelledInstance: EventInstance = {
+        id: uuidv4(),
+        eventId: selectedEvent.id,
+        date: selectedDate,
+        cancelled: true,
+        createdAt: now,
+        updatedAt: now,
+      };
+      addInstance(cancelledInstance, householdId);
+      toast({
+        title: "Instance Cancelled",
+        description: "This occurrence has been marked as cancelled.",
+      });
     }
+    setInstanceDialogOpen(false);
   };
 
   if (householdLoading) {

@@ -258,13 +258,13 @@ export function InstanceDialog({
                 Edit Series
               </Button>
             )}
-            {onDeleteInstance && instance && (
+            {onDeleteInstance && (
               <Button 
                 variant="outlined" 
                 onClick={onDeleteInstance} 
                 className="flex-1 sm:flex-initial text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
-                Delete This Instance
+                Cancel This Instance
               </Button>
             )}
             {onDeleteAll && (

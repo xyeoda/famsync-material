@@ -27,7 +27,7 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
     });
   };
 
-  // Map events to their days based on recurrence slots
+  // Map events to their days based on recurrence slots, filtering out cancelled instances
   const getEventsForDay = (date: Date): DayEvent[] => {
     const dayOfWeek = date.getDay();
     const dayEvents: DayEvent[] = [];
@@ -36,6 +36,10 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
       // Check if event is active on this date
       if (event.startDate > date) return;
       if (event.endDate && event.endDate < date) return;
+
+      // Check if this instance is cancelled
+      const instance = getInstanceForDate(event.id, date);
+      if (instance?.cancelled) return;
 
       // Find matching recurrence slots for this day
       event.recurrenceSlots.forEach(slot => {
