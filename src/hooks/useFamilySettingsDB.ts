@@ -24,9 +24,9 @@ const DEFAULT_SETTINGS: FamilySettings = {
   housekeeperName: "Nuru",
   kid1Color: "266 100% 60%",
   kid2Color: "39 100% 50%",
-  parent1Color: "217 71% 58%",
-  parent2Color: "340 65% 55%",
-  housekeeperColor: "180 50% 45%",
+  parent1Color: "205 85% 55%",
+  parent2Color: "350 75% 60%",
+  housekeeperColor: "168 55% 45%",
 };
 
 export function useFamilySettingsDB() {

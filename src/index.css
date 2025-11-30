@@ -81,9 +81,9 @@ All colors MUST be HSL.
     /* Family member colors for event identification */
     --kid1-color: 266 100% 60%;
     --kid2-color: 39 100% 50%;
-    --parent1-color: 217 91% 60%;
-    --parent2-color: 142 71% 45%;
-    --housekeeper-color: 280 67% 56%;
+    --parent1-color: 205 85% 55%;
+    --parent2-color: 350 75% 60%;
+    --housekeeper-color: 168 55% 45%;
 
     --transition-standard: all 200ms cubic-bezier(0.2, 0, 0, 1);
     --transition-emphasized: all 400ms cubic-bezier(0.2, 0, 0, 1);
@@ -166,9 +166,9 @@ All colors MUST be HSL.
     /* Family member colors for event identification */
     --kid1-color: 266 100% 80%;
     --kid2-color: 39 100% 60%;
-    --parent1-color: 217 91% 70%;
-    --parent2-color: 142 71% 55%;
-    --housekeeper-color: 280 67% 66%;
+    --parent1-color: 205 85% 65%;
+    --parent2-color: 350 75% 70%;
+    --housekeeper-color: 168 55% 55%;
   }
 }
 
