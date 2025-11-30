@@ -16,6 +16,8 @@ interface EventCardProps {
 export function EventCard({ event, instance, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsContext();
   
+  const isCancelled = instance?.cancelled || false;
+  
   const getMemberColor = (member: FamilyMember) => {
     if (member === "parent1") return settings.parent1Color;
     if (member === "parent2") return settings.parent2Color;
@@ -58,7 +60,8 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
       onClick={onClick}
       className={cn(
         "p-2 lg:p-2 cursor-pointer hover:shadow-elevation-2 transition-standard overflow-hidden state-layer relative bg-card/70 backdrop-blur-md border-border/40",
-        !isGradient && "border-l-4"
+        !isGradient && "border-l-4",
+        isCancelled && "opacity-50"
       )}
       style={!isGradient ? { borderLeftColor: borderColor } : undefined}
     >
@@ -70,9 +73,19 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
           }}
         />
       )}
+      {isCancelled && (
+        <div className="absolute top-1 right-1 z-10">
+          <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+            CANCELLED
+          </Badge>
+        </div>
+      )}
       <div className="flex flex-col gap-1.5 lg:gap-1">
         <div className="flex items-start justify-between gap-2 lg:gap-1.5">
-          <h4 className="font-medium text-sm lg:text-xs leading-tight line-clamp-2">
+          <h4 className={cn(
+            "font-medium text-sm lg:text-xs leading-tight line-clamp-2",
+            isCancelled && "line-through"
+          )}>
             {event.title}
           </h4>
           <span className="text-xs lg:text-[10px] text-muted-foreground whitespace-nowrap font-normal flex-shrink-0">
