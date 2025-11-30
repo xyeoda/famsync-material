@@ -15,55 +15,66 @@ export function TransportationLegend() {
   if (!hasKids && !hasTransport) return null;
 
   return (
-    <div className="mt-4 p-4 bg-surface-container/50 rounded-lg border border-border/40 space-y-4">
+    <div className="mt-4 space-y-3">
       {hasKids && (
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Kids:</span>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="flex h-6 rounded overflow-hidden border border-border/40 min-w-[120px]">
+        <div className="p-4 bg-surface-container/50 rounded-lg border border-border/40">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Kids:</span>
+            <div className="flex items-center gap-4 flex-1">
               {kid1Name && (
-                <div 
-                  className="flex-1"
-                  style={{ backgroundColor: `hsl(${settings.kid1Color})` }}
-                />
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `hsl(${settings.kid1Color})` }}
+                  />
+                  <span className="text-sm text-foreground">{kid1Name}</span>
+                </div>
               )}
               {kid2Name && (
-                <div 
-                  className="flex-1"
-                  style={{ backgroundColor: `hsl(${settings.kid2Color})` }}
-                />
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `hsl(${settings.kid2Color})` }}
+                  />
+                  <span className="text-sm text-foreground">{kid2Name}</span>
+                </div>
               )}
-            </div>
-            <div className="flex gap-4 text-sm text-foreground">
-              {kid1Name && <span>{kid1Name}</span>}
-              {kid2Name && <span>{kid2Name}</span>}
             </div>
           </div>
         </div>
       )}
       
       {hasTransport && (
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Transportation:</span>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="flex h-6 rounded overflow-hidden border border-border/40 min-w-[120px]">
-              <div 
-                className="flex-1"
-                style={{ backgroundColor: parent1Name ? `hsl(${settings.parent1Color})` : (parent2Name ? `hsl(${settings.parent2Color})` : `hsl(${settings.housekeeperColor})`) }}
-              />
-              <div 
-                className="flex-1"
-                style={{ backgroundColor: parent2Name ? `hsl(${settings.parent2Color})` : (housekeeperName ? `hsl(${settings.housekeeperColor})` : `hsl(${settings.parent1Color})`) }}
-              />
-            </div>
-            <div className="flex gap-4 text-sm">
-              <span className="text-foreground">
-                {parent1Name || parent2Name || housekeeperName}
-              </span>
-              {((parent1Name && parent2Name) || (parent1Name && housekeeperName) || (parent2Name && housekeeperName)) && (
-                <span className="text-foreground">
-                  {parent2Name || housekeeperName}
-                </span>
+        <div className="p-4 bg-surface-container/50 rounded-lg border border-border/40">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Transportation:</span>
+            <div className="flex items-center gap-4 flex-1 flex-wrap">
+              {parent1Name && (
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `hsl(${settings.parent1Color})` }}
+                  />
+                  <span className="text-sm text-foreground">{parent1Name}</span>
+                </div>
+              )}
+              {parent2Name && (
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `hsl(${settings.parent2Color})` }}
+                  />
+                  <span className="text-sm text-foreground">{parent2Name}</span>
+                </div>
+              )}
+              {housekeeperName && (
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: `hsl(${settings.housekeeperColor})` }}
+                  />
+                  <span className="text-sm text-foreground">{housekeeperName}</span>
+                </div>
               )}
               <span className="text-xs text-muted-foreground">
                 (Left: Drop-off | Right: Pick-up)
