@@ -12,6 +12,7 @@ import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { UserRoleBadge } from "@/components/UserRoleBadge";
+import { WeeklyTimeline } from "@/components/Dashboard/WeeklyTimeline";
 import { format, startOfWeek, endOfWeek, isWithinInterval, isSameDay, getDay } from "date-fns";
 import dashboardBg from "@/assets/dashboard-bg.png";
 
@@ -371,6 +372,11 @@ const FamilyDashboard = () => {
               <p className="text-xs text-muted-foreground">Recurring activities</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Weekly Timeline Visualization */}
+        <div className="mt-8">
+          <WeeklyTimeline events={events} instances={instances} weekStart={weekStart} />
         </div>
 
         {/* UAT Reset Access - Always visible for parents */}
