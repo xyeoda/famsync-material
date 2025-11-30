@@ -13,6 +13,7 @@ import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
 import { EventCard } from "./EventCard";
+import { cn } from "@/lib/utils";
 
 interface EventDialogProps {
   open: boolean;
@@ -140,22 +141,27 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-card/80 backdrop-blur-md border-border/50">
-        <DialogHeader>
-          <DialogTitle>{event ? "Edit Event" : "Create New Event"}</DialogTitle>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-surface">
+        <DialogHeader className="border-b border-outline/10 pb-4">
+          <DialogTitle className="text-xl">{event ? "Edit Event" : "Create New Event"}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid lg:grid-cols-[1fr,350px] gap-6 py-4">
-          <div className="space-y-6">
+        <div className="grid lg:grid-cols-[1fr,350px] gap-6 py-6">
+          <div className="space-y-5">
           {/* Participants - at the very top */}
-          <div className="space-y-3 p-5 rounded-xl bg-surface-container/50 border border-outline/20 shadow-sm">
-            <h3 className="font-semibold text-base text-on-surface">Which kids are attending?</h3>
+          <div className="space-y-3 p-6 rounded-2xl bg-primary/5 border border-primary/20">
+            <h3 className="font-semibold text-base text-primary">Which kids are attending?</h3>
             <div className="flex flex-wrap gap-3">
               {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
                 const isSelected = participants.includes(member);
 
                 return (
-                  <label key={member} className="flex items-center gap-2 cursor-pointer px-4 py-3 bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors border border-outline/10">
+                  <label key={member} className={cn(
+                    "flex items-center gap-3 cursor-pointer px-5 py-3.5 rounded-xl transition-all border-2",
+                    isSelected 
+                      ? "bg-primary/10 border-primary shadow-sm" 
+                      : "bg-surface-container border-outline/20 hover:border-outline/40"
+                  )}>
                     <Checkbox
                       id={member}
                       checked={isSelected}
@@ -170,82 +176,88 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
-          {/* Basic Info - with colored background */}
-          <div className="space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
-            <h3 className="font-semibold text-sm text-primary mb-2">Event Information</h3>
-            <div>
-              <Label htmlFor="title">Event Title</Label>
+          {/* Basic Info */}
+          <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
+            <h3 className="font-semibold text-base text-on-surface">Event Information</h3>
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-sm font-medium">Event Title</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g., BJJ Training"
+                className="bg-surface h-11"
               />
             </div>
 
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={(value) => setCategory(value as ActivityCategory)}>
-                <SelectTrigger id="category">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {EVENT_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-sm font-medium">Category</Label>
+                <Select value={category} onValueChange={(value) => setCategory(value as ActivityCategory)}>
+                  <SelectTrigger id="category" className="bg-surface h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-surface-container z-50">
+                    {EVENT_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <Label htmlFor="location">Location (Optional)</Label>
-              <Input
-                id="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g., Gracie Barra"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="location" className="text-sm font-medium">Location (Optional)</Label>
+                <Input
+                  id="location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g., Gracie Barra"
+                  className="bg-surface h-11"
+                />
+              </div>
             </div>
           </div>
 
           {/* Date Range */}
-          <div className="space-y-4">
-            <h3 className="font-medium">Date Range</h3>
+          <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
+            <h3 className="font-semibold text-base text-on-surface">Date Range</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="startDate">Start Date</Label>
+              <div className="space-y-2">
+                <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
                 <Input
                   id="startDate"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
+                  className="bg-surface h-11"
                 />
               </div>
-              <div>
-                <Label htmlFor="endDate">End Date (Optional)</Label>
+              <div className="space-y-2">
+                <Label htmlFor="endDate" className="text-sm font-medium">End Date (Optional)</Label>
                 <Input
                   id="endDate"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
+                  className="bg-surface h-11"
                 />
               </div>
             </div>
           </div>
 
-          {/* Recurrence Slots - with colored background */}
-          <div className="space-y-4 p-4 rounded-lg bg-secondary/5 border border-secondary/10">
+          {/* Recurrence Slots */}
+          <div className="space-y-5 p-6 rounded-2xl bg-surface-container border border-outline/20">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-secondary">Weekly Schedule</h3>
-              <Button onClick={handleAddSlot} variant="text" size="sm">
-                <Plus className="h-4 w-4 mr-1" />
+              <h3 className="font-semibold text-base text-on-surface">Weekly Schedule</h3>
+              <Button onClick={handleAddSlot} variant="outlined" size="sm" className="gap-1.5">
+                <Plus className="h-4 w-4" />
                 Add Time Slot
               </Button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recurrenceSlots.map((slot, index) => {
                 const dayLabel = DAYS_OF_WEEK.find(d => d.value === slot.dayOfWeek)?.label || "Day";
                 const slotTransportation = slot.transportation || {};
@@ -257,7 +269,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                     onOpenChange={(open) => setOpenSlotIndex(open ? index : null)}
                   >
                     <div 
-                      className="border border-border/50 rounded-lg overflow-hidden transition-all"
+                      className="border-2 border-outline/20 rounded-xl overflow-hidden transition-all bg-surface shadow-sm hover:shadow-md"
                       draggable
                       onDragStart={() => handleDragStart(index)}
                       onDragOver={(e) => handleDragOver(e, index)}
@@ -268,20 +280,20 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                       }}
                     >
                       {/* Slot Time Configuration */}
-                      <div className="flex items-end gap-2 p-3 bg-surface-container">
-                        <div className="flex items-center justify-center h-10 cursor-grab active:cursor-grabbing">
+                      <div className="flex items-end gap-3 p-4">
+                        <div className="flex items-center justify-center h-11 cursor-grab active:cursor-grabbing">
                           <GripVertical className="h-5 w-5 text-on-surface-variant" />
                         </div>
-                        <div className="flex-1">
-                          <Label>Day</Label>
+                        <div className="flex-1 space-y-2">
+                          <Label className="text-sm font-medium">Day</Label>
                           <Select
                             value={slot.dayOfWeek.toString()}
                             onValueChange={(value) => handleSlotChange(index, "dayOfWeek", parseInt(value))}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-surface-container h-11">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-surface-container z-50">
                               {DAYS_OF_WEEK.map((day) => (
                                 <SelectItem key={day.value} value={day.value.toString()}>
                                   {day.label}
@@ -291,21 +303,23 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                           </Select>
                         </div>
 
-                        <div className="flex-1">
-                          <Label>Start Time</Label>
+                        <div className="flex-1 space-y-2">
+                          <Label className="text-sm font-medium">Start Time</Label>
                           <Input
                             type="time"
                             value={slot.startTime}
                             onChange={(e) => handleSlotChange(index, "startTime", e.target.value)}
+                            className="bg-surface-container h-11"
                           />
                         </div>
 
-                        <div className="flex-1">
-                          <Label>End Time</Label>
+                        <div className="flex-1 space-y-2">
+                          <Label className="text-sm font-medium">End Time</Label>
                           <Input
                             type="time"
                             value={slot.endTime}
                             onChange={(e) => handleSlotChange(index, "endTime", e.target.value)}
+                            className="bg-surface-container h-11"
                           />
                         </div>
 
@@ -314,37 +328,37 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                             variant="text"
                             size="icon"
                             onClick={() => handleRemoveSlot(index)}
-                            className="h-10 w-10"
+                            className="h-11 w-11 text-destructive"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-5 w-5" />
                           </Button>
                         )}
                       </div>
 
                       {/* Collapsible Transportation Section */}
                       <CollapsibleTrigger asChild>
-                        <button className="w-full px-3 py-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors flex items-center justify-between text-sm font-medium">
+                        <button className="w-full px-4 py-3 bg-surface-container/50 hover:bg-surface-container transition-colors flex items-center justify-between text-sm font-medium border-t border-outline/10">
                           <span className="flex items-center gap-2">
                             <ChevronDown className={`h-4 w-4 transition-transform ${openSlotIndex === index ? 'rotate-180' : ''}`} />
                             Transportation for {dayLabel}
                             {hasSlotTransportation(slot) && (
-                              <span className="text-xs text-primary">(Set)</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">Set</span>
                             )}
                           </span>
                         </button>
                       </CollapsibleTrigger>
 
                       <CollapsibleContent>
-                        <div className="p-4 bg-surface-container-low border-t border-border/30">
+                        <div className="p-5 bg-surface-container/30 border-t border-outline/10">
                           <div className="grid md:grid-cols-2 gap-6">
                             {/* Drop-off */}
-                            <div className="space-y-3">
-                              <Label className="text-sm font-medium flex items-center gap-2">
+                            <div className="space-y-4">
+                              <Label className="text-base font-semibold flex items-center gap-2">
                                 <span>→</span> Drop-off
                               </Label>
                               
-                              <div>
-                                <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Method</Label>
                                 <div className="grid grid-cols-2 gap-2">
                                   {[
                                     { value: "car" as TransportMethod, icon: Car, label: "Car" },
@@ -367,18 +381,18 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                 </div>
                               </div>
 
-                              <div>
-                                <Label htmlFor={`dropOffPerson-${index}`} className="text-xs text-on-surface-variant mb-2 block">
+                              <div className="space-y-2">
+                                <Label htmlFor={`dropOffPerson-${index}`} className="text-sm font-medium">
                                   Responsible Person
                                 </Label>
                                 <Select
                                   value={slotTransportation.dropOffPerson}
                                   onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, dropOffPerson: value as FamilyMember })}
                                 >
-                                  <SelectTrigger id={`dropOffPerson-${index}`}>
+                                  <SelectTrigger id={`dropOffPerson-${index}`} className="bg-surface h-11">
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className="bg-surface-container z-50">
                                     {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
                                       .filter((member) => member !== "kid1" && member !== "kid2")
                                       .map((member) => (
@@ -392,13 +406,13 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                             </div>
 
                             {/* Pick-up */}
-                            <div className="space-y-3">
-                              <Label className="text-sm font-medium flex items-center gap-2">
+                            <div className="space-y-4">
+                              <Label className="text-base font-semibold flex items-center gap-2">
                                 <span>←</span> Pick-up
                               </Label>
                               
-                              <div>
-                                <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Method</Label>
                                 <div className="grid grid-cols-2 gap-2">
                                   {[
                                     { value: "car" as TransportMethod, icon: Car, label: "Car" },
@@ -421,18 +435,18 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                 </div>
                               </div>
 
-                              <div>
-                                <Label htmlFor={`pickUpPerson-${index}`} className="text-xs text-on-surface-variant mb-2 block">
+                              <div className="space-y-2">
+                                <Label htmlFor={`pickUpPerson-${index}`} className="text-sm font-medium">
                                   Responsible Person
                                 </Label>
                                 <Select
                                   value={slotTransportation.pickUpPerson}
                                   onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, pickUpPerson: value as FamilyMember })}
                                 >
-                                  <SelectTrigger id={`pickUpPerson-${index}`}>
+                                  <SelectTrigger id={`pickUpPerson-${index}`} className="bg-surface h-11">
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className="bg-surface-container z-50">
                                     {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
                                       .filter((member) => member !== "kid1" && member !== "kid2")
                                       .map((member) => (
@@ -456,9 +470,9 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
           </div>
 
           {/* Event Preview Panel */}
-          <div className="hidden lg:block space-y-4 bg-surface-container-low/30 rounded-lg p-4 border border-border/30">
-            <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2">
-              <span>Event Preview</span>
+          <div className="hidden lg:block space-y-4 bg-surface-container/50 rounded-2xl p-5 border border-outline/20 sticky top-4">
+            <h3 className="font-semibold text-base text-on-surface">
+              Event Preview
             </h3>
             
             {title && participants.length > 0 ? (
@@ -506,7 +520,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
           </div>
         </div>
 
-        <DialogFooter className="flex-row justify-between items-center">
+        <DialogFooter className="flex-row justify-between items-center border-t border-outline/10 pt-4">
           {event && (
             <Button 
               variant="text" 
@@ -516,16 +530,16 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                   onOpenChange(false);
                 }
               }}
-              className="text-destructive"
+              className="text-destructive hover:bg-destructive/10"
             >
               Delete All
             </Button>
           )}
-          <div className="flex gap-2 ml-auto">
-            <Button variant="text" onClick={() => onOpenChange(false)}>
+          <div className="flex gap-3 ml-auto">
+            <Button variant="outlined" onClick={() => onOpenChange(false)} className="min-w-24">
               Cancel
             </Button>
-            <Button variant="filled" onClick={handleSave} disabled={!isValid}>
+            <Button variant="filled" onClick={handleSave} disabled={!isValid} className="min-w-32">
               {event ? "Update Series" : "Create Event"}
             </Button>
           </div>
