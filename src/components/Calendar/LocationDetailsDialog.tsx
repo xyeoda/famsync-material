@@ -22,10 +22,9 @@ export function LocationDetailsDialog({ location, open, onOpenChange }: Location
 
   if (!location) return null;
 
-  const handleOpenInMaps = () => {
-    if (!location.address) return;
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`;
-    window.open(mapsUrl, "_blank");
+  const getMapsUrl = () => {
+    if (!location.address) return "";
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`;
   };
 
   const handleCopyAddress = () => {
@@ -60,11 +59,17 @@ export function LocationDetailsDialog({ location, open, onOpenChange }: Location
                 <Button
                   variant="outlined"
                   size="sm"
-                  onClick={handleOpenInMaps}
+                  asChild
                   className="gap-2 flex-1"
                 >
-                  <Navigation className="h-4 w-4" />
-                  Open in Maps
+                  <a 
+                    href={getMapsUrl()} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Navigation className="h-4 w-4" />
+                    Open in Maps
+                  </a>
                 </Button>
                 <Button
                   variant="outlined"
