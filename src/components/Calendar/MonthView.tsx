@@ -140,7 +140,7 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                       )}
                       {/* Bottom transportation strip */}
                       {(dropOffColor || pickUpColor) && (
-                        <div className="flex h-0.5 mt-1 -mx-1.5 -mb-1.5 rounded-b overflow-hidden">
+                        <div className="absolute bottom-0 left-0 right-0 flex h-0.5 rounded-b-lg overflow-hidden">
                           <div 
                             className="flex-1"
                             style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'transparent' }}
