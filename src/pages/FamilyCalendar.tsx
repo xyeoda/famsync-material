@@ -192,7 +192,7 @@ const FamilyCalendar = () => {
         )}
 
         {/* Legend Row */}
-        <div className="mt-4 surface-elevation-2 rounded-3xl p-4 flex items-center justify-between">
+        <div className="mt-4 surface-elevation-2 rounded-3xl p-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
               <div 
@@ -214,13 +214,6 @@ const FamilyCalendar = () => {
               />
               <span className="text-sm font-medium text-foreground">{getFamilyMemberName("kid2")}</span>
             </div>
-          </div>
-          <div className="flex items-center">
-            <img 
-              src={bjjBadge} 
-              alt="BJJ Badge" 
-              className="h-10 w-10 object-contain"
-            />
           </div>
         </div>
 
