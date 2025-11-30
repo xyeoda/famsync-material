@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/app-client';
 
 export function useSystemRole() {
   const [isSiteAdmin, setIsSiteAdmin] = useState(false);
