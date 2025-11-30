@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
+import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 import dashboardBg from "@/assets/dashboard-bg.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
 
@@ -30,6 +31,7 @@ const FamilyCalendar = () => {
   const { canEdit, userRole } = useHousehold();
   const { user } = useAuth();
   const { settings } = useFamilySettingsDB();
+  const { getFamilyMemberName } = useFamilySettingsContext();
   const location = useLocation();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents } = useEventsDB();
   const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances } = useEventInstancesDB();
@@ -200,7 +202,7 @@ const FamilyCalendar = () => {
                   borderColor: `hsl(${settings.kid1Color})`
                 }} 
               />
-              <span className="text-sm font-medium text-foreground">K1</span>
+              <span className="text-sm font-medium text-foreground">{getFamilyMemberName("kid1")}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div 
@@ -210,7 +212,7 @@ const FamilyCalendar = () => {
                   borderColor: `hsl(${settings.kid2Color})`
                 }} 
               />
-              <span className="text-sm font-medium text-foreground">K2</span>
+              <span className="text-sm font-medium text-foreground">{getFamilyMemberName("kid2")}</span>
             </div>
           </div>
           <div className="flex items-center">
