@@ -19,8 +19,9 @@ interface InstanceDialogProps {
   eventId: string;
   eventTitle: string;
   date: Date;
+  slotDayOfWeek?: number;
+  slotTransportation?: TransportationDetails;
   instance?: EventInstance;
-  defaultTransportation?: TransportationDetails;
 }
 
 export function InstanceDialog({ 
@@ -32,13 +33,17 @@ export function InstanceDialog({
   eventId, 
   eventTitle,
   date,
+  slotDayOfWeek,
+  slotTransportation,
   instance,
-  defaultTransportation 
 }: InstanceDialogProps) {
   const { getFamilyMemberName } = useFamilySettings();
   const [transportation, setTransportation] = useState<TransportationDetails>(
-    instance?.transportation || defaultTransportation || {}
+    instance?.transportation || slotTransportation || {}
   );
+
+  const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayName = slotDayOfWeek !== undefined ? DAYS_OF_WEEK[slotDayOfWeek] : "this day";
 
   const handleSave = () => {
     const now = new Date();
@@ -65,7 +70,7 @@ export function InstanceDialog({
 
         <div className="space-y-6 py-4">
           <div className="text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg">
-            💡 Changes apply only to this date. Default transportation from the event series is pre-filled below—adjust as needed.
+            💡 Changes apply only to this date. {slotTransportation ? `Pre-filled with ${dayName}'s defaults—adjust as needed.` : "Set transportation for this specific date."}
           </div>
 
           {/* Transportation */}

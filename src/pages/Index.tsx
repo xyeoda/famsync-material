@@ -203,20 +203,26 @@ const Index = () => {
           event={selectedEvent}
         />
 
-        {selectedEvent && selectedDate && (
-          <InstanceDialog
-            open={instanceDialogOpen}
-            onOpenChange={setInstanceDialogOpen}
-            onSave={handleSaveInstance}
-            onEditSeries={handleEditSeries}
-            onDeleteAll={handleBulkDelete}
-            eventId={selectedEvent.id}
-            eventTitle={selectedEvent.title}
-            date={selectedDate}
-            instance={selectedInstance}
-            defaultTransportation={selectedEvent.transportation}
-          />
-        )}
+        {selectedEvent && selectedDate && (() => {
+          const clickedDayOfWeek = selectedDate.getDay();
+          const matchingSlot = selectedEvent.recurrenceSlots.find(slot => slot.dayOfWeek === clickedDayOfWeek);
+          
+          return (
+            <InstanceDialog
+              open={instanceDialogOpen}
+              onOpenChange={setInstanceDialogOpen}
+              onSave={handleSaveInstance}
+              onEditSeries={handleEditSeries}
+              onDeleteAll={handleBulkDelete}
+              eventId={selectedEvent.id}
+              eventTitle={selectedEvent.title}
+              date={selectedDate}
+              slotDayOfWeek={matchingSlot?.dayOfWeek}
+              slotTransportation={matchingSlot?.transportation}
+              instance={selectedInstance}
+            />
+          );
+        })()}
 
         {selectedEvent && (
           <BulkDeleteDialog

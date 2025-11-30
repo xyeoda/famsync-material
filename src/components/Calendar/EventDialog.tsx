@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { FamilyEvent, FamilyMember, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
 import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
-import { Car, Bus, PersonStanding, Bike } from "lucide-react";
+import { Car, Bus, PersonStanding, Bike, ChevronDown } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
@@ -46,9 +47,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const [participants, setParticipants] = useState<FamilyMember[]>(
     event?.participants || []
   );
-  const [transportation, setTransportation] = useState<TransportationDetails>(
-    event?.transportation || {}
-  );
+  const [openSlotIndex, setOpenSlotIndex] = useState<number | null>(null);
 
   const handleAddSlot = () => {
     setRecurrenceSlots([...recurrenceSlots, { dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]);
@@ -62,6 +61,21 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     const updated = [...recurrenceSlots];
     updated[index] = { ...updated[index], [field]: value };
     setRecurrenceSlots(updated);
+  };
+
+  const handleSlotTransportationChange = (index: number, transportation: TransportationDetails) => {
+    const updated = [...recurrenceSlots];
+    updated[index] = { ...updated[index], transportation };
+    setRecurrenceSlots(updated);
+  };
+
+  const hasSlotTransportation = (slot: RecurrenceSlot) => {
+    return slot.transportation && (
+      slot.transportation.dropOffMethod || 
+      slot.transportation.dropOffPerson || 
+      slot.transportation.pickUpMethod || 
+      slot.transportation.pickUpPerson
+    );
   };
 
   const handleParticipantToggle = (member: FamilyMember) => {
@@ -83,7 +97,6 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
       endDate: endDate ? new Date(endDate) : undefined,
       recurrenceSlots,
       participants,
-      transportation,
       createdAt: event?.createdAt || now,
       updatedAt: now,
     };
@@ -176,57 +189,198 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
 
             <div className="space-y-3">
-              {recurrenceSlots.map((slot, index) => (
-                <div key={index} className="flex items-end gap-2 p-3 bg-surface-container rounded-lg">
-                  <div className="flex-1">
-                    <Label>Day</Label>
-                    <Select
-                      value={slot.dayOfWeek.toString()}
-                      onValueChange={(value) => handleSlotChange(index, "dayOfWeek", parseInt(value))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DAYS_OF_WEEK.map((day) => (
-                          <SelectItem key={day.value} value={day.value.toString()}>
-                            {day.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {recurrenceSlots.map((slot, index) => {
+                const dayLabel = DAYS_OF_WEEK.find(d => d.value === slot.dayOfWeek)?.label || "Day";
+                const slotTransportation = slot.transportation || {};
+                
+                return (
+                  <Collapsible
+                    key={index}
+                    open={openSlotIndex === index}
+                    onOpenChange={(open) => setOpenSlotIndex(open ? index : null)}
+                  >
+                    <div className="border border-border/50 rounded-lg overflow-hidden">
+                      {/* Slot Time Configuration */}
+                      <div className="flex items-end gap-2 p-3 bg-surface-container">
+                        <div className="flex-1">
+                          <Label>Day</Label>
+                          <Select
+                            value={slot.dayOfWeek.toString()}
+                            onValueChange={(value) => handleSlotChange(index, "dayOfWeek", parseInt(value))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {DAYS_OF_WEEK.map((day) => (
+                                <SelectItem key={day.value} value={day.value.toString()}>
+                                  {day.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                  <div className="flex-1">
-                    <Label>Start Time</Label>
-                    <Input
-                      type="time"
-                      value={slot.startTime}
-                      onChange={(e) => handleSlotChange(index, "startTime", e.target.value)}
-                    />
-                  </div>
+                        <div className="flex-1">
+                          <Label>Start Time</Label>
+                          <Input
+                            type="time"
+                            value={slot.startTime}
+                            onChange={(e) => handleSlotChange(index, "startTime", e.target.value)}
+                          />
+                        </div>
 
-                  <div className="flex-1">
-                    <Label>End Time</Label>
-                    <Input
-                      type="time"
-                      value={slot.endTime}
-                      onChange={(e) => handleSlotChange(index, "endTime", e.target.value)}
-                    />
-                  </div>
+                        <div className="flex-1">
+                          <Label>End Time</Label>
+                          <Input
+                            type="time"
+                            value={slot.endTime}
+                            onChange={(e) => handleSlotChange(index, "endTime", e.target.value)}
+                          />
+                        </div>
 
-                  {recurrenceSlots.length > 1 && (
-                    <Button
-                      variant="text"
-                      size="icon"
-                      onClick={() => handleRemoveSlot(index)}
-                      className="h-10 w-10"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+                        {recurrenceSlots.length > 1 && (
+                          <Button
+                            variant="text"
+                            size="icon"
+                            onClick={() => handleRemoveSlot(index)}
+                            className="h-10 w-10"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Collapsible Transportation Section */}
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full px-3 py-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors flex items-center justify-between text-sm font-medium">
+                          <span className="flex items-center gap-2">
+                            <ChevronDown className={`h-4 w-4 transition-transform ${openSlotIndex === index ? 'rotate-180' : ''}`} />
+                            Transportation for {dayLabel}
+                            {hasSlotTransportation(slot) && (
+                              <span className="text-xs text-primary">(Set)</span>
+                            )}
+                          </span>
+                        </button>
+                      </CollapsibleTrigger>
+
+                      <CollapsibleContent>
+                        <div className="p-4 bg-surface-container-low border-t border-border/30">
+                          <div className="grid md:grid-cols-2 gap-6">
+                            {/* Drop-off */}
+                            <div className="space-y-3">
+                              <Label className="text-sm font-medium flex items-center gap-2">
+                                <span>→</span> Drop-off
+                              </Label>
+                              
+                              <div>
+                                <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {[
+                                    { value: "car" as TransportMethod, icon: Car, label: "Car" },
+                                    { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
+                                    { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
+                                    { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
+                                  ].map(({ value, icon: Icon, label }) => (
+                                    <Button
+                                      key={value}
+                                      type="button"
+                                      variant={slotTransportation.dropOffMethod === value ? "filled" : "outlined"}
+                                      size="sm"
+                                      onClick={() => handleSlotTransportationChange(index, { ...slotTransportation, dropOffMethod: value })}
+                                      className="justify-start gap-2"
+                                    >
+                                      <Icon className="h-4 w-4" />
+                                      {label}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label htmlFor={`dropOffPerson-${index}`} className="text-xs text-on-surface-variant mb-2 block">
+                                  Responsible Person
+                                </Label>
+                                <Select
+                                  value={slotTransportation.dropOffPerson}
+                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, dropOffPerson: value as FamilyMember })}
+                                >
+                                  <SelectTrigger id={`dropOffPerson-${index}`}>
+                                    <SelectValue placeholder="Select..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
+                                      .filter((member) => member !== "kid1" && member !== "kid2")
+                                      .map((member) => (
+                                        <SelectItem key={member} value={member}>
+                                          {getFamilyMemberName(member)}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Pick-up */}
+                            <div className="space-y-3">
+                              <Label className="text-sm font-medium flex items-center gap-2">
+                                <span>←</span> Pick-up
+                              </Label>
+                              
+                              <div>
+                                <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {[
+                                    { value: "car" as TransportMethod, icon: Car, label: "Car" },
+                                    { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
+                                    { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
+                                    { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
+                                  ].map(({ value, icon: Icon, label }) => (
+                                    <Button
+                                      key={value}
+                                      type="button"
+                                      variant={slotTransportation.pickUpMethod === value ? "filled" : "outlined"}
+                                      size="sm"
+                                      onClick={() => handleSlotTransportationChange(index, { ...slotTransportation, pickUpMethod: value })}
+                                      className="justify-start gap-2"
+                                    >
+                                      <Icon className="h-4 w-4" />
+                                      {label}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div>
+                                <Label htmlFor={`pickUpPerson-${index}`} className="text-xs text-on-surface-variant mb-2 block">
+                                  Responsible Person
+                                </Label>
+                                <Select
+                                  value={slotTransportation.pickUpPerson}
+                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, pickUpPerson: value as FamilyMember })}
+                                >
+                                  <SelectTrigger id={`pickUpPerson-${index}`}>
+                                    <SelectValue placeholder="Select..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
+                                      .filter((member) => member !== "kid1" && member !== "kid2")
+                                      .map((member) => (
+                                        <SelectItem key={member} value={member}>
+                                          {getFamilyMemberName(member)}
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </div>
+                  </Collapsible>
+                );
+              })}
             </div>
           </div>
 
@@ -253,120 +407,6 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
-          {/* Transportation */}
-          <div className="space-y-4">
-            <h3 className="font-medium">Transportation</h3>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Drop-off */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <span>→</span> Drop-off
-                </Label>
-                
-                <div>
-                  <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: "car" as TransportMethod, icon: Car, label: "Car" },
-                      { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
-                      { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
-                      { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
-                    ].map(({ value, icon: Icon, label }) => (
-                      <Button
-                        key={value}
-                        type="button"
-                        variant={transportation.dropOffMethod === value ? "filled" : "outlined"}
-                        size="sm"
-                        onClick={() => setTransportation({ ...transportation, dropOffMethod: value })}
-                        className="justify-start gap-2"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="dropOffPerson" className="text-xs text-on-surface-variant mb-2 block">
-                    Responsible Person
-                  </Label>
-                  <Select
-                    value={transportation.dropOffPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value as FamilyMember })}
-                  >
-                    <SelectTrigger id="dropOffPerson">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                        .filter((member) => member !== "kid1" && member !== "kid2")
-                        .map((member) => (
-                          <SelectItem key={member} value={member}>
-                            {getFamilyMemberName(member)}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Pick-up */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <span>←</span> Pick-up
-                </Label>
-                
-                <div>
-                  <Label className="text-xs text-on-surface-variant mb-2 block">Method</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: "car" as TransportMethod, icon: Car, label: "Car" },
-                      { value: "bus" as TransportMethod, icon: Bus, label: "Bus" },
-                      { value: "walk" as TransportMethod, icon: PersonStanding, label: "Walk" },
-                      { value: "bike" as TransportMethod, icon: Bike, label: "Bike" },
-                    ].map(({ value, icon: Icon, label }) => (
-                      <Button
-                        key={value}
-                        type="button"
-                        variant={transportation.pickUpMethod === value ? "filled" : "outlined"}
-                        size="sm"
-                        onClick={() => setTransportation({ ...transportation, pickUpMethod: value })}
-                        className="justify-start gap-2"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="pickUpPerson" className="text-xs text-on-surface-variant mb-2 block">
-                    Responsible Person
-                  </Label>
-                  <Select
-                    value={transportation.pickUpPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value as FamilyMember })}
-                  >
-                    <SelectTrigger id="pickUpPerson">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                        .filter((member) => member !== "kid1" && member !== "kid2")
-                        .map((member) => (
-                          <SelectItem key={member} value={member}>
-                            {getFamilyMemberName(member)}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <DialogFooter className="flex-row justify-between items-center">
