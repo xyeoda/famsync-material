@@ -60,6 +60,15 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const handleSlotChange = (index: number, field: keyof RecurrenceSlot, value: any) => {
     const updated = [...recurrenceSlots];
     updated[index] = { ...updated[index], [field]: value };
+    
+    // Auto-compute end time when start time changes
+    if (field === "startTime" && value) {
+      const [hours, minutes] = value.split(':').map(Number);
+      const endHours = (hours + 1) % 24;
+      const endTime = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      updated[index] = { ...updated[index], startTime: value, endTime };
+    }
+    
     setRecurrenceSlots(updated);
   };
 
@@ -114,8 +123,9 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Basic Info */}
-          <div className="space-y-4">
+          {/* Basic Info - with colored background */}
+          <div className="space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
+            <h3 className="font-semibold text-sm text-primary mb-2">Event Information</h3>
             <div>
               <Label htmlFor="title">Event Title</Label>
               <Input
@@ -153,6 +163,29 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
+          {/* Participants - moved to top */}
+          <div className="space-y-4 p-4 rounded-lg bg-accent/5 border border-accent/10">
+            <h3 className="font-semibold text-sm text-accent">Which kids are attending?</h3>
+            <div className="flex flex-wrap gap-2">
+              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
+                const isSelected = participants.includes(member);
+
+                return (
+                  <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
+                    <Checkbox
+                      id={member}
+                      checked={isSelected}
+                      onCheckedChange={() => handleParticipantToggle(member)}
+                    />
+                    <span className="text-sm font-medium">
+                      {getFamilyMemberName(member)}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Date Range */}
           <div className="space-y-4">
             <h3 className="font-medium">Date Range</h3>
@@ -178,10 +211,10 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
             </div>
           </div>
 
-          {/* Recurrence Slots */}
-          <div className="space-y-4">
+          {/* Recurrence Slots - with colored background */}
+          <div className="space-y-4 p-4 rounded-lg bg-secondary/5 border border-secondary/10">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">Weekly Schedule</h3>
+              <h3 className="font-semibold text-sm text-secondary">Weekly Schedule</h3>
               <Button onClick={handleAddSlot} variant="text" size="sm">
                 <Plus className="h-4 w-4 mr-1" />
                 Add Time Slot
@@ -379,29 +412,6 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                       </CollapsibleContent>
                     </div>
                   </Collapsible>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Participants */}
-          <div className="space-y-4">
-            <h3 className="font-medium">Which kids are attending?</h3>
-            <div className="flex flex-wrap gap-2">
-              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
-                const isSelected = participants.includes(member);
-
-                return (
-                  <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
-                    <Checkbox
-                      id={member}
-                      checked={isSelected}
-                      onCheckedChange={() => handleParticipantToggle(member)}
-                    />
-                    <span className="text-sm font-medium">
-                      {getFamilyMemberName(member)}
-                    </span>
-                  </label>
                 );
               })}
             </div>
