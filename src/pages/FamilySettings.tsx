@@ -25,6 +25,7 @@ import { UserManagementDialog } from "@/components/UserManagement/UserManagement
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import dashboardBg from "@/assets/dashboard-bg.png";
+import { ActivityLocationsCard } from "@/components/Settings/ActivityLocationsCard";
 
 // Color conversion utilities
 function hslToHex(hsl: string): string {
@@ -417,6 +418,9 @@ export default function FamilySettings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Activity Locations */}
+          {urlHouseholdId && <ActivityLocationsCard householdId={urlHouseholdId} />}
 
           {/* User Management */}
           <Card className="bg-card/80 backdrop-blur-md border-border/50">

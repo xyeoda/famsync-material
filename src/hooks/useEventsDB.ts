@@ -53,12 +53,13 @@ export function useEventsDB() {
         startDate: new Date(event.start_date),
         endDate: event.end_date ? new Date(event.end_date) : undefined,
         location: event.location,
+        location_id: event.location_id,
         notes: event.notes,
         color: event.color,
         recurrenceSlots: event.recurrence_slots as RecurrenceSlot[],
         createdAt: new Date(event.created_at),
         updatedAt: new Date(event.updated_at),
-      }));
+      } as any));
 
       setEvents(mappedEvents);
     } catch (error) {
@@ -72,23 +73,30 @@ export function useEventsDB() {
     if (!user) return;
 
     try {
+      const eventData: any = {
+        user_id: user.id,
+        household_id: householdId,
+        title: event.title,
+        description: event.description,
+        category: event.category,
+        participants: event.participants,
+        transportation: event.transportation as any,
+        start_date: event.startDate.toISOString(),
+        end_date: event.endDate?.toISOString(),
+        location: event.location,
+        notes: event.notes,
+        color: event.color,
+        recurrence_slots: event.recurrenceSlots as any,
+      };
+      
+      // Add location_id if present
+      if ((event as any).location_id) {
+        eventData.location_id = (event as any).location_id;
+      }
+      
       const { error } = await supabase
         .from('family_events')
-        .insert([{
-          user_id: user.id,
-          household_id: householdId,
-          title: event.title,
-          description: event.description,
-          category: event.category,
-          participants: event.participants,
-          transportation: event.transportation as any,
-          start_date: event.startDate.toISOString(),
-          end_date: event.endDate?.toISOString(),
-          location: event.location,
-          notes: event.notes,
-          color: event.color,
-          recurrence_slots: event.recurrenceSlots as any,
-        }]);
+        .insert([eventData]);
 
       if (error) throw error;
 
@@ -114,6 +122,7 @@ export function useEventsDB() {
       if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
       if (updates.color !== undefined) dbUpdates.color = updates.color;
       if (updates.recurrenceSlots !== undefined) dbUpdates.recurrence_slots = updates.recurrenceSlots;
+      if ((updates as any).location_id !== undefined) dbUpdates.location_id = (updates as any).location_id;
 
       const { error } = await supabase
         .from('family_events')

@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_locations: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          household_id: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          phone_secondary: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          household_id: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          phone_secondary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          household_id?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          phone_secondary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_locations_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_audit_log: {
         Row: {
           action_type: string
@@ -196,6 +243,7 @@ export type Database = {
           household_id: string | null
           id: string
           location: string | null
+          location_id: string | null
           notes: string | null
           participants: Database["public"]["Enums"]["family_member"][]
           recurrence_slots: Json
@@ -214,6 +262,7 @@ export type Database = {
           household_id?: string | null
           id?: string
           location?: string | null
+          location_id?: string | null
           notes?: string | null
           participants?: Database["public"]["Enums"]["family_member"][]
           recurrence_slots?: Json
@@ -232,6 +281,7 @@ export type Database = {
           household_id?: string | null
           id?: string
           location?: string | null
+          location_id?: string | null
           notes?: string | null
           participants?: Database["public"]["Enums"]["family_member"][]
           recurrence_slots?: Json
@@ -247,6 +297,13 @@ export type Database = {
             columns: ["household_id"]
             isOneToOne: false
             referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "activity_locations"
             referencedColumns: ["id"]
           },
           {
