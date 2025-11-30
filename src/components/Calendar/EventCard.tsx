@@ -1,4 +1,4 @@
-import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember } from "@/types/event";
+import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember, RecurrenceSlot } from "@/types/event";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -8,12 +8,13 @@ import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 interface EventCardProps {
   event: FamilyEvent;
   instance?: EventInstance;
+  slot?: RecurrenceSlot;
   startTime: string;
   endTime: string;
   onClick?: () => void;
 }
 
-export function EventCard({ event, instance, startTime, endTime, onClick }: EventCardProps) {
+export function EventCard({ event, instance, slot, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsContext();
   
   const isCancelled = instance?.cancelled || false;
@@ -25,8 +26,8 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
     return null;
   };
 
-  // Use instance data if available, otherwise fall back to event data
-  const transportation = instance?.transportation || event.transportation;
+  // Use instance data if available, otherwise fall back to slot data, then event data
+  const transportation = instance?.transportation || slot?.transportation || event.transportation;
   const participants = instance?.participants || event.participants;
 
   // Get kids participating in this event
@@ -127,9 +128,17 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
         </div>
 
         {(dropOffName || pickUpName) && (
-          <div className="flex justify-between items-center mt-1 text-[10px] text-muted-foreground">
-            {dropOffName && <span>Drop: {dropOffName}</span>}
-            {pickUpName && <span>Pick: {pickUpName}</span>}
+          <div className="flex justify-between items-center mt-1 text-[10px] font-medium">
+            {dropOffName && (
+              <span style={{ color: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted-foreground))' }}>
+                Drop: {dropOffName}
+              </span>
+            )}
+            {pickUpName && (
+              <span style={{ color: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted-foreground))' }}>
+                Pick: {pickUpName}
+              </span>
+            )}
           </div>
         )}
 
@@ -137,15 +146,19 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
 
       {/* Bottom transportation strip */}
       {(dropOffColor || pickUpColor) && (
-        <div className="absolute bottom-0 left-0 right-0 flex h-1.5 rounded-b-lg overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 flex h-2 rounded-b-lg overflow-hidden">
           <div 
-            className="flex-1"
+            className="flex-1 flex items-center justify-center text-[8px] font-bold text-white"
             style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted))' }}
-          />
+          >
+            {dropOffName && dropOffName.charAt(0)}
+          </div>
           <div 
-            className="flex-1"
+            className="flex-1 flex items-center justify-center text-[8px] font-bold text-white"
             style={{ backgroundColor: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted))' }}
-          />
+          >
+            {pickUpName && pickUpName.charAt(0)}
+          </div>
         </div>
       )}
     </Card>

@@ -93,6 +93,7 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
                         key={`${event.id}-${index}`}
                         event={event}
                         instance={instance}
+                        slot={slot}
                         startTime={slot.startTime}
                         endTime={slot.endTime}
                         onClick={() => onEventClick(event, day)}
