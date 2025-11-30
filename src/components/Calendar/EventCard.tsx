@@ -55,6 +55,20 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
     ? getMemberColor(transportation.pickUpPerson)
     : null;
 
+  const dropOffName = transportation?.dropOffPerson
+    ? getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]
+    : null;
+  const pickUpName = transportation?.pickUpPerson
+    ? getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]
+    : null;
+
+  console.log("EventCard transportation", {
+    eventId: event.id,
+    transportation,
+    dropOffColor,
+    pickUpColor,
+  });
+
   return (
     <Card
       onClick={onClick}
@@ -118,6 +132,13 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
             );
           })}
         </div>
+
+        {(dropOffName || pickUpName) && (
+          <div className="flex justify-between items-center mt-1 text-[10px] text-muted-foreground">
+            {dropOffName && <span>Drop: {dropOffName}</span>}
+            {pickUpName && <span>Pick: {pickUpName}</span>}
+          </div>
+        )}
 
       </div>
 
