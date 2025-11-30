@@ -86,7 +86,7 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
             <div
               key={day.toISOString()}
               className={cn(
-                "min-h-[90px] bg-surface dark:bg-surface-container p-2",
+                "min-h-[120px] bg-surface dark:bg-surface-container p-2",
                 !inCurrentMonth && "bg-surface-variant dark:bg-surface-container-low opacity-60 dark:opacity-50"
               )}
             >
@@ -125,7 +125,7 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                       key={event.id}
                       onClick={() => onEventClick(event, day)}
                       className={cn(
-                        "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard state-layer bg-surface-container dark:bg-surface-container-high relative space-y-0.5",
+                        "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard state-layer bg-surface-container dark:bg-surface-container-high relative",
                         `category-${event.category}`,
                         "font-medium dark:text-foreground/90",
                         !isGradient && "border-l-2"
@@ -140,31 +140,31 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                           }}
                         />
                       )}
-                      <div className="truncate">{event.title}</div>
+                      <div className="truncate font-medium">{event.title}</div>
                       {event.location && (
-                        <div className="flex items-center gap-0.5 text-muted-foreground">
+                        <div className="flex items-center gap-0.5 text-muted-foreground opacity-80">
                           <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
                           <span className="truncate">{event.location}</span>
                         </div>
                       )}
-                      {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
-                        <div className="flex items-center gap-1 pt-0.5 flex-wrap">
-                          {transportation.dropOffPerson && DropOffIcon && dropOffColor && (
-                            <div className="flex items-center gap-0.5 bg-surface-container-high dark:bg-surface-container rounded-full px-1 py-0.5">
-                              {DropOffIcon && <DropOffIcon className="h-2.5 w-2.5 text-muted-foreground" />}
+                      {(dropOffColor || pickUpColor) && (
+                        <div className="flex items-center gap-1 pt-1 mt-1 border-t border-border/20">
+                          {dropOffColor && DropOffIcon && (
+                            <div className="flex items-center gap-0.5">
+                              <DropOffIcon className="h-2.5 w-2.5 text-muted-foreground/70" />
                               <div 
-                                className="w-2 h-2 rounded-full border border-background"
+                                className="w-2.5 h-2.5 rounded-full border border-background shadow-sm"
                                 style={{ backgroundColor: `hsl(${dropOffColor})` }}
                               />
                             </div>
                           )}
-                          {transportation.pickUpPerson && PickUpIcon && pickUpColor && (
-                            <div className="flex items-center gap-0.5 bg-surface-container-high dark:bg-surface-container rounded-full px-1 py-0.5">
+                          {pickUpColor && PickUpIcon && (
+                            <div className="flex items-center gap-0.5">
                               <div 
-                                className="w-2 h-2 rounded-full border border-background"
+                                className="w-2.5 h-2.5 rounded-full border border-background shadow-sm"
                                 style={{ backgroundColor: `hsl(${pickUpColor})` }}
                               />
-                              {PickUpIcon && <PickUpIcon className="h-2.5 w-2.5 text-muted-foreground" />}
+                              <PickUpIcon className="h-2.5 w-2.5 text-muted-foreground/70" />
                             </div>
                           )}
                         </div>
