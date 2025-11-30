@@ -123,6 +123,29 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          {/* Participants - at the very top */}
+          <div className="space-y-3 p-5 rounded-xl bg-surface-container/50 border border-outline/20 shadow-sm">
+            <h3 className="font-semibold text-base text-on-surface">Which kids are attending?</h3>
+            <div className="flex flex-wrap gap-3">
+              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
+                const isSelected = participants.includes(member);
+
+                return (
+                  <label key={member} className="flex items-center gap-2 cursor-pointer px-4 py-3 bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors border border-outline/10">
+                    <Checkbox
+                      id={member}
+                      checked={isSelected}
+                      onCheckedChange={() => handleParticipantToggle(member)}
+                    />
+                    <span className="text-sm font-medium">
+                      {getFamilyMemberName(member)}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Basic Info - with colored background */}
           <div className="space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
             <h3 className="font-semibold text-sm text-primary mb-2">Event Information</h3>
@@ -160,29 +183,6 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., Gracie Barra"
               />
-            </div>
-          </div>
-
-          {/* Participants - moved to top */}
-          <div className="space-y-4 p-4 rounded-lg bg-accent/5 border border-accent/10">
-            <h3 className="font-semibold text-sm text-accent">Which kids are attending?</h3>
-            <div className="flex flex-wrap gap-2">
-              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
-                const isSelected = participants.includes(member);
-
-                return (
-                  <label key={member} className="flex items-center gap-2 cursor-pointer p-3 bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors">
-                    <Checkbox
-                      id={member}
-                      checked={isSelected}
-                      onCheckedChange={() => handleParticipantToggle(member)}
-                    />
-                    <span className="text-sm font-medium">
-                      {getFamilyMemberName(member)}
-                    </span>
-                  </label>
-                );
-              })}
             </div>
           </div>
 
