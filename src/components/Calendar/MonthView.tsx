@@ -12,7 +12,7 @@ interface MonthViewProps {
 }
 
 export function MonthView({ currentDate, events, instances, onEventClick }: MonthViewProps) {
-  const { settings } = useFamilySettingsContext();
+  const { settings, getFamilyMemberName } = useFamilySettingsContext();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -38,12 +38,17 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
 
   const getEventsForDay = (date: Date) => {
     const dayOfWeek = date.getDay();
-    return events.filter(event => {
-      if (event.startDate > date) return false;
-      if (event.endDate && event.endDate < date) return false;
-      
-      return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
-    });
+    return events
+      .filter(event => {
+        if (event.startDate > date) return false;
+        if (event.endDate && event.endDate < date) return false;
+        
+        return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
+      })
+      .map(event => ({
+        event,
+        slot: event.recurrenceSlots.find(slot => slot.dayOfWeek === dayOfWeek)!
+      }));
   };
 
   const getEventBorderColor = (event: FamilyEvent) => {
@@ -102,15 +107,18 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
               </div>
 
               <div className="space-y-0.5">
-                {dayEvents.slice(0, 3).map(event => {
+                {dayEvents.slice(0, 3).map(({ event, slot }) => {
                   const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
                   const borderColor = getEventBorderColor(event);
                   const isGradient = kidsInvolved.length === 2;
                   const instance = getInstanceForDate(event.id, day);
-                  const transportation = instance?.transportation || event.transportation;
+                  const transportation = instance?.transportation || slot?.transportation || event.transportation;
                   
                   const dropOffColor = transportation?.dropOffPerson ? getMemberColor(transportation.dropOffPerson) : null;
                   const pickUpColor = transportation?.pickUpPerson ? getMemberColor(transportation.pickUpPerson) : null;
+                  
+                  const dropOffName = transportation?.dropOffPerson ? getFamilyMemberName(transportation.dropOffPerson).split(" ")[0] : null;
+                  const pickUpName = transportation?.pickUpPerson ? getFamilyMemberName(transportation.pickUpPerson).split(" ")[0] : null;
 
                   return (
                     <div
@@ -139,9 +147,24 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                           <span className="truncate">{event.location}</span>
                         </div>
                       )}
+                      {/* Transportation info */}
+                      {(dropOffName || pickUpName) && (
+                        <div className="text-[8px] font-medium mt-0.5 flex justify-between">
+                          {dropOffName && (
+                            <span style={{ color: dropOffColor ? `hsl(${dropOffColor})` : 'hsl(var(--muted-foreground))' }}>
+                              D: {dropOffName}
+                            </span>
+                          )}
+                          {pickUpName && (
+                            <span style={{ color: pickUpColor ? `hsl(${pickUpColor})` : 'hsl(var(--muted-foreground))' }}>
+                              P: {pickUpName}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       {/* Bottom transportation strip */}
                       {(dropOffColor || pickUpColor) && (
-                        <div className="absolute bottom-0 left-0 right-0 flex h-0.5 rounded-b-lg overflow-hidden">
+                        <div className="absolute bottom-0 left-0 right-0 flex h-1 rounded-b-lg overflow-hidden">
                           <div 
                             className="flex-1"
                             style={{ backgroundColor: dropOffColor ? `hsl(${dropOffColor})` : 'transparent' }}
