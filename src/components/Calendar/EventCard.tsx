@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember, RecurrenceSlot } from "@/types/event";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+import { LocationDetailsDialog } from "./LocationDetailsDialog";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
+import { useHousehold } from "@/contexts/HouseholdContext";
 
 interface EventCardProps {
   event: FamilyEvent;
@@ -16,6 +20,12 @@ interface EventCardProps {
 
 export function EventCard({ event, instance, slot, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsContext();
+  const { householdId } = useHousehold();
+  const { locations } = useActivityLocations(householdId);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  
+  const locationId = (event as any).location_id;
+  const locationDetails = locationId ? locations.find(loc => loc.id === locationId) : null;
   
   const isCancelled = instance?.cancelled || false;
   
@@ -102,11 +112,28 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
         </div>
 
         {event.location && (
-          <div className="flex items-center gap-1 text-xs lg:text-[10px] text-muted-foreground">
+          <div 
+            className={cn(
+              "flex items-center gap-1 text-xs lg:text-[10px] text-muted-foreground",
+              locationDetails && "cursor-pointer hover:text-primary transition-colors"
+            )}
+            onClick={(e) => {
+              if (locationDetails) {
+                e.stopPropagation();
+                setLocationDialogOpen(true);
+              }
+            }}
+          >
             <MapPin className="h-3 w-3 flex-shrink-0" />
             <span className="truncate">{event.location}</span>
           </div>
         )}
+        
+        <LocationDetailsDialog
+          location={locationDetails}
+          open={locationDialogOpen}
+          onOpenChange={setLocationDialogOpen}
+        />
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {participants.map((participant) => {

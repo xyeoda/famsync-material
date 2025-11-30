@@ -15,6 +15,9 @@ import { v4 as uuidv4 } from "uuid";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 import { EventCard } from "./EventCard";
 import { cn } from "@/lib/utils";
+import { LocationCombobox } from "./LocationCombobox";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
+import { useHousehold } from "@/contexts/HouseholdContext";
 
 interface EventDialogProps {
   open: boolean;
@@ -35,6 +38,8 @@ const DAYS_OF_WEEK = [
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
   const { getFamilyMemberName } = useFamilySettingsContext();
+  const { householdId } = useHousehold();
+  const { locations } = useActivityLocations(householdId);
   
   // Detect if existing event is single-day
   const isExistingSingleDay = event?.startDate && event?.endDate && 
@@ -44,6 +49,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const [title, setTitle] = useState(event?.title || "");
   const [category, setCategory] = useState<ActivityCategory>(event?.category || "other");
   const [location, setLocation] = useState(event?.location || "");
+  const [locationId, setLocationId] = useState<string | undefined>((event as any)?.location_id);
   const [startDate, setStartDate] = useState(
     event?.startDate ? event.startDate.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
   );
@@ -75,6 +81,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
       setTitle(event?.title || "");
       setCategory(event?.category || "other");
       setLocation(event?.location || "");
+      setLocationId((event as any)?.location_id);
       setStartDate(
         event?.startDate ? event.startDate.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
       );
@@ -189,7 +196,8 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
       participants,
       createdAt: event?.createdAt || now,
       updatedAt: now,
-    };
+      ...(locationId && { location_id: locationId }),
+    } as any;
     onSave(newEvent);
     onOpenChange(false);
   };
@@ -291,12 +299,14 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
               <div className="space-y-2">
                 <Label htmlFor="location" className="text-sm font-medium">Location (Optional)</Label>
-                <Input
-                  id="location"
+                <LocationCombobox
+                  locations={locations}
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g., Gracie Barra"
-                  className="bg-surface h-11"
+                  locationId={locationId}
+                  onChange={(loc, locId) => {
+                    setLocation(loc);
+                    setLocationId(locId);
+                  }}
                 />
               </div>
             </div>
