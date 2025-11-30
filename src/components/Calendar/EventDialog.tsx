@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,25 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   );
   const [openSlotIndex, setOpenSlotIndex] = useState<number | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  // Sync form state with event prop when it changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      setTitle(event?.title || "");
+      setCategory(event?.category || "other");
+      setLocation(event?.location || "");
+      setStartDate(
+        event?.startDate ? event.startDate.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
+      );
+      setEndDate(event?.endDate ? event.endDate.toISOString().split("T")[0] : "");
+      setRecurrenceSlots(
+        event?.recurrenceSlots || [{ dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]
+      );
+      setParticipants(event?.participants || []);
+      setOpenSlotIndex(null);
+      setDraggedIndex(null);
+    }
+  }, [open, event]);
 
   const handleAddSlot = () => {
     setRecurrenceSlots([...recurrenceSlots, { dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]);
