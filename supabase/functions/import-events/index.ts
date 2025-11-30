@@ -204,11 +204,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Prepare summary
+    const summary = {
+      totalUploaded: events.length,
+      conflicts: conflicts.length,
+      readyToImport: validEvents.length,
+      skippedInvalid: events.length - conflicts.length - validEvents.length,
+    };
+
     // If conflicts found, return them for review
     if (conflicts.length > 0) {
       console.log(`Found ${conflicts.length} potential duplicates`);
       return new Response(
-        JSON.stringify({ conflicts }),
+        JSON.stringify({ 
+          conflicts,
+          summary,
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -218,7 +229,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         message: 'No conflicts found',
-        validEvents: validEvents.length,
+        summary,
+        validEvents,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
