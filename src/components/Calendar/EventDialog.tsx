@@ -8,10 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { FamilyEvent, FamilyMember, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
 import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
-import { Car, Bus, PersonStanding, Bike, ChevronDown } from "lucide-react";
+import { Car, Bus, PersonStanding, Bike, ChevronDown, GripVertical } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { EventCard } from "./EventCard";
 
 interface EventDialogProps {
   open: boolean;
@@ -48,6 +49,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     event?.participants || []
   );
   const [openSlotIndex, setOpenSlotIndex] = useState<number | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const handleAddSlot = () => {
     setRecurrenceSlots([...recurrenceSlots, { dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]);
@@ -95,6 +97,27 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     }
   };
 
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newSlots = [...recurrenceSlots];
+    const draggedSlot = newSlots[draggedIndex];
+    newSlots.splice(draggedIndex, 1);
+    newSlots.splice(index, 0, draggedSlot);
+    
+    setRecurrenceSlots(newSlots);
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   const handleSave = () => {
     const now = new Date();
     const newEvent: FamilyEvent = {
@@ -117,12 +140,13 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card/80 backdrop-blur-md border-border/50">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-card/80 backdrop-blur-md border-border/50">
         <DialogHeader>
           <DialogTitle>{event ? "Edit Event" : "Create New Event"}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="grid lg:grid-cols-[1fr,350px] gap-6 py-4">
+          <div className="space-y-6">
           {/* Participants - at the very top */}
           <div className="space-y-3 p-5 rounded-xl bg-surface-container/50 border border-outline/20 shadow-sm">
             <h3 className="font-semibold text-base text-on-surface">Which kids are attending?</h3>
@@ -232,9 +256,22 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                     open={openSlotIndex === index}
                     onOpenChange={(open) => setOpenSlotIndex(open ? index : null)}
                   >
-                    <div className="border border-border/50 rounded-lg overflow-hidden">
+                    <div 
+                      className="border border-border/50 rounded-lg overflow-hidden transition-all"
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                      style={{ 
+                        opacity: draggedIndex === index ? 0.5 : 1,
+                        cursor: 'move'
+                      }}
+                    >
                       {/* Slot Time Configuration */}
                       <div className="flex items-end gap-2 p-3 bg-surface-container">
+                        <div className="flex items-center justify-center h-10 cursor-grab active:cursor-grabbing">
+                          <GripVertical className="h-5 w-5 text-on-surface-variant" />
+                        </div>
                         <div className="flex-1">
                           <Label>Day</Label>
                           <Select
@@ -416,7 +453,57 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
               })}
             </div>
           </div>
+          </div>
 
+          {/* Event Preview Panel */}
+          <div className="hidden lg:block space-y-4 bg-surface-container-low/30 rounded-lg p-4 border border-border/30">
+            <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2">
+              <span>Event Preview</span>
+            </h3>
+            
+            {title && participants.length > 0 ? (
+              <div className="space-y-3">
+                <p className="text-xs text-on-surface-variant mb-3">
+                  Preview of how your events will appear:
+                </p>
+                {recurrenceSlots.map((slot, index) => {
+                  const previewEvent: FamilyEvent = {
+                    id: `preview-${index}`,
+                    title: title || "Event Title",
+                    category,
+                    location,
+                    startDate: new Date(startDate),
+                    endDate: endDate ? new Date(endDate) : undefined,
+                    recurrenceSlots: [slot],
+                    participants,
+                    transportation: slot.transportation,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  };
+
+                  const dayLabel = DAYS_OF_WEEK.find(d => d.value === slot.dayOfWeek)?.label || "Day";
+
+                  return (
+                    <div key={index} className="space-y-1">
+                      <div className="text-xs font-medium text-on-surface-variant flex items-center gap-2">
+                        <GripVertical className="h-3 w-3" />
+                        {dayLabel}
+                      </div>
+                      <EventCard
+                        event={previewEvent}
+                        startTime={slot.startTime}
+                        endTime={slot.endTime}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-sm text-on-surface-variant/60 text-center py-8">
+                Fill in event details to see preview
+              </div>
+            )}
+          </div>
         </div>
 
         <DialogFooter className="flex-row justify-between items-center">
