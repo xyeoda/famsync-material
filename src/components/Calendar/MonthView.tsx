@@ -41,8 +41,14 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
     const dayOfWeek = date.getDay();
     return events
       .filter(event => {
-        if (event.startDate > date) return false;
-        if (event.endDate && event.endDate < date) return false;
+        // Use date-only comparison for timezone safety
+        const eventStartDate = new Date(event.startDate.toISOString().split('T')[0]);
+        const compareDate = new Date(date.toISOString().split('T')[0]);
+        if (eventStartDate > compareDate) return false;
+        if (event.endDate) {
+          const eventEndDate = new Date(event.endDate.toISOString().split('T')[0]);
+          if (eventEndDate < compareDate) return false;
+        }
         
         return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
       })
