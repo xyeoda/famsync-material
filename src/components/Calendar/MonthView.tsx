@@ -41,6 +41,11 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
     return events.filter(event => {
       if (event.startDate > date) return false;
       if (event.endDate && event.endDate < date) return false;
+      
+      // Check if this instance is cancelled
+      const instance = getInstanceForDate(event.id, date);
+      if (instance?.cancelled) return false;
+      
       return event.recurrenceSlots.some(slot => slot.dayOfWeek === dayOfWeek);
     });
   };
