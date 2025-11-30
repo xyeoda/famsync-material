@@ -258,13 +258,26 @@ export function InstanceDialog({
                 Edit Series
               </Button>
             )}
-            {onDeleteInstance && (
+            {onDeleteInstance && !instance?.cancelled && (
               <Button 
                 variant="outlined" 
                 onClick={onDeleteInstance} 
                 className="flex-1 sm:flex-initial text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
                 Cancel This Instance
+              </Button>
+            )}
+            {onDeleteInstance && instance?.cancelled && (
+              <Button 
+                variant="outlined" 
+                onClick={() => {
+                  // Restore by unmarking as cancelled
+                  const restoredInstance = { ...instance, cancelled: false };
+                  onSave(restoredInstance);
+                }} 
+                className="flex-1 sm:flex-initial text-primary border-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                Restore This Instance
               </Button>
             )}
             {onDeleteAll && (

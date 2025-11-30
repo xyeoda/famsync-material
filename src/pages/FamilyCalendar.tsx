@@ -17,6 +17,7 @@ import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 import dashboardBg from "@/assets/dashboard-bg.png";
 import bjjBadge from "@/assets/activities/bjj_badge.png";
+import { v4 as uuidv4 } from "uuid";
 
 const FamilyCalendar = () => {
   const { householdId: urlHouseholdId } = useParams<{ householdId: string }>();
@@ -34,7 +35,7 @@ const FamilyCalendar = () => {
   const { getFamilyMemberName } = useFamilySettingsContext();
   const location = useLocation();
   const { events, addEvent, updateEvent, deleteEventsByTitle, loadEvents } = useEventsDB();
-  const { instances, addInstance, updateInstance, getInstanceForDate, loadInstances } = useEventInstancesDB();
+  const { instances, addInstance, updateInstance, deleteInstance, getInstanceForDate, loadInstances } = useEventInstancesDB();
   const { toast } = useToast();
 
   // Load data when household ID is available
@@ -160,6 +161,36 @@ const FamilyCalendar = () => {
     }
   };
 
+  const handleDeleteInstance = () => {
+    if (!urlHouseholdId || !selectedEvent || !selectedDate) return;
+    
+    if (selectedInstance) {
+      // If instance exists, mark it as cancelled
+      updateInstance(selectedInstance.id, { cancelled: true });
+      toast({
+        title: "Instance Cancelled",
+        description: "This occurrence has been marked as cancelled.",
+      });
+    } else {
+      // If no instance exists, create a cancelled instance
+      const now = new Date();
+      const cancelledInstance: EventInstance = {
+        id: uuidv4(),
+        eventId: selectedEvent.id,
+        date: selectedDate,
+        cancelled: true,
+        createdAt: now,
+        updatedAt: now,
+      };
+      addInstance(cancelledInstance, urlHouseholdId);
+      toast({
+        title: "Instance Cancelled",
+        description: "This occurrence has been marked as cancelled.",
+      });
+    }
+    setInstanceDialogOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8 relative">
       <div 
@@ -240,6 +271,7 @@ const FamilyCalendar = () => {
               onSave={handleSaveInstance}
               onEditSeries={handleEditSeries}
               onDeleteAll={handleBulkDelete}
+              onDeleteInstance={handleDeleteInstance}
               event={selectedEvent}
               date={selectedDate}
               slotDayOfWeek={matchingSlot?.dayOfWeek}
