@@ -82,69 +82,65 @@ const FamilyDashboard = () => {
       
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8">
-          {/* Header Card */}
-          <Card className="surface-elevation-1 bg-card/80 backdrop-blur-md border-border/50">
-            <CardContent className="pt-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                {/* Left side: Family Name */}
-                <h2 className="text-3xl font-bold text-foreground">{householdName}</h2>
+          {/* Header - matching Calendar header style */}
+          <div className="surface-elevation-2 rounded-3xl p-4 mb-4 bg-card/80 backdrop-blur-md">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Left side: Family Name */}
+              <h2 className="text-2xl font-bold text-foreground">{householdName}</h2>
 
-                {/* Right side: User Controls */}
-                <div className="flex items-center gap-3">
-                  {user && (
-                    <>
-                      {/* User Info Section */}
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50">
-                        {userRole && <UserRoleBadge role={userRole} />}
-                      </div>
+              {/* Right side: User Controls */}
+              <div className="flex items-center gap-3">
+                {user && (
+                  <>
+                    {/* User Info Section */}
+                    {userRole && <UserRoleBadge role={userRole} />}
 
-                      {/* Divider */}
-                      <div className="h-6 w-px bg-border hidden md:block" />
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border hidden md:block" />
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-wrap items-center gap-2">
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        onClick={() => navigate(`/family/${urlHouseholdId}/calendar`)}
+                        className="gap-2"
+                      >
+                        <Calendar className="h-4 w-4" />
+                        <span className="hidden sm:inline">Calendar</span>
+                      </Button>
+                      {canEdit && (
                         <Button
                           variant="outlined"
                           size="sm"
-                          onClick={() => navigate(`/family/${urlHouseholdId}/calendar`)}
+                          onClick={() => navigate(`/family/${urlHouseholdId}/settings`)}
                           className="gap-2"
                         >
-                          <Calendar className="h-4 w-4" />
-                          <span className="hidden sm:inline">Calendar</span>
+                          <Settings className="h-4 w-4" />
+                          <span className="hidden sm:inline">Settings</span>
                         </Button>
-                        {canEdit && (
-                          <Button
-                            variant="outlined"
-                            size="sm"
-                            onClick={() => navigate(`/family/${urlHouseholdId}/settings`)}
-                            className="gap-2"
-                          >
-                            <Settings className="h-4 w-4" />
-                            <span className="hidden sm:inline">Settings</span>
-                          </Button>
-                        )}
-                        <Button
-                          variant="outlined"
-                          size="sm"
-                          onClick={handleSignOut}
-                          className="gap-2"
-                        >
-                          <LogOut className="h-4 w-4" />
-                          <span className="hidden sm:inline">Sign Out</span>
-                        </Button>
-                      </div>
+                      )}
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        onClick={handleSignOut}
+                        className="gap-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span className="hidden sm:inline">Sign Out</span>
+                      </Button>
+                    </div>
 
-                      {/* Divider */}
-                      <div className="h-6 w-px bg-border hidden md:block" />
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border hidden md:block" />
 
-                      {/* Theme Toggle */}
-                      <ThemeToggle />
-                    </>
-                  )}
-                </div>
+                    {/* Theme Toggle */}
+                    <ThemeToggle />
+                  </>
+                )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         <Card className="surface-elevation-1 mb-8 bg-card/80 backdrop-blur-md border-border/50">
