@@ -13,8 +13,11 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('Missing authorization header');
       throw new Error('Missing authorization header');
     }
+
+    console.log('Auth header present, validating user...');
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -22,11 +25,20 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    // Get current user
+    // Get current user from JWT token
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      throw new Error('Unauthorized');
+    
+    if (userError) {
+      console.error('User auth error:', userError);
+      throw new Error(`Authentication failed: ${userError.message}`);
     }
+    
+    if (!user) {
+      console.error('No user found in JWT');
+      throw new Error('Unauthorized - invalid or expired token');
+    }
+
+    console.log('User authenticated:', user.id);
 
     // Check if user is site admin or parent
     const { data: adminCheck } = await supabase.rpc('is_site_admin', { _user_id: user.id });
