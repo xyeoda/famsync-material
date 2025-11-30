@@ -29,6 +29,7 @@ export default function AdminBulkEvents() {
   const [conflicts, setConflicts] = useState<DuplicateConflict[]>([]);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [uploadedData, setUploadedData] = useState<any>(null);
+  const [uploadSummary, setUploadSummary] = useState<any>(null);
 
   // Check access permissions
   useEffect(() => {
@@ -103,6 +104,7 @@ export default function AdminBulkEvents() {
 
     setIsUploading(true);
     setUploadResult(null);
+    setUploadSummary(null);
 
     try {
       const text = await file.text();
@@ -119,15 +121,35 @@ export default function AdminBulkEvents() {
 
       if (error) throw error;
 
+      // Store summary information
+      setUploadSummary(data.summary);
+
       if (data.conflicts && data.conflicts.length > 0) {
         setConflicts(data.conflicts);
         setUploadedData(events);
         setShowReviewDialog(true);
-      } else {
-        setUploadResult(data);
+        toast({
+          title: "Upload processed",
+          description: `Found ${data.summary.conflicts} potential duplicates to review`,
+        });
+      } else if (data.validEvents) {
+        // No conflicts - auto-import the valid events
+        const { data: resolveData, error: resolveError } = await supabase.functions.invoke('resolve-event-conflicts', {
+          body: {
+            events: data.validEvents,
+            resolutions: data.validEvents.reduce((acc: any, _: any, idx: number) => {
+              acc[idx] = 'create';
+              return acc;
+            }, {}),
+          },
+        });
+
+        if (resolveError) throw resolveError;
+
+        setUploadResult(resolveData);
         toast({
           title: "Import successful",
-          description: `Imported ${data.imported} events`,
+          description: `Imported ${resolveData.imported} events`,
         });
       }
     } catch (error: any) {
@@ -269,12 +291,33 @@ export default function AdminBulkEvents() {
               </label>
             </div>
 
+            {uploadSummary && (
+              <Alert className="border-primary/50 bg-primary/10">
+                <AlertCircle className="h-4 w-4 text-primary" />
+                <AlertDescription>
+                  <div className="space-y-1">
+                    <p className="font-semibold">Upload Summary:</p>
+                    <ul className="text-sm space-y-1 ml-4">
+                      <li>📊 Total records in file: {uploadSummary.totalUploaded}</li>
+                      {uploadSummary.conflicts > 0 && (
+                        <li>⚠️ Potential duplicates: {uploadSummary.conflicts}</li>
+                      )}
+                      {uploadSummary.skippedInvalid > 0 && (
+                        <li>⚠️ Invalid/skipped: {uploadSummary.skippedInvalid}</li>
+                      )}
+                      <li>✓ Ready to import: {uploadSummary.readyToImport}</li>
+                    </ul>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             {uploadResult && (
               <Alert className="border-green-500/50 bg-green-500/10">
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
                 <AlertDescription>
                   <div className="space-y-1">
-                    <p className="font-semibold">Import Summary:</p>
+                    <p className="font-semibold">Import Results:</p>
                     <ul className="text-sm space-y-1 ml-4">
                       <li>✓ Imported: {uploadResult.imported} new events</li>
                       <li>✓ Updated: {uploadResult.updated} existing events</li>
