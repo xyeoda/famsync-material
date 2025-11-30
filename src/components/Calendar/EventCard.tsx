@@ -2,7 +2,7 @@ import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember } from "@/type
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Car, Bus, PersonStanding, Bike } from "lucide-react";
+import { Car, Bus, PersonStanding, Bike, MapPin, ArrowDown, ArrowUp } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 
 interface EventCardProps {
@@ -90,34 +90,10 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
           </span>
         </div>
 
-        {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
-          <div className="flex items-center gap-1 flex-wrap">
-            {transportation.dropOffPerson && DropOffIcon && (
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1",
-                  dropOffColor && "text-white",
-                )}
-                style={dropOffColor ? { backgroundColor: `hsl(${dropOffColor})` } : undefined}
-              >
-                <DropOffIcon className="h-3 w-3" />
-                {getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]}
-              </Badge>
-            )}
-            {transportation.pickUpPerson && PickUpIcon && (
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-xs lg:text-[10px] py-0.5 px-1.5 h-4 font-normal rounded-full flex items-center gap-1",
-                  pickUpColor && "text-white",
-                )}
-                style={pickUpColor ? { backgroundColor: `hsl(${pickUpColor})` } : undefined}
-              >
-                <PickUpIcon className="h-3 w-3" />
-                {getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]}
-              </Badge>
-            )}
+        {event.location && (
+          <div className="flex items-center gap-1 text-xs lg:text-[10px] text-muted-foreground">
+            <MapPin className="h-3 w-3 flex-shrink-0" />
+            <span className="truncate">{event.location}</span>
           </div>
         )}
 
@@ -139,6 +115,32 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
             );
           })}
         </div>
+
+        {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
+          <div className="flex items-center justify-between pt-1 border-t border-border/30">
+            {transportation.dropOffPerson && DropOffIcon ? (
+              <div className="flex items-center gap-1">
+                {DropOffIcon && <DropOffIcon className="h-3 w-3 text-muted-foreground" />}
+                <div 
+                  className="w-2 h-2 rounded-full"
+                  style={dropOffColor ? { backgroundColor: `hsl(${dropOffColor})` } : undefined}
+                />
+                <ArrowDown className="h-3 w-3 text-muted-foreground" />
+              </div>
+            ) : <div />}
+            
+            {transportation.pickUpPerson && PickUpIcon ? (
+              <div className="flex items-center gap-1">
+                <ArrowUp className="h-3 w-3 text-muted-foreground" />
+                <div 
+                  className="w-2 h-2 rounded-full"
+                  style={pickUpColor ? { backgroundColor: `hsl(${pickUpColor})` } : undefined}
+                />
+                {PickUpIcon && <PickUpIcon className="h-3 w-3 text-muted-foreground" />}
+              </div>
+            ) : <div />}
+          </div>
+        )}
       </div>
     </Card>
   );

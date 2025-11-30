@@ -1,6 +1,8 @@
 import { FamilyEvent, EventInstance, FamilyMember } from "@/types/event";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, startOfWeek, endOfWeek, isSameDay, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
+import { MapPin, Car, Bus, PersonStanding, Bike } from "lucide-react";
+import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -10,6 +12,7 @@ interface MonthViewProps {
 }
 
 export function MonthView({ currentDate, events, instances, onEventClick }: MonthViewProps) {
+  const { settings } = useFamilySettingsContext();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -17,6 +20,20 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
   
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const transportIcons = {
+    car: Car,
+    bus: Bus,
+    walk: PersonStanding,
+    bike: Bike,
+  };
+
+  const getMemberColor = (member: FamilyMember) => {
+    if (member === "parent1") return settings.parent1Color;
+    if (member === "parent2") return settings.parent2Color;
+    if (member === "housekeeper") return settings.housekeeperColor;
+    return null;
+  };
 
   const getInstanceForDate = (eventId: string, date: Date): EventInstance | undefined => {
     const dateStr = date.toISOString().split('T')[0];
@@ -95,13 +112,20 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                   const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
                   const borderColor = getEventBorderColor(event);
                   const isGradient = kidsInvolved.length === 2;
+                  const instance = getInstanceForDate(event.id, day);
+                  const transportation = instance?.transportation || event.transportation;
                   
+                  const DropOffIcon = transportation?.dropOffMethod ? transportIcons[transportation.dropOffMethod] : null;
+                  const PickUpIcon = transportation?.pickUpMethod ? transportIcons[transportation.pickUpMethod] : null;
+                  const dropOffColor = transportation?.dropOffPerson ? getMemberColor(transportation.dropOffPerson) : null;
+                  const pickUpColor = transportation?.pickUpPerson ? getMemberColor(transportation.pickUpPerson) : null;
+
                   return (
                     <div
                       key={event.id}
                       onClick={() => onEventClick(event, day)}
                       className={cn(
-                        "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard truncate state-layer bg-surface-container dark:bg-surface-container-high relative",
+                        "text-[10px] p-1.5 rounded-lg cursor-pointer hover:shadow-elevation-1 dark:hover:bg-surface-container-high transition-standard state-layer bg-surface-container dark:bg-surface-container-high relative space-y-0.5",
                         `category-${event.category}`,
                         "font-medium dark:text-foreground/90",
                         !isGradient && "border-l-2"
@@ -116,7 +140,35 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                           }}
                         />
                       )}
-                      {event.title}
+                      <div className="truncate">{event.title}</div>
+                      {event.location && (
+                        <div className="flex items-center gap-0.5 text-muted-foreground">
+                          <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
+                        </div>
+                      )}
+                      {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                          {transportation.dropOffPerson && DropOffIcon && dropOffColor && (
+                            <div className="flex items-center gap-0.5">
+                              {DropOffIcon && <DropOffIcon className="h-2.5 w-2.5 text-muted-foreground" />}
+                              <div 
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: `hsl(${dropOffColor})` }}
+                              />
+                            </div>
+                          )}
+                          {transportation.pickUpPerson && PickUpIcon && pickUpColor && (
+                            <div className="flex items-center gap-0.5">
+                              <div 
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: `hsl(${pickUpColor})` }}
+                              />
+                              {PickUpIcon && <PickUpIcon className="h-2.5 w-2.5 text-muted-foreground" />}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
