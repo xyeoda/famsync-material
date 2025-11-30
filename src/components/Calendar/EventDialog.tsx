@@ -11,7 +11,7 @@ import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike, ChevronDown, GripVertical } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
 import { EventCard } from "./EventCard";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +33,7 @@ const DAYS_OF_WEEK = [
 ];
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
-  const { getFamilyMemberName } = useFamilySettings();
+  const { getFamilyMemberName } = useFamilySettingsContext();
   const [title, setTitle] = useState(event?.title || "");
   const [category, setCategory] = useState<ActivityCategory>(event?.category || "other");
   const [location, setLocation] = useState(event?.location || "");

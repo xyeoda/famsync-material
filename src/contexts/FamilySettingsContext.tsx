@@ -1,17 +1,18 @@
 import { createContext, useContext, ReactNode, useEffect } from "react";
-import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
+import { useFamilySettingsDB, FamilySettings } from "@/hooks/useFamilySettingsDB";
 import { useHousehold } from "./HouseholdContext";
 import { FamilyMember } from "@/types/event";
 
 interface FamilySettingsContextType {
   getFamilyMemberName: (member: FamilyMember) => string;
   getFamilyMembers: () => Record<FamilyMember, string>;
+  settings: FamilySettings;
 }
 
 const FamilySettingsContext = createContext<FamilySettingsContextType | undefined>(undefined);
 
 export function FamilySettingsProvider({ children }: { children: ReactNode }) {
-  const { getFamilyMemberName, getFamilyMembers, loadSettings } = useFamilySettingsDB();
+  const { getFamilyMemberName, getFamilyMembers, loadSettings, settings } = useFamilySettingsDB();
   const { householdId } = useHousehold();
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export function FamilySettingsProvider({ children }: { children: ReactNode }) {
   }, [householdId]);
 
   return (
-    <FamilySettingsContext.Provider value={{ getFamilyMemberName, getFamilyMembers }}>
+    <FamilySettingsContext.Provider value={{ getFamilyMemberName, getFamilyMembers, settings }}>
       {children}
     </FamilySettingsContext.Provider>
   );
