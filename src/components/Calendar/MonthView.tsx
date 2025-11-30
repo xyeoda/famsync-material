@@ -37,16 +37,21 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
     });
   };
 
+  // Helper to get date-only for comparison (in local timezone)
+  const getDateOnly = (d: Date) => {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  };
+
   const getEventsForDay = (date: Date) => {
     const dayOfWeek = date.getDay();
+    const compareDate = getDateOnly(date);
     return events
       .filter(event => {
-        // Use date-only comparison for timezone safety
-        const eventStartDate = new Date(event.startDate.toISOString().split('T')[0]);
-        const compareDate = new Date(date.toISOString().split('T')[0]);
+        // Use date-only comparison in local timezone
+        const eventStartDate = getDateOnly(event.startDate);
         if (eventStartDate > compareDate) return false;
         if (event.endDate) {
-          const eventEndDate = new Date(event.endDate.toISOString().split('T')[0]);
+          const eventEndDate = getDateOnly(event.endDate);
           if (eventEndDate < compareDate) return false;
         }
         

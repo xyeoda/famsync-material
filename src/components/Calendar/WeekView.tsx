@@ -29,17 +29,22 @@ export function WeekView({ currentDate, events, instances, onEventClick }: WeekV
   };
 
   // Map events to their days based on recurrence slots, showing cancelled instances with visual treatment
+  // Helper to get date-only for comparison (in local timezone)
+  const getDateOnly = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
   const getEventsForDay = (date: Date): DayEvent[] => {
     const dayOfWeek = date.getDay();
     const dayEvents: DayEvent[] = [];
+    const compareDate = getDateOnly(date);
 
     events.forEach(event => {
-      // Check if event is active on this date (using date-only comparison for timezone safety)
-      const eventStartDate = new Date(event.startDate.toISOString().split('T')[0]);
-      const compareDate = new Date(date.toISOString().split('T')[0]);
+      // Check if event is active on this date (using date-only comparison in local timezone)
+      const eventStartDate = getDateOnly(event.startDate);
       if (eventStartDate > compareDate) return;
       if (event.endDate) {
-        const eventEndDate = new Date(event.endDate.toISOString().split('T')[0]);
+        const eventEndDate = getDateOnly(event.endDate);
         if (eventEndDate < compareDate) return;
       }
 
