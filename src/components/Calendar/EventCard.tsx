@@ -117,28 +117,34 @@ export function EventCard({ event, instance, startTime, endTime, onClick }: Even
         </div>
 
         {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
-          <div className="flex items-center justify-between pt-1 border-t border-border/30">
-            {transportation.dropOffPerson && DropOffIcon ? (
+          <div className="flex items-center gap-2 pt-1.5 border-t border-border/30 flex-wrap">
+            {transportation.dropOffPerson && DropOffIcon && dropOffColor && (
               <div className="flex items-center gap-1">
                 {DropOffIcon && <DropOffIcon className="h-3 w-3 text-muted-foreground" />}
                 <div 
-                  className="w-2 h-2 rounded-full"
-                  style={dropOffColor ? { backgroundColor: `hsl(${dropOffColor})` } : undefined}
+                  className="w-3 h-3 rounded-full border-2 border-background"
+                  style={{ backgroundColor: `hsl(${dropOffColor})` }}
                 />
                 <ArrowDown className="h-3 w-3 text-muted-foreground" />
+                <span className="text-xs lg:text-[10px] font-medium">
+                  {getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]}
+                </span>
               </div>
-            ) : <div />}
+            )}
             
-            {transportation.pickUpPerson && PickUpIcon ? (
+            {transportation.pickUpPerson && PickUpIcon && pickUpColor && (
               <div className="flex items-center gap-1">
                 <ArrowUp className="h-3 w-3 text-muted-foreground" />
                 <div 
-                  className="w-2 h-2 rounded-full"
-                  style={pickUpColor ? { backgroundColor: `hsl(${pickUpColor})` } : undefined}
+                  className="w-3 h-3 rounded-full border-2 border-background"
+                  style={{ backgroundColor: `hsl(${pickUpColor})` }}
                 />
                 {PickUpIcon && <PickUpIcon className="h-3 w-3 text-muted-foreground" />}
+                <span className="text-xs lg:text-[10px] font-medium">
+                  {getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]}
+                </span>
               </div>
-            ) : <div />}
+            )}
           </div>
         )}
       </div>

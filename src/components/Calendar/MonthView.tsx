@@ -148,20 +148,20 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
                         </div>
                       )}
                       {(transportation?.dropOffPerson || transportation?.pickUpPerson) && (
-                        <div className="flex items-center gap-1.5 pt-0.5">
+                        <div className="flex items-center gap-1 pt-0.5 flex-wrap">
                           {transportation.dropOffPerson && DropOffIcon && dropOffColor && (
-                            <div className="flex items-center gap-0.5">
+                            <div className="flex items-center gap-0.5 bg-surface-container-high dark:bg-surface-container rounded-full px-1 py-0.5">
                               {DropOffIcon && <DropOffIcon className="h-2.5 w-2.5 text-muted-foreground" />}
                               <div 
-                                className="w-1.5 h-1.5 rounded-full"
+                                className="w-2 h-2 rounded-full border border-background"
                                 style={{ backgroundColor: `hsl(${dropOffColor})` }}
                               />
                             </div>
                           )}
                           {transportation.pickUpPerson && PickUpIcon && pickUpColor && (
-                            <div className="flex items-center gap-0.5">
+                            <div className="flex items-center gap-0.5 bg-surface-container-high dark:bg-surface-container rounded-full px-1 py-0.5">
                               <div 
-                                className="w-1.5 h-1.5 rounded-full"
+                                className="w-2 h-2 rounded-full border border-background"
                                 style={{ backgroundColor: `hsl(${pickUpColor})` }}
                               />
                               {PickUpIcon && <PickUpIcon className="h-2.5 w-2.5 text-muted-foreground" />}
