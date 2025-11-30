@@ -53,11 +53,22 @@ export default function AdminBulkEvents() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
+      // Refresh session to ensure we have a valid JWT
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Your session has expired. Please refresh the page and try again.');
+      }
+
+      console.log('Calling export-events function...');
       const { data, error } = await supabase.functions.invoke('export-events', {
         method: 'POST',
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Export function error:', error);
+        throw error;
+      }
 
       // Create and download JSON file
       const blob = new Blob([JSON.stringify(data.events, null, 2)], { type: 'application/json' });
