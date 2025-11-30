@@ -14,24 +14,32 @@ export function useEventsDB() {
 
   const loadEvents = async (forceHouseholdId?: string) => {
     try {
-      let query = supabase
-        .from('family_events')
-        .select('*')
-        .order('start_date', { ascending: true });
+      let householdId = forceHouseholdId;
       
-      // If we have a specific household ID to load (display mode)
-      if (forceHouseholdId) {
-        query = query.eq('household_id', forceHouseholdId);
-      } else if (user) {
-        // Otherwise load by user_id (authenticated mode)
-        query = query.eq('user_id', user.id);
-      } else {
-        // No user and no household ID, can't load events
+      // If no household ID provided, get it from user's roles
+      if (!householdId && user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('household_id')
+          .eq('user_id', user.id)
+          .limit(1)
+          .single();
+        
+        if (roleData) {
+          householdId = roleData.household_id;
+        }
+      }
+      
+      if (!householdId) {
         setLoading(false);
         return;
       }
       
-      const { data, error } = await query;
+      const { data, error } = await supabase
+        .from('family_events')
+        .select('*')
+        .eq('household_id', householdId)
+        .order('start_date', { ascending: true });
 
       if (error) throw error;
 
@@ -110,8 +118,7 @@ export function useEventsDB() {
       const { error } = await supabase
         .from('family_events')
         .update(dbUpdates)
-        .eq('id', id)
-        .eq('user_id', user.id);
+        .eq('id', id);
 
       if (error) throw error;
 
@@ -128,8 +135,7 @@ export function useEventsDB() {
       const { error } = await supabase
         .from('family_events')
         .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
+        .eq('id', id);
 
       if (error) throw error;
 
@@ -143,11 +149,21 @@ export function useEventsDB() {
     if (!user) return;
 
     try {
+      // Get household_id first
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('household_id')
+        .eq('user_id', user.id)
+        .limit(1)
+        .single();
+      
+      if (!roleData) return;
+      
       const { error } = await supabase
         .from('family_events')
         .delete()
         .eq('title', title)
-        .eq('user_id', user.id);
+        .eq('household_id', roleData.household_id);
 
       if (error) throw error;
 
