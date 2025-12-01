@@ -8,18 +8,30 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/app-client";
-import { Plus, Copy, Trash2, Calendar, Download, Info } from "lucide-react";
+import { Plus, Copy, Trash2, Calendar, Download, Info, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { formatDistanceToNow } from "date-fns";
 
 interface CalendarToken {
   id: string;
   name: string;
   token: string;
   filter_person: string | null;
+  calendar_app_type: string;
   last_accessed_at: string | null;
   created_at: string;
 }
+
+type CalendarAppType = 'google' | 'apple' | 'outlook_web' | 'outlook_desktop' | 'other';
+
+const SYNC_INTERVALS: Record<CalendarAppType, number | null> = {
+  google: 18 * 60 * 60 * 1000, // 18 hours (middle of 12-24h range)
+  apple: null, // Configurable
+  outlook_web: 3 * 60 * 60 * 1000, // 3 hours
+  outlook_desktop: null, // Configurable
+  other: null,
+};
 
 export function CalendarSyncCard() {
   const { toast } = useToast();
@@ -30,6 +42,7 @@ export function CalendarSyncCard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [feedName, setFeedName] = useState("");
   const [filterPerson, setFilterPerson] = useState<string>("all");
+  const [calendarAppType, setCalendarAppType] = useState<CalendarAppType>('google');
 
   useEffect(() => {
     if (householdId) {
@@ -73,6 +86,7 @@ export function CalendarSyncCard() {
           token,
           name: feedName,
           filter_person: filterPerson === 'all' ? null : filterPerson,
+          calendar_app_type: calendarAppType,
         });
 
       if (error) throw error;
@@ -85,6 +99,7 @@ export function CalendarSyncCard() {
       setDialogOpen(false);
       setFeedName("");
       setFilterPerson("all");
+      setCalendarAppType('google');
       loadTokens();
     } catch (error) {
       console.error('Error creating feed:', error);
@@ -140,7 +155,6 @@ export function CalendarSyncCard() {
       const response = await fetch(url);
       const icsContent = await response.text();
       
-      // Create a blob and trigger download
       const blob = new Blob([icsContent], { type: 'text/calendar' });
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -170,6 +184,40 @@ export function CalendarSyncCard() {
     if (filter === "parent2") return settings?.parent2Name || "Parent 2";
     if (filter === "housekeeper") return settings?.housekeeperName || "Housekeeper";
     return filter;
+  };
+
+  const getAppTypeLabel = (appType: string): string => {
+    const labels: Record<string, string> = {
+      google: "Google Calendar",
+      apple: "Apple Calendar",
+      outlook_web: "Outlook Web",
+      outlook_desktop: "Outlook Desktop",
+      other: "Other",
+    };
+    return labels[appType] || appType;
+  };
+
+  const getSyncStatus = (token: CalendarToken): { status: 'synced' | 'due' | 'never'; nextSync: Date | null } => {
+    if (!token.last_accessed_at) {
+      return { status: 'never', nextSync: null };
+    }
+
+    const lastSync = new Date(token.last_accessed_at);
+    const now = new Date();
+    const interval = SYNC_INTERVALS[token.calendar_app_type as CalendarAppType];
+
+    if (!interval) {
+      return { status: 'synced', nextSync: null };
+    }
+
+    const timeSinceSync = now.getTime() - lastSync.getTime();
+    const nextSync = new Date(lastSync.getTime() + interval);
+
+    if (timeSinceSync > interval) {
+      return { status: 'due', nextSync };
+    }
+
+    return { status: 'synced', nextSync };
   };
 
   return (
@@ -207,6 +255,21 @@ export function CalendarSyncCard() {
                   value={feedName}
                   onChange={(e) => setFeedName(e.target.value)}
                 />
+              </div>
+              <div>
+                <Label htmlFor="calendar-app">Calendar App</Label>
+                <Select value={calendarAppType} onValueChange={(value) => setCalendarAppType(value as CalendarAppType)}>
+                  <SelectTrigger id="calendar-app">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="google">Google Calendar (syncs every 12-24h)</SelectItem>
+                    <SelectItem value="apple">Apple Calendar (configurable)</SelectItem>
+                    <SelectItem value="outlook_web">Outlook Web (syncs every 3h)</SelectItem>
+                    <SelectItem value="outlook_desktop">Outlook Desktop (configurable)</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="filter">Filter Events</Label>
@@ -268,52 +331,81 @@ export function CalendarSyncCard() {
         {tokens.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-medium">Your Calendar Feeds</h4>
-            {tokens.map((token) => (
-              <Card key={token.id} className="backdrop-blur-sm bg-background/60">
-                <CardContent className="p-4 space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1 flex-1">
-                      <p className="font-medium">{token.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {getFilterLabel(token.filter_person)}
-                      </p>
-                      {token.last_accessed_at && (
+            {tokens.map((token) => {
+              const syncStatus = getSyncStatus(token);
+              return (
+                <Card key={token.id} className="backdrop-blur-sm bg-background/60">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium">{token.name}</p>
+                          {syncStatus.status === 'synced' && (
+                            <div className="flex items-center gap-1 text-green-500">
+                              <CheckCircle2 className="h-3 w-3 animate-pulse" />
+                              <span className="text-xs">Synced</span>
+                            </div>
+                          )}
+                          {syncStatus.status === 'due' && (
+                            <div className="flex items-center gap-1 text-amber-500">
+                              <AlertCircle className="h-3 w-3" />
+                              <span className="text-xs">Due</span>
+                            </div>
+                          )}
+                          {syncStatus.status === 'never' && (
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              <span className="text-xs">Never synced</span>
+                            </div>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
-                          Last synced: {new Date(token.last_accessed_at).toLocaleDateString()}
+                          {getFilterLabel(token.filter_person)} • {getAppTypeLabel(token.calendar_app_type)}
                         </p>
-                      )}
+                        {token.last_accessed_at && (
+                          <p className="text-xs text-muted-foreground">
+                            Last synced: {formatDistanceToNow(new Date(token.last_accessed_at), { addSuffix: true })}
+                          </p>
+                        )}
+                        {syncStatus.nextSync && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Next sync expected: {formatDistanceToNow(syncStatus.nextSync, { addSuffix: true })}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteFeed(token.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteFeed(token.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outlined"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => copyFeedUrl(token.token)}
-                    >
-                      <Copy className="h-3 w-3 mr-2" />
-                      Copy URL
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => downloadFeed(token.token, token.name)}
-                    >
-                      <Download className="h-3 w-3 mr-2" />
-                      Download ICS
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => copyFeedUrl(token.token)}
+                      >
+                        <Copy className="h-3 w-3 mr-2" />
+                        Copy URL
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => downloadFeed(token.token, token.name)}
+                      >
+                        <Download className="h-3 w-3 mr-2" />
+                        Download ICS
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
 

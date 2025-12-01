@@ -101,6 +101,7 @@ export type Database = {
       }
       calendar_tokens: {
         Row: {
+          calendar_app_type: string | null
           created_at: string
           filter_person: string | null
           household_id: string
@@ -112,6 +113,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          calendar_app_type?: string | null
           created_at?: string
           filter_person?: string | null
           household_id: string
@@ -123,6 +125,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          calendar_app_type?: string | null
           created_at?: string
           filter_person?: string | null
           household_id?: string
