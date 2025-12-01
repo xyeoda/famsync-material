@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/app-client";
-import { Plus, Copy, Trash2, Calendar, Download } from "lucide-react";
+import { Plus, Copy, Trash2, Calendar, Download, Info } from "lucide-react";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettings } from "@/hooks/useFamilySettings";
 
@@ -134,6 +134,36 @@ export function CalendarSyncCard() {
     return `${supabaseUrl}/functions/v1/calendar-feed?token=${token}`;
   };
 
+  const downloadFeed = async (token: string, name: string) => {
+    const url = getFeedUrl(token);
+    try {
+      const response = await fetch(url);
+      const icsContent = await response.text();
+      
+      // Create a blob and trigger download
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${name.replace(/\s+/g, '-').toLowerCase()}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+      
+      toast({
+        title: "Download started",
+        description: "Your calendar file is downloading.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download calendar file.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getFilterLabel = (filter: string | null) => {
     if (!filter) return "All family events";
     if (filter === "parent1") return settings?.parent1Name || "Parent 1";
@@ -201,6 +231,40 @@ export function CalendarSyncCard() {
           </DialogContent>
         </Dialog>
 
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
+          <h4 className="font-medium flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Understanding Your Options
+          </h4>
+          
+          <div className="space-y-2 text-sm">
+            <div>
+              <p className="font-medium text-green-400">📥 Subscribe (Copy URL)</p>
+              <p className="text-muted-foreground">
+                Your calendar app periodically fetches updates automatically. Changes in KinSynch
+                appear in your calendar within 12-24 hours (Google) or 15 min - 1 week (Apple/Outlook).
+                <strong> Recommended for ongoing sync.</strong>
+              </p>
+            </div>
+            
+            <div>
+              <p className="font-medium text-blue-400">💾 Download ICS</p>
+              <p className="text-muted-foreground">
+                Get an immediate snapshot of your current events. Useful when you need the latest
+                changes right now. <strong>One-time import, won't auto-update.</strong>
+              </p>
+            </div>
+            
+            <div className="border-t border-border/50 pt-2 mt-2">
+              <p className="font-medium text-amber-400">⚠️ Avoid Duplicates</p>
+              <p className="text-muted-foreground">
+                Don't subscribe AND download the same feed to the same calendar — this creates
+                duplicate events. Choose one method per calendar app.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {tokens.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-medium">Your Calendar Feeds</h4>
@@ -237,6 +301,15 @@ export function CalendarSyncCard() {
                       <Copy className="h-3 w-3 mr-2" />
                       Copy URL
                     </Button>
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => downloadFeed(token.token, token.name)}
+                    >
+                      <Download className="h-3 w-3 mr-2" />
+                      Download ICS
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -257,6 +330,7 @@ export function CalendarSyncCard() {
                   <li>Paste your feed URL</li>
                   <li>Click "Add calendar"</li>
                 </ol>
+                <p className="text-xs text-amber-400 mt-2">⏱️ Google Calendar syncs every 12-24 hours automatically</p>
               </div>
               <div>
                 <h5 className="font-medium mb-2">Apple Calendar (iOS/Mac)</h5>
@@ -266,6 +340,7 @@ export function CalendarSyncCard() {
                   <li>Paste your feed URL</li>
                   <li>Click Subscribe</li>
                 </ol>
+                <p className="text-xs text-amber-400 mt-2">⏱️ Sync frequency can be set in Calendar → Preferences → Accounts</p>
               </div>
               <div>
                 <h5 className="font-medium mb-2">Microsoft Outlook</h5>
@@ -275,6 +350,7 @@ export function CalendarSyncCard() {
                   <li>Paste your feed URL</li>
                   <li>Click Import</li>
                 </ol>
+                <p className="text-xs text-amber-400 mt-2">⏱️ Outlook web syncs every 3 hours; desktop app varies by settings</p>
               </div>
             </AccordionContent>
           </AccordionItem>
