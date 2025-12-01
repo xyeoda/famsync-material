@@ -120,6 +120,41 @@ export interface Database {
           is_first_parent?: boolean
         }
       }
+      calendar_tokens: {
+        Row: {
+          id: string
+          household_id: string
+          user_id: string
+          token: string
+          filter_person: string | null
+          name: string
+          last_accessed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          household_id: string
+          user_id: string
+          token: string
+          filter_person?: string | null
+          name: string
+          last_accessed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          household_id?: string
+          user_id?: string
+          token?: string
+          filter_person?: string | null
+          name?: string
+          last_accessed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       profiles: {
         Row: {
           id: string
