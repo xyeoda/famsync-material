@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Home, Users, Palette, Trash2, Shield, Copy, FileJson } from "lucide-react";
+import { ArrowLeft, Home, Users, Palette, Trash2, Shield, Copy, FileJson, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useHousehold } from "@/contexts/HouseholdContext";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
@@ -28,6 +28,7 @@ import dashboardBg from "@/assets/dashboard-bg.png";
 import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { ActivityLocationsCard } from "@/components/Settings/ActivityLocationsCard";
 import { CalendarSyncCard } from "@/components/Settings/CalendarSyncCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Color conversion utilities
 function hslToHex(hsl: string): string {
@@ -204,302 +205,338 @@ export default function FamilySettings() {
             <p className="text-muted-foreground mt-1">Manage your household configuration</p>
           </div>
 
-          {/* Household Settings */}
-          <Card className="bg-card/80 backdrop-blur-md border-border/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Home className="h-5 w-5 text-primary" />
-                <CardTitle>Household Information</CardTitle>
-              </div>
-              <CardDescription>Configure your household details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="household-name">Household Name</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="household-name"
-                    value={editedHouseholdName}
-                    onChange={(e) => setEditedHouseholdName(e.target.value)}
-                    placeholder="The Smith Family"
-                    disabled={loading}
-                  />
-                  <Button
-                    onClick={handleUpdateHouseholdName}
-                    disabled={loading || editedHouseholdName === householdName}
+          <Tabs defaultValue="family" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="family" className="gap-2">
+                <Users className="h-4 w-4" />
+                Family
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="gap-2">
+                <Calendar className="h-4 w-4" />
+                Calendar
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Advanced
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Family Tab */}
+            <TabsContent value="family" className="space-y-6">
+              {/* Household Settings */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Home className="h-5 w-5 text-primary" />
+                    <CardTitle>Household Information</CardTitle>
+                  </div>
+                  <CardDescription>Configure your household details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="household-name">Household Name</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="household-name"
+                        value={editedHouseholdName}
+                        onChange={(e) => setEditedHouseholdName(e.target.value)}
+                        placeholder="The Smith Family"
+                        disabled={loading}
+                      />
+                      <Button
+                        onClick={handleUpdateHouseholdName}
+                        disabled={loading || editedHouseholdName === householdName}
+                      >
+                        Update
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Label htmlFor="display-url">Display Link</Label>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Share this link with devices you want to display the calendar on (read-only access)
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        id="display-url"
+                        value={displayUrl || "Loading..."}
+                        readOnly
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        onClick={handleCopyDisplayUrl}
+                        disabled={!displayUrl}
+                        variant="outlined"
+                        className="gap-2"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Family Members */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    <CardTitle>Family Members</CardTitle>
+                  </div>
+                  <CardDescription>Customize family member names</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="parent1-name">Parent 1 Name</Label>
+                      <Input
+                        id="parent1-name"
+                        value={settings.parent1Name || ""}
+                        onChange={(e) => handleUpdateFamilyMember("parent1Name", e.target.value)}
+                        placeholder="Parent 1"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="parent2-name">Parent 2 Name</Label>
+                      <Input
+                        id="parent2-name"
+                        value={settings.parent2Name || ""}
+                        onChange={(e) => handleUpdateFamilyMember("parent2Name", e.target.value)}
+                        placeholder="Parent 2"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="kid1-name">Kid 1 Name</Label>
+                      <Input
+                        id="kid1-name"
+                        value={settings.kid1Name || ""}
+                        onChange={(e) => handleUpdateFamilyMember("kid1Name", e.target.value)}
+                        placeholder="Kid 1"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="kid2-name">Kid 2 Name</Label>
+                      <Input
+                        id="kid2-name"
+                        value={settings.kid2Name || ""}
+                        onChange={(e) => handleUpdateFamilyMember("kid2Name", e.target.value)}
+                        placeholder="Kid 2"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="housekeeper-name">Housekeeper Name</Label>
+                      <Input
+                        id="housekeeper-name"
+                        value={settings.housekeeperName || ""}
+                        onChange={(e) => handleUpdateFamilyMember("housekeeperName", e.target.value)}
+                        placeholder="Housekeeper"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Color Customization */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Palette className="h-5 w-5 text-primary" />
+                    <CardTitle>Color Customization</CardTitle>
+                  </div>
+                  <CardDescription>Click the colored buttons to pick a color</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="parent1-color">Parent 1 Color</Label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          id="parent1-color"
+                          value={hslToHex(settings.parent1Color)}
+                          onChange={(e) => handleColorChange("parent1Color", e.target.value)}
+                          className="h-10 w-20 rounded border border-input cursor-pointer"
+                        />
+                        <Input
+                          value={hslToHex(settings.parent1Color)}
+                          readOnly
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="parent2-color">Parent 2 Color</Label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          id="parent2-color"
+                          value={hslToHex(settings.parent2Color)}
+                          onChange={(e) => handleColorChange("parent2Color", e.target.value)}
+                          className="h-10 w-20 rounded border border-input cursor-pointer"
+                        />
+                        <Input
+                          value={hslToHex(settings.parent2Color)}
+                          readOnly
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="kid1-color">Kid 1 Color</Label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          id="kid1-color"
+                          value={hslToHex(settings.kid1Color)}
+                          onChange={(e) => handleColorChange("kid1Color", e.target.value)}
+                          className="h-10 w-20 rounded border border-input cursor-pointer"
+                        />
+                        <Input
+                          value={hslToHex(settings.kid1Color)}
+                          readOnly
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="kid2-color">Kid 2 Color</Label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          id="kid2-color"
+                          value={hslToHex(settings.kid2Color)}
+                          onChange={(e) => handleColorChange("kid2Color", e.target.value)}
+                          className="h-10 w-20 rounded border border-input cursor-pointer"
+                        />
+                        <Input
+                          value={hslToHex(settings.kid2Color)}
+                          readOnly
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="housekeeper-color">Housekeeper Color</Label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          id="housekeeper-color"
+                          value={hslToHex(settings.housekeeperColor)}
+                          onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
+                          className="h-10 w-20 rounded border border-input cursor-pointer"
+                        />
+                        <Input
+                          value={hslToHex(settings.housekeeperColor)}
+                          readOnly
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Calendar Tab */}
+            <TabsContent value="calendar" className="space-y-6">
+              {/* Activity Locations */}
+              {urlHouseholdId && <ActivityLocationsCard householdId={urlHouseholdId} />}
+
+              {/* Calendar Sync */}
+              <CalendarSyncCard />
+
+              {/* Bulk Event Management */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <FileJson className="h-5 w-5 text-primary" />
+                    <CardTitle>Bulk Event Management</CardTitle>
+                  </div>
+                  <CardDescription>Export and import events in bulk with smart duplicate detection</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    onClick={() => navigate(`/family/${urlHouseholdId}/bulk-events`)} 
+                    variant="outlined" 
+                    className="w-full"
                   >
-                    Update
+                    <FileJson className="mr-2 h-4 w-4" />
+                    Manage Events in Bulk
                   </Button>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-              <Separator />
-
-              <div className="space-y-2">
-                <Label htmlFor="display-url">Display Link</Label>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Share this link with devices you want to display the calendar on (read-only access)
-                </p>
-                <div className="flex gap-2">
-                  <Input
-                    id="display-url"
-                    value={displayUrl || "Loading..."}
-                    readOnly
-                    className="font-mono text-sm"
-                  />
-                  <Button
-                    onClick={handleCopyDisplayUrl}
-                    disabled={!displayUrl}
-                    variant="outlined"
-                    className="gap-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                    Copy
+            {/* Advanced Tab */}
+            <TabsContent value="advanced" className="space-y-6">
+              {/* User Management */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    <CardTitle>User Management</CardTitle>
+                  </div>
+                  <CardDescription>Manage family member access</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={() => setUserManagementOpen(true)} variant="outlined" className="w-full">
+                    <Users className="mr-2 h-4 w-4" />
+                    Manage Users
                   </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {/* Family Members */}
-          <Card className="bg-card/80 backdrop-blur-md border-border/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                <CardTitle>Family Members</CardTitle>
-              </div>
-              <CardDescription>Customize family member names</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="parent1-name">Parent 1 Name</Label>
-                  <Input
-                    id="parent1-name"
-                    value={settings.parent1Name || ""}
-                    onChange={(e) => handleUpdateFamilyMember("parent1Name", e.target.value)}
-                    placeholder="Parent 1"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="parent2-name">Parent 2 Name</Label>
-                  <Input
-                    id="parent2-name"
-                    value={settings.parent2Name || ""}
-                    onChange={(e) => handleUpdateFamilyMember("parent2Name", e.target.value)}
-                    placeholder="Parent 2"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kid1-name">Kid 1 Name</Label>
-                  <Input
-                    id="kid1-name"
-                    value={settings.kid1Name || ""}
-                    onChange={(e) => handleUpdateFamilyMember("kid1Name", e.target.value)}
-                    placeholder="Kid 1"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kid2-name">Kid 2 Name</Label>
-                  <Input
-                    id="kid2-name"
-                    value={settings.kid2Name || ""}
-                    onChange={(e) => handleUpdateFamilyMember("kid2Name", e.target.value)}
-                    placeholder="Kid 2"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="housekeeper-name">Housekeeper Name</Label>
-                  <Input
-                    id="housekeeper-name"
-                    value={settings.housekeeperName || ""}
-                    onChange={(e) => handleUpdateFamilyMember("housekeeperName", e.target.value)}
-                    placeholder="Housekeeper"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Color Customization */}
-          <Card className="bg-card/80 backdrop-blur-md border-border/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-primary" />
-                <CardTitle>Color Customization</CardTitle>
-              </div>
-              <CardDescription>Click the colored buttons to pick a color</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="parent1-color">Parent 1 Color</Label>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      id="parent1-color"
-                      value={hslToHex(settings.parent1Color)}
-                      onChange={(e) => handleColorChange("parent1Color", e.target.value)}
-                      className="h-10 w-20 rounded border border-input cursor-pointer"
-                    />
-                    <Input
-                      value={hslToHex(settings.parent1Color)}
-                      readOnly
-                      className="flex-1"
-                    />
+              {/* Danger Zone */}
+              <Card className="bg-card/80 backdrop-blur-md border-border/50 border-destructive/50">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Trash2 className="h-5 w-5 text-destructive" />
+                    <CardTitle className="text-destructive">Danger Zone</CardTitle>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="parent2-color">Parent 2 Color</Label>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      id="parent2-color"
-                      value={hslToHex(settings.parent2Color)}
-                      onChange={(e) => handleColorChange("parent2Color", e.target.value)}
-                      className="h-10 w-20 rounded border border-input cursor-pointer"
-                    />
-                    <Input
-                      value={hslToHex(settings.parent2Color)}
-                      readOnly
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kid1-color">Kid 1 Color</Label>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      id="kid1-color"
-                      value={hslToHex(settings.kid1Color)}
-                      onChange={(e) => handleColorChange("kid1Color", e.target.value)}
-                      className="h-10 w-20 rounded border border-input cursor-pointer"
-                    />
-                    <Input
-                      value={hslToHex(settings.kid1Color)}
-                      readOnly
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kid2-color">Kid 2 Color</Label>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      id="kid2-color"
-                      value={hslToHex(settings.kid2Color)}
-                      onChange={(e) => handleColorChange("kid2Color", e.target.value)}
-                      className="h-10 w-20 rounded border border-input cursor-pointer"
-                    />
-                    <Input
-                      value={hslToHex(settings.kid2Color)}
-                      readOnly
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="housekeeper-color">Housekeeper Color</Label>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      id="housekeeper-color"
-                      value={hslToHex(settings.housekeeperColor)}
-                      onChange={(e) => handleColorChange("housekeeperColor", e.target.value)}
-                      className="h-10 w-20 rounded border border-input cursor-pointer"
-                    />
-                    <Input
-                      value={hslToHex(settings.housekeeperColor)}
-                      readOnly
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Locations */}
-          {urlHouseholdId && <ActivityLocationsCard householdId={urlHouseholdId} />}
-
-          {/* Calendar Sync */}
-          <CalendarSyncCard />
-
-          {/* User Management */}
-          <Card className="bg-card/80 backdrop-blur-md border-border/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                <CardTitle>User Management</CardTitle>
-              </div>
-              <CardDescription>Manage family member access</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => setUserManagementOpen(true)} variant="outlined" className="w-full">
-                <Users className="mr-2 h-4 w-4" />
-                Manage Users
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Bulk Event Management */}
-          <Card className="bg-card/80 backdrop-blur-md border-border/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <FileJson className="h-5 w-5 text-primary" />
-                <CardTitle>Bulk Event Management</CardTitle>
-              </div>
-              <CardDescription>Export and import events in bulk with smart duplicate detection</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                onClick={() => navigate(`/family/${urlHouseholdId}/bulk-events`)} 
-                variant="outlined" 
-                className="w-full"
-              >
-                <FileJson className="mr-2 h-4 w-4" />
-                Manage Events in Bulk
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Danger Zone */}
-          <Card className="bg-card/80 backdrop-blur-md border-destructive/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Trash2 className="h-5 w-5 text-destructive" />
-                <CardTitle className="text-destructive">Danger Zone</CardTitle>
-              </div>
-              <CardDescription>Irreversible actions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full" disabled={resetting}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {resetting ? "Resetting..." : "Reset Entire Database"}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete ALL data including all households, users, events, and settings.
-                      This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResetDatabase} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Yes, reset everything
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardContent>
-          </Card>
+                  <CardDescription>Irreversible actions that affect all data</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="w-full" disabled={resetting}>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Reset Entire Database
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete:
+                          <ul className="list-disc list-inside mt-2 space-y-1">
+                            <li>All events and event instances</li>
+                            <li>All family settings and customizations</li>
+                            <li>All household data</li>
+                            <li>All user accounts and roles</li>
+                          </ul>
+                          You will be logged out and redirected to the home page.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={resetting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleResetDatabase}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={resetting}
+                        >
+                          {resetting ? "Resetting..." : "Yes, Reset Everything"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
