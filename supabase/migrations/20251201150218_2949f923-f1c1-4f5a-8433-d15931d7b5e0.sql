@@ -1,0 +1,1 @@
+ALTER TABLE public.calendar_tokens ENABLE ROW LEVEL SECURITY;

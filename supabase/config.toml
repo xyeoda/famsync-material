@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.admin-resend-invitation]
 verify_jwt = false
+
+[functions.calendar-feed]
+verify_jwt = false

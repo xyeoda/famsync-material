@@ -25,7 +25,9 @@ import { UserManagementDialog } from "@/components/UserManagement/UserManagement
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import dashboardBg from "@/assets/dashboard-bg.png";
+import { FamilySettingsDialog } from "@/components/Calendar/FamilySettingsDialog";
 import { ActivityLocationsCard } from "@/components/Settings/ActivityLocationsCard";
+import { CalendarSyncCard } from "@/components/Settings/CalendarSyncCard";
 
 // Color conversion utilities
 function hslToHex(hsl: string): string {
@@ -421,6 +423,9 @@ export default function FamilySettings() {
 
           {/* Activity Locations */}
           {urlHouseholdId && <ActivityLocationsCard householdId={urlHouseholdId} />}
+
+          {/* Calendar Sync */}
+          <CalendarSyncCard />
 
           {/* User Management */}
           <Card className="bg-card/80 backdrop-blur-md border-border/50">
