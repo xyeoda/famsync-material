@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HouseholdProvider } from "./contexts/HouseholdContext";
 import { FamilySettingsProvider } from "./contexts/FamilySettingsContext";
+import { FamilyMembersProvider } from "./contexts/FamilyMembersContext";
 import { FamilyLayout } from "./components/FamilyLayout";
 import LandingPage from "./pages/LandingPage";
 import FamilyDashboard from "./pages/FamilyDashboard";
@@ -56,7 +57,9 @@ const App = () => {
               element={(
                 <HouseholdProvider>
                   <FamilySettingsProvider>
-                    <FamilyLayout />
+                    <FamilyMembersProvider>
+                      <FamilyLayout />
+                    </FamilyMembersProvider>
                   </FamilySettingsProvider>
                 </HouseholdProvider>
               )}
@@ -73,7 +76,9 @@ const App = () => {
               element={(
                 <HouseholdProvider>
                   <FamilySettingsProvider>
-                    <FamilyCalendar />
+                    <FamilyMembersProvider>
+                      <FamilyCalendar />
+                    </FamilyMembersProvider>
                   </FamilySettingsProvider>
                 </HouseholdProvider>
               )}

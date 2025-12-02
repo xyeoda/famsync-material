@@ -362,6 +362,57 @@ export type Database = {
           },
         ]
       }
+      family_members: {
+        Row: {
+          color: string
+          created_at: string
+          display_order: number
+          helper_category: Database["public"]["Enums"]["helper_category"] | null
+          household_id: string
+          id: string
+          is_active: boolean
+          member_type: Database["public"]["Enums"]["member_type"]
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          display_order?: number
+          helper_category?:
+            | Database["public"]["Enums"]["helper_category"]
+            | null
+          household_id: string
+          id?: string
+          is_active?: boolean
+          member_type: Database["public"]["Enums"]["member_type"]
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          display_order?: number
+          helper_category?:
+            | Database["public"]["Enums"]["helper_category"]
+            | null
+          household_id?: string
+          id?: string
+          is_active?: boolean
+          member_type?: Database["public"]["Enums"]["member_type"]
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       family_settings: {
         Row: {
           created_at: string
@@ -682,6 +733,14 @@ export type Database = {
         | "other"
       app_role: "parent" | "helper" | "kid"
       family_member: "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper"
+      helper_category:
+        | "grandparent"
+        | "nanny"
+        | "housekeeper"
+        | "babysitter"
+        | "au_pair"
+        | "other"
+      member_type: "parent" | "kid" | "helper"
       system_role: "site_admin" | "user"
       transport_method: "car" | "bus" | "walk" | "bike"
     }
@@ -821,6 +880,15 @@ export const Constants = {
       ],
       app_role: ["parent", "helper", "kid"],
       family_member: ["parent1", "parent2", "kid1", "kid2", "housekeeper"],
+      helper_category: [
+        "grandparent",
+        "nanny",
+        "housekeeper",
+        "babysitter",
+        "au_pair",
+        "other",
+      ],
+      member_type: ["parent", "kid", "helper"],
       system_role: ["site_admin", "user"],
       transport_method: ["car", "bus", "walk", "bike"],
     },
