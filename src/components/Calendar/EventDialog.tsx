@@ -8,11 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { FamilyEvent, FamilyMember, ActivityCategory, RecurrenceSlot, TransportMethod, TransportationDetails } from "@/types/event";
-import { FAMILY_MEMBERS, EVENT_CATEGORIES } from "@/types/event";
+import { EVENT_CATEGORIES } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike, ChevronDown, GripVertical } from "lucide-react";
 import { Plus, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { EventCard } from "./EventCard";
 import { cn } from "@/lib/utils";
 import { LocationCombobox } from "./LocationCombobox";
@@ -38,8 +39,12 @@ const DAYS_OF_WEEK = [
 
 export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogProps) {
   const { getFamilyMemberName } = useFamilySettingsContext();
+  const { getKids, getAdults } = useFamilyMembersContext();
   const { householdId } = useHousehold();
   const { locations } = useActivityLocations(householdId);
+  
+  const kids = getKids();
+  const adults = getAdults();
   
   // Detect if existing event is single-day
   const isExistingSingleDay = event?.startDate && event?.endDate && 
@@ -242,27 +247,37 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
           <div className="space-y-3 p-6 rounded-2xl bg-primary/5 border border-primary/20">
             <h3 className="font-semibold text-base text-primary">Which kids are attending?</h3>
             <div className="flex flex-wrap gap-3">
-              {(["kid1", "kid2"] as FamilyMember[]).map((member) => {
-                const isSelected = participants.includes(member);
+              {kids.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No kids configured. Add kids in Family Settings.</p>
+              ) : (
+                kids.map((kid) => {
+                  // For backwards compatibility, map member ID to legacy format if needed
+                  const legacyId = `kid${kids.indexOf(kid) + 1}` as FamilyMember;
+                  const isSelected = participants.includes(legacyId);
 
-                return (
-                  <label key={member} className={cn(
-                    "flex items-center gap-3 cursor-pointer px-5 py-3.5 rounded-xl transition-all border-2",
-                    isSelected 
-                      ? "bg-primary/10 border-primary shadow-sm" 
-                      : "bg-surface-container border-outline/20 hover:border-outline/40"
-                  )}>
-                    <Checkbox
-                      id={member}
-                      checked={isSelected}
-                      onCheckedChange={() => handleParticipantToggle(member)}
-                    />
-                    <span className="text-sm font-medium">
-                      {getFamilyMemberName(member)}
-                    </span>
-                  </label>
-                );
-              })}
+                  return (
+                    <label key={kid.id} className={cn(
+                      "flex items-center gap-3 cursor-pointer px-5 py-3.5 rounded-xl transition-all border-2",
+                      isSelected 
+                        ? "bg-primary/10 border-primary shadow-sm" 
+                        : "bg-surface-container border-outline/20 hover:border-outline/40"
+                    )}>
+                      <Checkbox
+                        id={kid.id}
+                        checked={isSelected}
+                        onCheckedChange={() => handleParticipantToggle(legacyId)}
+                      />
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: `hsl(${kid.color})` }}
+                      />
+                      <span className="text-sm font-medium">
+                        {kid.name}
+                      </span>
+                    </label>
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -533,13 +548,17 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
                                   <SelectContent className="bg-surface-container z-50">
-                                    {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                                      .filter((member) => member !== "kid1" && member !== "kid2")
-                                      .map((member) => (
-                                        <SelectItem key={member} value={member}>
-                                          {getFamilyMemberName(member)}
+                                    {adults.map((adult) => {
+                                      // Map to legacy format for backwards compatibility
+                                      const legacyId = adult.memberType === 'parent' 
+                                        ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
+                                        : 'housekeeper';
+                                      return (
+                                        <SelectItem key={adult.id} value={legacyId}>
+                                          {adult.name}
                                         </SelectItem>
-                                      ))}
+                                      );
+                                    })}
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -587,13 +606,17 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
                                   <SelectContent className="bg-surface-container z-50">
-                                    {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                                      .filter((member) => member !== "kid1" && member !== "kid2")
-                                      .map((member) => (
-                                        <SelectItem key={member} value={member}>
-                                          {getFamilyMemberName(member)}
+                                    {adults.map((adult) => {
+                                      // Map to legacy format for backwards compatibility
+                                      const legacyId = adult.memberType === 'parent' 
+                                        ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
+                                        : 'housekeeper';
+                                      return (
+                                        <SelectItem key={adult.id} value={legacyId}>
+                                          {adult.name}
                                         </SelectItem>
-                                      ))}
+                                      );
+                                    })}
                                   </SelectContent>
                                 </Select>
                               </div>

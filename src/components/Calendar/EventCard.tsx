@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { FamilyEvent, EventInstance, FAMILY_MEMBERS, FamilyMember, RecurrenceSlot } from "@/types/event";
+import { FamilyEvent, EventInstance, FamilyMember, RecurrenceSlot } from "@/types/event";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { LocationDetailsDialog } from "./LocationDetailsDialog";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { useHousehold } from "@/contexts/HouseholdContext";
@@ -20,19 +21,34 @@ interface EventCardProps {
 
 export function EventCard({ event, instance, slot, startTime, endTime, onClick }: EventCardProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsContext();
+  const { getKids, getAdults, getMemberColor: getDynamicMemberColor } = useFamilyMembersContext();
   const { householdId } = useHousehold();
   const { locations } = useActivityLocations(householdId);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  
+  const kids = getKids();
+  const adults = getAdults();
   
   const locationId = (event as any).location_id;
   const locationDetails = locationId ? locations.find(loc => loc.id === locationId) : null;
   
   const isCancelled = instance?.cancelled || false;
   
+  // Get member color - supports both legacy format and dynamic members
   const getMemberColor = (member: FamilyMember) => {
-    if (member === "parent1") return settings.parent1Color;
-    if (member === "parent2") return settings.parent2Color;
-    if (member === "housekeeper") return settings.housekeeperColor;
+    // Check if it's a legacy format (parent1, parent2, housekeeper)
+    if (member === "parent1") {
+      const parent = adults.find(a => a.memberType === 'parent');
+      return parent?.color || settings.parent1Color;
+    }
+    if (member === "parent2") {
+      const parentList = adults.filter(a => a.memberType === 'parent');
+      return parentList[1]?.color || settings.parent2Color;
+    }
+    if (member === "housekeeper") {
+      const helper = adults.find(a => a.memberType === 'helper');
+      return helper?.color || settings.housekeeperColor;
+    }
     return null;
   };
 
@@ -41,23 +57,37 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
   const participants = instance?.participants || event.participants;
 
   // Get kids participating in this event
-  const kidsInvolved = participants.filter((p) => p === "kid1" || p === "kid2");
+  const kidsInvolved = participants.filter((p) => p === "kid1" || p === "kid2" || p.startsWith("kid"));
+  
+  // Get kid colors from dynamic members
+  const getKidColor = (kidId: string, index: number) => {
+    // Try to get from dynamic members first
+    if (kids[index]) {
+      return kids[index].color;
+    }
+    // Fallback to CSS variables
+    return `var(--${kidId}-color)`;
+  };
   
   // Determine border color based on kids involved
   const getBorderColor = () => {
-    if (kidsInvolved.length === 2) {
-      // Both kids - return gradient string
-      return 'linear-gradient(to bottom, hsl(var(--kid1-color)), hsl(var(--kid2-color)))';
+    if (kidsInvolved.length >= 2) {
+      // Multiple kids - return gradient string
+      const kid1Color = kids[0]?.color ? `hsl(${kids[0].color})` : 'hsl(var(--kid1-color))';
+      const kid2Color = kids[1]?.color ? `hsl(${kids[1].color})` : 'hsl(var(--kid2-color))';
+      return `linear-gradient(to bottom, ${kid1Color}, ${kid2Color})`;
     } else if (kidsInvolved.length === 1) {
       // Single kid - show solid color
-      return `hsl(var(--${kidsInvolved[0]}-color))`;
+      const kidIndex = parseInt(kidsInvolved[0].replace('kid', '')) - 1;
+      const kidColor = kids[kidIndex]?.color;
+      return kidColor ? `hsl(${kidColor})` : `hsl(var(--${kidsInvolved[0]}-color))`;
     }
     // No kids - fallback to category color
     return `hsl(var(--category-${event.category}))`;
   };
 
   const borderColor = getBorderColor();
-  const isGradient = kidsInvolved.length === 2;
+  const isGradient = kidsInvolved.length >= 2;
 
   const dropOffColor = transportation?.dropOffPerson
     ? getMemberColor(transportation.dropOffPerson)
