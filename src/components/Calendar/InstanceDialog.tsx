@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EventInstance, FamilyMember, TransportMethod, TransportationDetails, FamilyEvent } from "@/types/event";
-import { FAMILY_MEMBERS } from "@/types/event";
 import { Car, Bus, PersonStanding, Bike, Calendar, MapPin, Users, Clock } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
@@ -40,6 +40,8 @@ export function InstanceDialog({
   instance,
 }: InstanceDialogProps) {
   const { getFamilyMemberName } = useFamilySettingsContext();
+  const { getAdults } = useFamilyMembersContext();
+  const adults = getAdults();
   const [transportation, setTransportation] = useState<TransportationDetails>(
     instance?.transportation || slotTransportation || {}
   );
@@ -182,13 +184,16 @@ export function InstanceDialog({
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                        .filter((member) => member !== "kid1" && member !== "kid2")
-                        .map((member) => (
-                          <SelectItem key={member} value={member}>
-                            {getFamilyMemberName(member)}
+                      {adults.map((adult) => {
+                        const legacyId = adult.memberType === 'parent' 
+                          ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
+                          : 'housekeeper';
+                        return (
+                          <SelectItem key={adult.id} value={legacyId}>
+                            {adult.name}
                           </SelectItem>
-                        ))}
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -236,13 +241,16 @@ export function InstanceDialog({
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(FAMILY_MEMBERS) as FamilyMember[])
-                        .filter((member) => member !== "kid1" && member !== "kid2")
-                        .map((member) => (
-                          <SelectItem key={member} value={member}>
-                            {getFamilyMemberName(member)}
+                      {adults.map((adult) => {
+                        const legacyId = adult.memberType === 'parent' 
+                          ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
+                          : 'housekeeper';
+                        return (
+                          <SelectItem key={adult.id} value={legacyId}>
+                            {adult.name}
                           </SelectItem>
-                        ))}
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
