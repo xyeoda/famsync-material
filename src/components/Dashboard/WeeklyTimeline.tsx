@@ -4,6 +4,7 @@ import { FamilyEvent, EventInstance } from "@/types/event";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, Bus, PersonStanding, Bike } from "lucide-react";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 
 interface WeeklyTimelineProps {
   events: FamilyEvent[];
@@ -13,6 +14,7 @@ interface WeeklyTimelineProps {
 
 export function WeeklyTimeline({ events, instances, weekStart }: WeeklyTimelineProps) {
   const { getFamilyMemberName, settings } = useFamilySettingsDB();
+  const { getMemberName, getMemberColor } = useFamilyMembersContext();
 
   const transportIcons = {
     car: Car,
@@ -58,7 +60,14 @@ export function WeeklyTimeline({ events, instances, weekStart }: WeeklyTimelineP
     const primaryParticipant = event.participants[0];
     if (!primaryParticipant) return 'hsl(var(--primary))';
     
-    const colorMap = {
+    // Try to get color from dynamic members first
+    const dynamicColor = getMemberColor(primaryParticipant);
+    if (dynamicColor && dynamicColor !== '217 91% 60%') {
+      return `hsl(${dynamicColor})`;
+    }
+    
+    // Fallback to legacy settings
+    const colorMap: Record<string, string> = {
       parent1: settings.parent1Color,
       parent2: settings.parent2Color,
       kid1: settings.kid1Color,
@@ -66,7 +75,7 @@ export function WeeklyTimeline({ events, instances, weekStart }: WeeklyTimelineP
       housekeeper: settings.housekeeperColor,
     };
     
-    return `hsl(${colorMap[primaryParticipant]})`;
+    return `hsl(${colorMap[primaryParticipant] || 'var(--primary)'})`;
   };
 
   const getInstanceTransportation = (eventId: string, date: Date) => {
@@ -75,6 +84,17 @@ export function WeeklyTimeline({ events, instances, weekStart }: WeeklyTimelineP
                 format(new Date(inst.date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
     );
     return instance?.transportation;
+  };
+
+  // Helper to get member name - handles both UUID and legacy IDs
+  const getDisplayName = (id: string): string => {
+    // Try dynamic members first
+    const dynamicName = getMemberName(id);
+    if (dynamicName && dynamicName !== 'Unknown' && dynamicName !== id) {
+      return dynamicName;
+    }
+    // Fallback to legacy settings
+    return getFamilyMemberName(id);
   };
 
   return (
@@ -155,31 +175,27 @@ export function WeeklyTimeline({ events, instances, weekStart }: WeeklyTimelineP
                             )}
                             {transportation && (DropOffIcon || PickUpIcon) && (
                               <div className="flex items-center gap-1 mt-1 text-white/80">
-                                {DropOffIcon && (
-                                  <span className="flex items-center gap-0.5" title={`Drop-off: ${getFamilyMemberName(transportation.dropOffPerson!)}`}>
+                                {DropOffIcon && transportation.dropOffPerson && (
+                                  <span className="flex items-center gap-0.5" title={`Drop-off: ${getDisplayName(transportation.dropOffPerson)}`}>
                                     <DropOffIcon className="h-3 w-3" />
-                                    {transportation.dropOffPerson && (
-                                      <span className="text-[9px]">
-                                        {getFamilyMemberName(transportation.dropOffPerson)[0]}
-                                      </span>
-                                    )}
+                                    <span className="text-[9px]">
+                                      {getDisplayName(transportation.dropOffPerson)[0]}
+                                    </span>
                                   </span>
                                 )}
-                                {PickUpIcon && (
-                                  <span className="flex items-center gap-0.5" title={`Pick-up: ${getFamilyMemberName(transportation.pickUpPerson!)}`}>
+                                {PickUpIcon && transportation.pickUpPerson && (
+                                  <span className="flex items-center gap-0.5" title={`Pick-up: ${getDisplayName(transportation.pickUpPerson)}`}>
                                     <PickUpIcon className="h-3 w-3" />
-                                    {transportation.pickUpPerson && (
-                                      <span className="text-[9px]">
-                                        {getFamilyMemberName(transportation.pickUpPerson)[0]}
-                                      </span>
-                                    )}
+                                    <span className="text-[9px]">
+                                      {getDisplayName(transportation.pickUpPerson)[0]}
+                                    </span>
                                   </span>
                                 )}
                               </div>
                             )}
                             {event.participants.length > 0 && (
                               <div className="text-[9px] text-white/70 mt-0.5 line-clamp-1">
-                                {event.participants.map(p => getFamilyMemberName(p)[0]).join(', ')}
+                                {event.participants.map(p => getDisplayName(p)[0]).join(', ')}
                               </div>
                             )}
                           </div>

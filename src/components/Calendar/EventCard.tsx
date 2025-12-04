@@ -35,21 +35,25 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
   const isCancelled = instance?.cancelled || false;
   
   // Get member color - supports both legacy format and dynamic members
-  const getMemberColor = (member: FamilyMember) => {
+  const getMemberColor = (member: string): string | null => {
+    // Use context's getMemberColor which handles both legacy and UUID formats
+    const { getMemberColor: getContextMemberColor, getMemberByLegacyId } = useFamilyMembersContext();
+    
     // Check if it's a legacy format (parent1, parent2, housekeeper)
     if (member === "parent1") {
-      const parent = adults.find(a => a.memberType === 'parent');
+      const parent = getMemberByLegacyId('parent1');
       return parent?.color || settings.parent1Color;
     }
     if (member === "parent2") {
-      const parentList = adults.filter(a => a.memberType === 'parent');
-      return parentList[1]?.color || settings.parent2Color;
+      const parent = getMemberByLegacyId('parent2');
+      return parent?.color || settings.parent2Color;
     }
     if (member === "housekeeper") {
-      const helper = adults.find(a => a.memberType === 'helper');
+      const helper = getMemberByLegacyId('housekeeper');
       return helper?.color || settings.housekeeperColor;
     }
-    return null;
+    // For UUIDs, use the context
+    return getContextMemberColor(member);
   };
 
   // Use instance data if available, otherwise fall back to slot data, then event data
@@ -167,8 +171,9 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {participants.map((participant) => {
-            const isKid = participant === "kid1" || participant === "kid2";
-            const bgColor = getMemberColor(participant);
+            const isKid = participant.startsWith('kid') || kids.some(k => k.id === participant);
+            const { getMemberColor: getContextColor, getMemberName } = useFamilyMembersContext();
+            const bgColor = getContextColor(participant);
 
             return (
               <span
@@ -178,7 +183,7 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
                 }`}
                 style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
               >
-                {getFamilyMemberName(participant).split(" ")[0]}
+                {getMemberName(participant).split(" ")[0]}
               </span>
             );
           })}

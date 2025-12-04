@@ -168,15 +168,20 @@ export function useFamilySettingsDB() {
     await updateSettings(DEFAULT_SETTINGS);
   };
 
-  const getFamilyMemberName = (member: FamilyMember): string => {
-    const nameMap: Record<FamilyMember, keyof FamilySettings> = {
+  const getFamilyMemberName = (member: string): string => {
+    const nameMap: Record<string, keyof FamilySettings> = {
       parent1: "parent1Name",
       parent2: "parent2Name",
       kid1: "kid1Name",
       kid2: "kid2Name",
       housekeeper: "housekeeperName",
     };
-    return settings[nameMap[member]];
+    const key = nameMap[member];
+    if (key) {
+      return settings[key] as string;
+    }
+    // For UUIDs or unknown members, return the ID
+    return member;
   };
 
   const getFamilyMembers = (): Record<FamilyMember, string> => ({
