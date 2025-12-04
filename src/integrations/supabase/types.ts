@@ -227,6 +227,7 @@ export type Database = {
           event_id: string
           household_id: string | null
           id: string
+          participant_ids: string[] | null
           participants: Database["public"]["Enums"]["family_member"][] | null
           transportation: Json | null
           updated_at: string
@@ -239,6 +240,7 @@ export type Database = {
           event_id: string
           household_id?: string | null
           id?: string
+          participant_ids?: string[] | null
           participants?: Database["public"]["Enums"]["family_member"][] | null
           transportation?: Json | null
           updated_at?: string
@@ -251,6 +253,7 @@ export type Database = {
           event_id?: string
           household_id?: string | null
           id?: string
+          participant_ids?: string[] | null
           participants?: Database["public"]["Enums"]["family_member"][] | null
           transportation?: Json | null
           updated_at?: string
@@ -292,6 +295,7 @@ export type Database = {
           location: string | null
           location_id: string | null
           notes: string | null
+          participant_ids: string[] | null
           participants: Database["public"]["Enums"]["family_member"][]
           recurrence_slots: Json
           start_date: string
@@ -311,6 +315,7 @@ export type Database = {
           location?: string | null
           location_id?: string | null
           notes?: string | null
+          participant_ids?: string[] | null
           participants?: Database["public"]["Enums"]["family_member"][]
           recurrence_slots?: Json
           start_date: string
@@ -330,6 +335,7 @@ export type Database = {
           location?: string | null
           location_id?: string | null
           notes?: string | null
+          participant_ids?: string[] | null
           participants?: Database["public"]["Enums"]["family_member"][]
           recurrence_slots?: Json
           start_date?: string
@@ -709,6 +715,10 @@ export type Database = {
     }
     Functions: {
       admin_exists: { Args: never; Returns: boolean }
+      get_member_id_from_legacy: {
+        Args: { p_household_id: string; p_legacy_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _household_id: string

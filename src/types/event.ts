@@ -1,3 +1,4 @@
+// Legacy family member type for backwards compatibility
 export type FamilyMember = "parent1" | "parent2" | "kid1" | "kid2" | "housekeeper";
 
 export type TransportMethod = "car" | "bus" | "walk" | "bike";
@@ -13,9 +14,11 @@ export interface RecurrenceSlot {
 
 export interface TransportationDetails {
   dropOffMethod?: TransportMethod;
-  dropOffPerson?: FamilyMember;
+  dropOffPerson?: string; // UUID or legacy FamilyMember ID
+  dropOffPersonId?: string; // UUID of family_member (new format)
   pickUpMethod?: TransportMethod;
-  pickUpPerson?: FamilyMember;
+  pickUpPerson?: string; // UUID or legacy FamilyMember ID
+  pickUpPersonId?: string; // UUID of family_member (new format)
 }
 
 export interface FamilyEvent {
@@ -24,11 +27,12 @@ export interface FamilyEvent {
   description?: string;
   category: ActivityCategory;
   recurrenceSlots: RecurrenceSlot[]; // Multiple time slots per week
-  participants: FamilyMember[]; // Kids attending this event
+  participants: string[]; // Array of family_member UUIDs (or legacy IDs during transition)
   transportation?: TransportationDetails;
   startDate: Date; // When the recurring pattern starts
   endDate?: Date; // Optional end date for the pattern
   location?: string;
+  location_id?: string;
   notes?: string;
   color?: string; // Optional custom color override
   createdAt: Date;
@@ -41,12 +45,13 @@ export interface EventInstance {
   eventId: string; // Reference to parent event
   date: Date; // Specific date this override applies to
   transportation?: TransportationDetails;
-  participants?: FamilyMember[];
+  participants?: string[]; // Array of family_member UUIDs (or legacy IDs during transition)
   cancelled?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
+// Legacy mapping for backwards compatibility
 export const FAMILY_MEMBERS: Record<FamilyMember, string> = {
   parent1: "Parent 1",
   parent2: "Parent 2",
@@ -72,3 +77,14 @@ export const EVENT_CATEGORIES: ActivityCategory[] = [
   "health",
   "other",
 ];
+
+// Helper to check if a participant ID is a UUID (vs legacy format)
+export function isUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+// Helper to check if a participant ID is legacy format
+export function isLegacyMemberId(id: string): boolean {
+  return ['parent1', 'parent2', 'kid1', 'kid2', 'housekeeper'].includes(id);
+}

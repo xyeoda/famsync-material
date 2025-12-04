@@ -1,9 +1,10 @@
-import { FamilyEvent, EventInstance, FamilyMember } from "@/types/event";
+import { FamilyEvent, EventInstance, isLegacyMemberId } from "@/types/event";
 import { TransportationLegend } from "./TransportationLegend";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, startOfWeek, endOfWeek, isSameDay, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { MapPin } from "lucide-react";
 import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -14,6 +15,7 @@ interface MonthViewProps {
 
 export function MonthView({ currentDate, events, instances, onEventClick }: MonthViewProps) {
   const { settings } = useFamilySettingsContext();
+  const { getMemberColor: getContextMemberColor } = useFamilyMembersContext();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -22,10 +24,14 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  const getMemberColor = (member: FamilyMember) => {
+  const getMemberColor = (member: string): string | null => {
     if (member === "parent1") return settings.parent1Color;
     if (member === "parent2") return settings.parent2Color;
     if (member === "housekeeper") return settings.housekeeperColor;
+    // For UUIDs, use context
+    if (!isLegacyMemberId(member)) {
+      return getContextMemberColor(member);
+    }
     return null;
   };
 
@@ -64,11 +70,12 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
   };
 
   const getEventBorderColor = (event: FamilyEvent) => {
-    const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
+    const kidsInvolved = event.participants.filter((p: string) => p === "kid1" || p === "kid2" || p.startsWith("kid"));
     if (kidsInvolved.length === 2) {
       return 'linear-gradient(to bottom, hsl(var(--kid1-color)), hsl(var(--kid2-color)))';
     } else if (kidsInvolved.length === 1) {
-      return `hsl(var(--${kidsInvolved[0]}-color))`;
+      const kidId = kidsInvolved[0];
+      return isLegacyMemberId(kidId) ? `hsl(var(--${kidId}-color))` : `hsl(${getContextMemberColor(kidId)})`;
     }
     return `hsl(var(--category-${event.category}))`;
   };
@@ -121,7 +128,7 @@ export function MonthView({ currentDate, events, instances, onEventClick }: Mont
 
                 <div className="space-y-0.5">
                   {dayEvents.slice(0, 3).map(({ event, slot }) => {
-                    const kidsInvolved = event.participants.filter((p: FamilyMember) => p === "kid1" || p === "kid2");
+                    const kidsInvolved = event.participants.filter((p: string) => p === "kid1" || p === "kid2" || p.startsWith("kid"));
                     const borderColor = getEventBorderColor(event);
                     const isGradient = kidsInvolved.length === 2;
                     const instance = getInstanceForDate(event.id, day);

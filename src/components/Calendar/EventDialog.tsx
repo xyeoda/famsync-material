@@ -70,7 +70,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const [recurrenceSlots, setRecurrenceSlots] = useState<RecurrenceSlot[]>(
     event?.recurrenceSlots || [{ dayOfWeek: 1, startTime: "09:00", endTime: "10:00" }]
   );
-  const [participants, setParticipants] = useState<FamilyMember[]>(
+  const [participants, setParticipants] = useState<string[]>(
     event?.participants || []
   );
   const [openSlotIndex, setOpenSlotIndex] = useState<number | null>(null);
@@ -140,7 +140,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
     );
   };
 
-  const handleParticipantToggle = (member: FamilyMember) => {
+  const handleParticipantToggle = (member: string) => {
     if (participants.includes(member)) {
       setParticipants(participants.filter(p => p !== member));
     } else {
