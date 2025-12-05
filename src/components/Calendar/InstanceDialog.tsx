@@ -177,23 +177,18 @@ export function InstanceDialog({
                     Responsible Person
                   </Label>
                   <Select
-                    value={transportation.dropOffPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPerson: value as FamilyMember })}
+                    value={transportation.dropOffPersonId || transportation.dropOffPerson}
+                    onValueChange={(value) => setTransportation({ ...transportation, dropOffPersonId: value, dropOffPerson: value })}
                   >
                     <SelectTrigger id="dropOffPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {adults.map((adult) => {
-                        const legacyId = adult.memberType === 'parent' 
-                          ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
-                          : 'housekeeper';
-                        return (
-                          <SelectItem key={adult.id} value={legacyId}>
-                            {adult.name}
-                          </SelectItem>
-                        );
-                      })}
+                      {adults.map((adult) => (
+                        <SelectItem key={adult.id} value={adult.id}>
+                          {adult.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -234,23 +229,18 @@ export function InstanceDialog({
                     Responsible Person
                   </Label>
                   <Select
-                    value={transportation.pickUpPerson}
-                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPerson: value as FamilyMember })}
+                    value={transportation.pickUpPersonId || transportation.pickUpPerson}
+                    onValueChange={(value) => setTransportation({ ...transportation, pickUpPersonId: value, pickUpPerson: value })}
                   >
                     <SelectTrigger id="pickUpPerson">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {adults.map((adult) => {
-                        const legacyId = adult.memberType === 'parent' 
-                          ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
-                          : 'housekeeper';
-                        return (
-                          <SelectItem key={adult.id} value={legacyId}>
-                            {adult.name}
-                          </SelectItem>
-                        );
-                      })}
+                      {adults.map((adult) => (
+                        <SelectItem key={adult.id} value={adult.id}>
+                          {adult.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

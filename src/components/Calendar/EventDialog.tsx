@@ -251,9 +251,8 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                 <p className="text-sm text-muted-foreground">No kids configured. Add kids in Family Settings.</p>
               ) : (
                 kids.map((kid) => {
-                  // For backwards compatibility, map member ID to legacy format if needed
-                  const legacyId = `kid${kids.indexOf(kid) + 1}` as FamilyMember;
-                  const isSelected = participants.includes(legacyId);
+                  // Use UUID directly - no legacy mapping
+                  const isSelected = participants.includes(kid.id);
 
                   return (
                     <label key={kid.id} className={cn(
@@ -265,7 +264,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                       <Checkbox
                         id={kid.id}
                         checked={isSelected}
-                        onCheckedChange={() => handleParticipantToggle(legacyId)}
+                        onCheckedChange={() => handleParticipantToggle(kid.id)}
                       />
                       <div 
                         className="w-3 h-3 rounded-full" 
@@ -541,24 +540,18 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                   Responsible Person
                                 </Label>
                                 <Select
-                                  value={slotTransportation.dropOffPerson}
-                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, dropOffPerson: value as FamilyMember })}
+                                  value={slotTransportation.dropOffPersonId || slotTransportation.dropOffPerson}
+                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, dropOffPersonId: value, dropOffPerson: value })}
                                 >
                                   <SelectTrigger id={`dropOffPerson-${index}`} className="bg-surface h-11">
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
                                   <SelectContent className="bg-surface-container z-50">
-                                    {adults.map((adult) => {
-                                      // Map to legacy format for backwards compatibility
-                                      const legacyId = adult.memberType === 'parent' 
-                                        ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
-                                        : 'housekeeper';
-                                      return (
-                                        <SelectItem key={adult.id} value={legacyId}>
-                                          {adult.name}
-                                        </SelectItem>
-                                      );
-                                    })}
+                                    {adults.map((adult) => (
+                                      <SelectItem key={adult.id} value={adult.id}>
+                                        {adult.name}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -599,24 +592,18 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                                   Responsible Person
                                 </Label>
                                 <Select
-                                  value={slotTransportation.pickUpPerson}
-                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, pickUpPerson: value as FamilyMember })}
+                                  value={slotTransportation.pickUpPersonId || slotTransportation.pickUpPerson}
+                                  onValueChange={(value) => handleSlotTransportationChange(index, { ...slotTransportation, pickUpPersonId: value, pickUpPerson: value })}
                                 >
                                   <SelectTrigger id={`pickUpPerson-${index}`} className="bg-surface h-11">
                                     <SelectValue placeholder="Select..." />
                                   </SelectTrigger>
                                   <SelectContent className="bg-surface-container z-50">
-                                    {adults.map((adult) => {
-                                      // Map to legacy format for backwards compatibility
-                                      const legacyId = adult.memberType === 'parent' 
-                                        ? `parent${adults.filter(a => a.memberType === 'parent').indexOf(adult) + 1}`
-                                        : 'housekeeper';
-                                      return (
-                                        <SelectItem key={adult.id} value={legacyId}>
-                                          {adult.name}
-                                        </SelectItem>
-                                      );
-                                    })}
+                                    {adults.map((adult) => (
+                                      <SelectItem key={adult.id} value={adult.id}>
+                                        {adult.name}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </div>
