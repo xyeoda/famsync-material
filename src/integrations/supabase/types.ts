@@ -227,8 +227,7 @@ export type Database = {
           event_id: string
           household_id: string | null
           id: string
-          participant_ids: string[] | null
-          participants: Database["public"]["Enums"]["family_member"][] | null
+          participants: string[] | null
           transportation: Json | null
           updated_at: string
           user_id: string
@@ -240,8 +239,7 @@ export type Database = {
           event_id: string
           household_id?: string | null
           id?: string
-          participant_ids?: string[] | null
-          participants?: Database["public"]["Enums"]["family_member"][] | null
+          participants?: string[] | null
           transportation?: Json | null
           updated_at?: string
           user_id: string
@@ -253,8 +251,7 @@ export type Database = {
           event_id?: string
           household_id?: string | null
           id?: string
-          participant_ids?: string[] | null
-          participants?: Database["public"]["Enums"]["family_member"][] | null
+          participants?: string[] | null
           transportation?: Json | null
           updated_at?: string
           user_id?: string
@@ -295,8 +292,7 @@ export type Database = {
           location: string | null
           location_id: string | null
           notes: string | null
-          participant_ids: string[] | null
-          participants: Database["public"]["Enums"]["family_member"][]
+          participants: string[] | null
           recurrence_slots: Json
           start_date: string
           title: string
@@ -315,8 +311,7 @@ export type Database = {
           location?: string | null
           location_id?: string | null
           notes?: string | null
-          participant_ids?: string[] | null
-          participants?: Database["public"]["Enums"]["family_member"][]
+          participants?: string[] | null
           recurrence_slots?: Json
           start_date: string
           title: string
@@ -335,8 +330,7 @@ export type Database = {
           location?: string | null
           location_id?: string | null
           notes?: string | null
-          participant_ids?: string[] | null
-          participants?: Database["public"]["Enums"]["family_member"][]
+          participants?: string[] | null
           recurrence_slots?: Json
           start_date?: string
           title?: string
