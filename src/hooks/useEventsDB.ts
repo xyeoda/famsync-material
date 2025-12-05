@@ -43,30 +43,23 @@ export function useEventsDB() {
 
       if (error) throw error;
 
-      const mappedEvents: FamilyEvent[] = (data || []).map((event: any) => {
-        // Prefer participant_ids (UUIDs) if available, fallback to legacy participants
-        const participants = event.participant_ids?.length > 0 
-          ? event.participant_ids 
-          : (event.participants || []);
-
-        return {
-          id: event.id,
-          title: event.title,
-          description: event.description,
-          category: event.category as ActivityCategory,
-          participants,
-          transportation: event.transportation as TransportationDetails | undefined,
-          startDate: new Date(event.start_date),
-          endDate: event.end_date ? new Date(event.end_date) : undefined,
-          location: event.location,
-          location_id: event.location_id,
-          notes: event.notes,
-          color: event.color,
-          recurrenceSlots: event.recurrence_slots as RecurrenceSlot[],
-          createdAt: new Date(event.created_at),
-          updatedAt: new Date(event.updated_at),
-        };
-      });
+      const mappedEvents: FamilyEvent[] = (data || []).map((event: any) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        category: event.category as ActivityCategory,
+        participants: event.participants || [],
+        transportation: event.transportation as TransportationDetails | undefined,
+        startDate: new Date(event.start_date),
+        endDate: event.end_date ? new Date(event.end_date) : undefined,
+        location: event.location,
+        location_id: event.location_id,
+        notes: event.notes,
+        color: event.color,
+        recurrenceSlots: event.recurrence_slots as RecurrenceSlot[],
+        createdAt: new Date(event.created_at),
+        updatedAt: new Date(event.updated_at),
+      }));
 
       setEvents(mappedEvents);
     } catch (error) {
@@ -86,9 +79,7 @@ export function useEventsDB() {
         title: event.title,
         description: event.description,
         category: event.category,
-        // Store in both columns for backwards compatibility
         participants: event.participants,
-        participant_ids: event.participants,
         transportation: event.transportation as any,
         start_date: event.startDate.toISOString(),
         end_date: event.endDate?.toISOString(),
@@ -123,11 +114,7 @@ export function useEventsDB() {
       if (updates.title !== undefined) dbUpdates.title = updates.title;
       if (updates.description !== undefined) dbUpdates.description = updates.description;
       if (updates.category !== undefined) dbUpdates.category = updates.category;
-      if (updates.participants !== undefined) {
-        // Store in both columns for backwards compatibility
-        dbUpdates.participants = updates.participants;
-        dbUpdates.participant_ids = updates.participants;
-      }
+      if (updates.participants !== undefined) dbUpdates.participants = updates.participants;
       if (updates.transportation !== undefined) dbUpdates.transportation = updates.transportation;
       if (updates.startDate !== undefined) dbUpdates.start_date = updates.startDate.toISOString();
       if (updates.endDate !== undefined) dbUpdates.end_date = updates.endDate?.toISOString();

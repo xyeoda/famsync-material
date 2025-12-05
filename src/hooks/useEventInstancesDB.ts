@@ -43,23 +43,16 @@ export function useEventInstancesDB() {
 
       if (error) throw error;
 
-      const mappedInstances: EventInstance[] = (data || []).map((instance: any) => {
-        // Prefer participant_ids (UUIDs) if available, fallback to legacy participants
-        const participants = instance.participant_ids?.length > 0 
-          ? instance.participant_ids 
-          : (instance.participants || undefined);
-
-        return {
-          id: instance.id,
-          eventId: instance.event_id,
-          date: new Date(instance.date),
-          transportation: instance.transportation as TransportationDetails | undefined,
-          participants,
-          cancelled: instance.cancelled,
-          createdAt: new Date(instance.created_at),
-          updatedAt: new Date(instance.updated_at),
-        };
-      });
+      const mappedInstances: EventInstance[] = (data || []).map((instance: any) => ({
+        id: instance.id,
+        eventId: instance.event_id,
+        date: new Date(instance.date),
+        transportation: instance.transportation as TransportationDetails | undefined,
+        participants: instance.participants || undefined,
+        cancelled: instance.cancelled,
+        createdAt: new Date(instance.created_at),
+        updatedAt: new Date(instance.updated_at),
+      }));
 
       setInstances(mappedInstances);
     } catch (error) {
@@ -89,9 +82,7 @@ export function useEventInstancesDB() {
           household_id: householdId,
           date: instance.date.toISOString().split('T')[0],
           transportation: instance.transportation as any,
-          // Store in both columns for backwards compatibility
           participants: instance.participants as any,
-          participant_ids: instance.participants as any,
           cancelled: instance.cancelled,
         }]);
 
@@ -109,11 +100,7 @@ export function useEventInstancesDB() {
     try {
       const dbUpdates: any = {};
       if (updates.transportation !== undefined) dbUpdates.transportation = updates.transportation;
-      if (updates.participants !== undefined) {
-        // Store in both columns for backwards compatibility
-        dbUpdates.participants = updates.participants;
-        dbUpdates.participant_ids = updates.participants;
-      }
+      if (updates.participants !== undefined) dbUpdates.participants = updates.participants;
       if (updates.cancelled !== undefined) dbUpdates.cancelled = updates.cancelled;
 
       const { error } = await supabase
