@@ -41,7 +41,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
   const { getFamilyMemberName } = useFamilySettingsContext();
   const { getKids, getAdults } = useFamilyMembersContext();
   const { householdId } = useHousehold();
-  const { locations } = useActivityLocations(householdId);
+  const { locations, addLocation } = useActivityLocations(householdId);
   
   const kids = getKids();
   const adults = getAdults();
@@ -321,6 +321,7 @@ export function EventDialog({ open, onOpenChange, onSave, event }: EventDialogPr
                     setLocation(loc);
                     setLocationId(locId);
                   }}
+                  onAddLocation={addLocation}
                 />
               </div>
             </div>

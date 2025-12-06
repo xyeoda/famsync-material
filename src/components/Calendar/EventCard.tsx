@@ -162,20 +162,18 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
           onOpenChange={setLocationDialogOpen}
         />
 
-        <div className="flex flex-wrap gap-1 lg:gap-0.5">
-          {participants.map((participant) => {
-            const { getMemberName } = useFamilyMembersContext();
-
-            return (
+        {participatingKids.length > 0 && (
+          <div className="flex flex-wrap gap-1 lg:gap-0.5">
+            {participatingKids.map((kid, index) => (
               <span
-                key={participant}
+                key={kid!.id}
                 className="text-xs lg:text-[10px] text-muted-foreground font-normal"
               >
-                {getMemberName(participant).split(" ")[0]}
+                {kid!.name.split(" ")[0]}{index < participatingKids.length - 1 ? "," : ""}
               </span>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
 
 
       </div>
