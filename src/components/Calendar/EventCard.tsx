@@ -60,38 +60,31 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
   const transportation = instance?.transportation || slot?.transportation || event.transportation;
   const participants = instance?.participants || event.participants;
 
-  // Get kids participating in this event
-  const kidsInvolved = participants.filter((p) => p === "kid1" || p === "kid2" || p.startsWith("kid"));
+  // Get kids participating in this event (by checking if participant UUID matches a kid)
+  const kidIds = kids.map(k => k.id);
+  const kidsInvolved = participants.filter((p) => kidIds.includes(p));
   
-  // Get kid colors from dynamic members
-  const getKidColor = (kidId: string, index: number) => {
-    // Try to get from dynamic members first
-    if (kids[index]) {
-      return kids[index].color;
-    }
-    // Fallback to CSS variables
-    return `var(--${kidId}-color)`;
-  };
+  // Get participating kid objects with their colors
+  const participatingKids = kidsInvolved.map(kidId => kids.find(k => k.id === kidId)).filter(Boolean);
   
   // Determine border color based on kids involved
   const getBorderColor = () => {
-    if (kidsInvolved.length >= 2) {
-      // Multiple kids - return gradient string
-      const kid1Color = kids[0]?.color ? `hsl(${kids[0].color})` : 'hsl(var(--kid1-color))';
-      const kid2Color = kids[1]?.color ? `hsl(${kids[1].color})` : 'hsl(var(--kid2-color))';
+    if (participatingKids.length >= 2) {
+      // Multiple kids - return gradient using their actual colors
+      const kid1Color = participatingKids[0]?.color ? `hsl(${participatingKids[0].color})` : 'hsl(var(--kid1-color))';
+      const kid2Color = participatingKids[1]?.color ? `hsl(${participatingKids[1].color})` : 'hsl(var(--kid2-color))';
       return `linear-gradient(to bottom, ${kid1Color}, ${kid2Color})`;
-    } else if (kidsInvolved.length === 1) {
-      // Single kid - show solid color
-      const kidIndex = parseInt(kidsInvolved[0].replace('kid', '')) - 1;
-      const kidColor = kids[kidIndex]?.color;
-      return kidColor ? `hsl(${kidColor})` : `hsl(var(--${kidsInvolved[0]}-color))`;
+    } else if (participatingKids.length === 1) {
+      // Single kid - show their color
+      const kidColor = participatingKids[0]?.color;
+      return kidColor ? `hsl(${kidColor})` : 'hsl(var(--kid1-color))';
     }
     // No kids - fallback to category color
     return `hsl(var(--category-${event.category}))`;
   };
 
   const borderColor = getBorderColor();
-  const isGradient = kidsInvolved.length >= 2;
+  const isGradient = participatingKids.length >= 2;
 
   const dropOffColor = transportation?.dropOffPerson
     ? getMemberColor(transportation.dropOffPerson)
