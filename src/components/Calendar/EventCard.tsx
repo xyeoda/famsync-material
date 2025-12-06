@@ -171,17 +171,12 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
 
         <div className="flex flex-wrap gap-1 lg:gap-0.5">
           {participants.map((participant) => {
-            const isKid = participant.startsWith('kid') || kids.some(k => k.id === participant);
-            const { getMemberColor: getContextColor, getMemberName } = useFamilyMembersContext();
-            const bgColor = getContextColor(participant);
+            const { getMemberName } = useFamilyMembersContext();
 
             return (
               <span
                 key={participant}
-                className={`text-xs lg:text-[10px] px-1.5 py-0.5 rounded-full font-normal ${
-                  isKid ? "bg-surface-container" : "text-white"
-                }`}
-                style={bgColor ? { backgroundColor: `hsl(${bgColor})` } : undefined}
+                className="text-xs lg:text-[10px] text-muted-foreground font-normal"
               >
                 {getMemberName(participant).split(" ")[0]}
               </span>
