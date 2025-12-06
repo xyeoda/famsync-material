@@ -62,15 +62,10 @@ export function UserManagementDialog({
   const [emailTrackingOpen, setEmailTrackingOpen] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (open) {
-      loadMembers();
-      loadPendingInvites();
-    }
-  }, [open, householdId]);
-
-  const loadMembers = async () => {
+  const loadData = async () => {
+    setLoading(true);
     try {
+      // Load members first
       const { data, error } = await supabase
         .from("user_roles")
         .select(`
@@ -93,26 +88,36 @@ export function UserManagementDialog({
       }));
 
       setMembers(mappedMembers);
-    } catch (error) {
-      console.error("Error loading members:", error);
-    }
-  };
 
-  const loadPendingInvites = async () => {
-    try {
-      const { data, error } = await supabase
+      // Now load pending invites, excluding already-joined members
+      const memberEmails = mappedMembers.map((m: HouseholdMember) => m.email.toLowerCase());
+      
+      const { data: inviteData, error: inviteError } = await supabase
         .from("pending_invitations")
         .select("*")
         .eq("household_id", householdId)
         .gt("expires_at", new Date().toISOString());
 
-      if (error) throw error;
+      if (inviteError) throw inviteError;
 
-      setPendingInvites(data || []);
+      // Filter out invitations for users who have already joined
+      const filteredInvites = (inviteData || []).filter(
+        (invite: PendingInvitation) => !memberEmails.includes(invite.email.toLowerCase())
+      );
+
+      setPendingInvites(filteredInvites);
     } catch (error) {
-      console.error("Error loading pending invites:", error);
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (open) {
+      loadData();
+    }
+  }, [open, householdId]);
 
   const handleSendInvitation = async () => {
     if (!email || !role) {
@@ -144,7 +149,7 @@ export function UserManagementDialog({
 
       setEmail("");
       setRole("kid");
-      loadPendingInvites();
+      loadData();
     } catch (error: any) {
       console.error("Error sending invitation:", error);
       toast({
@@ -172,7 +177,7 @@ export function UserManagementDialog({
       });
 
       setMemberToRemove(null);
-      loadMembers();
+      loadData();
     } catch (error: any) {
       console.error("Error removing member:", error);
       toast({
@@ -197,7 +202,7 @@ export function UserManagementDialog({
         description: "The invitation has been cancelled",
       });
 
-      loadPendingInvites();
+      loadData();
     } catch (error: any) {
       console.error("Error cancelling invitation:", error);
       toast({
