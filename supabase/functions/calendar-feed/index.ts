@@ -50,12 +50,19 @@ Deno.serve(async (req) => {
 
     const calendarToken = data as CalendarToken;
 
-    // Fetch family settings for names
+    // Fetch family settings for legacy name resolution
     const { data: settings } = await supabase
       .from('family_settings')
       .select('*')
       .eq('household_id', calendarToken.household_id)
-      .single();
+      .maybeSingle();
+
+    // Fetch family members for UUID name resolution
+    const { data: familyMembers } = await supabase
+      .from('family_members')
+      .select('*')
+      .eq('household_id', calendarToken.household_id)
+      .eq('is_active', true);
 
     // Fetch all events for this household
     const { data: events, error: eventsError } = await supabase
@@ -75,7 +82,7 @@ Deno.serve(async (req) => {
       .eq('household_id', calendarToken.household_id);
 
     // Generate iCal feed
-    const icalEvents = expandEventsToICal(events || [], instances || [], calendarToken.filter_person, settings);
+    const icalEvents = expandEventsToICal(events || [], instances || [], calendarToken.filter_person, settings, familyMembers || []);
     
     const icalContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -108,11 +115,25 @@ function expandEventsToICal(
   events: any[],
   instances: any[],
   filterPerson: string | null,
-  settings: any
+  settings: any,
+  familyMembers: any[]
 ): string[] {
   const icalEvents: string[] = [];
   const now = new Date();
   const oneYearFromNow = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+
+  // Helper to get member name from UUID or legacy ID
+  const getMemberName = (id: string): string => {
+    if (!id) return '';
+    
+    // Check family members first (UUID-based)
+    const member = familyMembers.find(m => m.id === id);
+    if (member) return member.name;
+    
+    // Fallback to legacy settings
+    const nameKey = `${id}_name`;
+    return settings?.[nameKey] || id;
+  };
 
   events.forEach((event) => {
     const startDate = new Date(event.start_date);
@@ -145,10 +166,10 @@ function expandEventsToICal(
           const transportation = instance?.transportation || slot.transportation || event.transportation;
           const participants = instance?.participants || event.participants;
 
-          // Apply filter if specified
+          // Apply filter if specified - check both dropOff and pickUp person
           if (filterPerson && transportation) {
-            const dropOffPerson = transportation.dropOffPerson;
-            const pickUpPerson = transportation.pickUpPerson;
+            const dropOffPerson = transportation.dropOffPerson || transportation.dropOffPersonId;
+            const pickUpPerson = transportation.pickUpPerson || transportation.pickUpPersonId;
             
             if (dropOffPerson !== filterPerson && pickUpPerson !== filterPerson) {
               currentDate.setDate(currentDate.getDate() + 1);
@@ -166,7 +187,7 @@ function expandEventsToICal(
           const dtEnd = new Date(currentDate);
           dtEnd.setHours(parseInt(endTime[0]), parseInt(endTime[1]), 0);
 
-          const description = buildDescription(participants, transportation, settings, event.notes);
+          const description = buildDescription(participants, transportation, getMemberName, event.notes);
 
           icalEvents.push(`BEGIN:VEVENT
 UID:${event.id}-${dateStr}@kinsynch.app
@@ -188,27 +209,30 @@ END:VEVENT`);
   return icalEvents;
 }
 
-function buildDescription(participants: string[], transportation: any, settings: any, notes?: string): string {
+function buildDescription(
+  participants: string[], 
+  transportation: any, 
+  getMemberName: (id: string) => string,
+  notes?: string
+): string {
   let desc = '';
 
   // Add participants
   if (participants && participants.length > 0) {
-    const participantNames = participants.map(p => {
-      const nameKey = `${p}_name`;
-      return settings?.[nameKey] || p;
-    });
+    const participantNames = participants.map(p => getMemberName(p));
     desc += `Participants: ${participantNames.join(', ')}\n`;
   }
 
   // Add transportation
   if (transportation) {
-    if (transportation.dropOffPerson && transportation.dropOffMethod) {
-      const dropOffName = settings?.[`${transportation.dropOffPerson}_name`] || transportation.dropOffPerson;
-      desc += `Drop-off: ${dropOffName} (${transportation.dropOffMethod})\n`;
+    const dropOffPerson = transportation.dropOffPersonId || transportation.dropOffPerson;
+    const pickUpPerson = transportation.pickUpPersonId || transportation.pickUpPerson;
+    
+    if (dropOffPerson && transportation.dropOffMethod) {
+      desc += `Drop-off: ${getMemberName(dropOffPerson)} (${transportation.dropOffMethod})\n`;
     }
-    if (transportation.pickUpPerson && transportation.pickUpMethod) {
-      const pickUpName = settings?.[`${transportation.pickUpPerson}_name`] || transportation.pickUpPerson;
-      desc += `Pick-up: ${pickUpName} (${transportation.pickUpMethod})\n`;
+    if (pickUpPerson && transportation.pickUpMethod) {
+      desc += `Pick-up: ${getMemberName(pickUpPerson)} (${transportation.pickUpMethod})\n`;
     }
   }
 

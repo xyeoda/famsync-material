@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle } from "lucide-react";
 import { format } from "date-fns";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 
 interface DuplicateConflict {
   uploadedEvent: any;
@@ -49,6 +50,13 @@ export function BulkEventReviewDialog({
   onResolve,
 }: BulkEventReviewDialogProps) {
   const [resolutions, setResolutions] = useState<Record<string, 'skip' | 'update' | 'create'>>({});
+  const { getMemberName } = useFamilyMembersContext();
+
+  // Helper to get participant names from IDs
+  const getParticipantNames = (participants: string[] | undefined): string => {
+    if (!participants || participants.length === 0) return 'None';
+    return participants.map(id => getMemberName(id) || id).join(', ');
+  };
 
   const handleResolve = () => {
     onResolve(resolutions);
@@ -96,7 +104,7 @@ export function BulkEventReviewDialog({
                         {format(new Date(conflict.uploadedEvent.start_date), 'PPP')}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {conflict.uploadedEvent.participants?.join(', ')}
+                        {getParticipantNames(conflict.uploadedEvent.participants)}
                       </p>
                     </div>
                   </TableCell>
@@ -107,7 +115,7 @@ export function BulkEventReviewDialog({
                         {format(new Date(conflict.existingEvent.start_date), 'PPP')}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {conflict.existingEvent.participants?.join(', ')}
+                        {getParticipantNames(conflict.existingEvent.participants)}
                       </p>
                     </div>
                   </TableCell>
