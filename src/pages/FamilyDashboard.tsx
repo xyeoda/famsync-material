@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useEventsDB } from "@/hooks/useEventsDB";
 import { useFamilySettingsDB } from "@/hooks/useFamilySettingsDB";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { useEventInstancesDB } from "@/hooks/useEventInstancesDB";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { UserRoleBadge } from "@/components/UserRoleBadge";
@@ -52,9 +53,10 @@ const FamilyDashboard = () => {
     loadInstances
   } = useEventInstancesDB();
   const {
-    settings,
-    getFamilyMemberName
+    settings
   } = useFamilySettingsDB();
+  const { getMemberName, getKids } = useFamilyMembersContext();
+  const kids = getKids();
 
   // Load data when household ID is available
   useEffect(() => {
@@ -158,16 +160,20 @@ const FamilyDashboard = () => {
               const dropOffPerson = transportation?.dropOffPerson;
               const pickUpPerson = transportation?.pickUpPerson;
 
-              // Determine border color based on participants
+              // Determine border color based on participants (UUID-based)
               const participants = event.participants;
-              const bothKids = participants.includes("kid1") && participants.includes("kid2");
-              let borderColorStyle = `hsl(${settings.kid1Color})`;
+              const kidIds = kids.map(k => k.id);
+              const kidsInEvent = participants.filter(p => kidIds.includes(p));
+              const participatingKids = kidsInEvent.map(id => kids.find(k => k.id === id)).filter(Boolean);
+              const bothKids = participatingKids.length >= 2;
+              
+              let borderColorStyle = participatingKids[0]?.color 
+                ? `hsl(${participatingKids[0].color})` 
+                : `hsl(${settings.kid1Color})`;
               let borderBackground = undefined;
-              if (bothKids) {
-                borderBackground = `linear-gradient(to bottom, hsl(${settings.kid1Color}), hsl(${settings.kid2Color}))`;
-              } else if (participants.length === 1) {
-                const participant = participants[0];
-                if (participant === "kid1") borderColorStyle = `hsl(${settings.kid1Color})`;else if (participant === "kid2") borderColorStyle = `hsl(${settings.kid2Color})`;else if (participant === "parent1") borderColorStyle = `hsl(${settings.parent1Color})`;else if (participant === "parent2") borderColorStyle = `hsl(${settings.parent2Color})`;else if (participant === "housekeeper") borderColorStyle = `hsl(${settings.housekeeperColor})`;
+              
+              if (bothKids && participatingKids[0] && participatingKids[1]) {
+                borderBackground = `linear-gradient(to bottom, hsl(${participatingKids[0].color}), hsl(${participatingKids[1].color}))`;
               }
               return <Card key={event.id} className={`surface-elevation-2 bg-card/70 backdrop-blur-md border-border/40 animate-fade-in ${bothKids ? 'relative overflow-hidden' : 'border-l-4'}`} style={{
                 ...(bothKids ? undefined : {
@@ -193,7 +199,7 @@ const FamilyDashboard = () => {
                         <div className="flex items-center gap-2 text-xs">
                           <User className="h-3 w-3 text-muted-foreground" />
                           <span className="text-muted-foreground">
-                            {event.participants.map(p => getFamilyMemberName(p)).join(", ")}
+                            {event.participants.map(p => getMemberName(p)).join(", ")}
                           </span>
                         </div>
                         {event.location && <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-primary hover:underline">
@@ -203,9 +209,9 @@ const FamilyDashboard = () => {
                         {(dropOffPerson || pickUpPerson) && <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Car className="h-3 w-3" />
                             <span>
-                              {dropOffPerson && `Drop: ${getFamilyMemberName(dropOffPerson)}`}
+                              {dropOffPerson && `Drop: ${getMemberName(dropOffPerson)}`}
                               {dropOffPerson && pickUpPerson && " • "}
-                              {pickUpPerson && `Pick: ${getFamilyMemberName(pickUpPerson)}`}
+                              {pickUpPerson && `Pick: ${getMemberName(pickUpPerson)}`}
                             </span>
                           </div>}
                       </CardContent>

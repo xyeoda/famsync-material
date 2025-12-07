@@ -7,7 +7,7 @@ import { EventInstance, FamilyMember, TransportMethod, TransportationDetails, Fa
 import { Car, Bus, PersonStanding, Bike, Calendar, MapPin, Users, Clock } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
-import { useFamilySettingsContext } from "@/contexts/FamilySettingsContext";
+
 import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -39,8 +39,7 @@ export function InstanceDialog({
   slotTransportation,
   instance,
 }: InstanceDialogProps) {
-  const { getFamilyMemberName } = useFamilySettingsContext();
-  const { getAdults } = useFamilyMembersContext();
+  const { getAdults, getMemberName } = useFamilyMembersContext();
   const adults = getAdults();
   const [transportation, setTransportation] = useState<TransportationDetails>(
     instance?.transportation || slotTransportation || {}
@@ -118,7 +117,7 @@ export function InstanceDialog({
                 <div className="flex flex-wrap gap-1">
                   {event.participants.map((participant) => (
                     <Badge key={participant} variant="outline" className="text-xs">
-                      {getFamilyMemberName(participant)}
+                      {getMemberName(participant)}
                     </Badge>
                   ))}
                 </div>

@@ -20,14 +20,13 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, instance, slot, startTime, endTime, onClick }: EventCardProps) {
-  const { getFamilyMemberName, settings } = useFamilySettingsContext();
-  const { getKids, getAdults, getMemberColor: getDynamicMemberColor } = useFamilyMembersContext();
+  const { settings } = useFamilySettingsContext();
+  const { getKids, getMemberColor: getDynamicMemberColor, getMemberByLegacyId } = useFamilyMembersContext();
   const { householdId } = useHousehold();
   const { locations } = useActivityLocations(householdId);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   
   const kids = getKids();
-  const adults = getAdults();
   
   const locationId = (event as any).location_id;
   const locationDetails = locationId ? locations.find(loc => loc.id === locationId) : null;
@@ -36,9 +35,6 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
   
   // Get member color - supports both legacy format and dynamic members
   const getMemberColor = (member: string): string | null => {
-    // Use context's getMemberColor which handles both legacy and UUID formats
-    const { getMemberColor: getContextMemberColor, getMemberByLegacyId } = useFamilyMembersContext();
-    
     // Check if it's a legacy format (parent1, parent2, housekeeper)
     if (member === "parent1") {
       const parent = getMemberByLegacyId('parent1');
@@ -53,7 +49,7 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
       return helper?.color || settings.housekeeperColor;
     }
     // For UUIDs, use the context
-    return getContextMemberColor(member);
+    return getDynamicMemberColor(member);
   };
 
   // Use instance data if available, otherwise fall back to slot data, then event data
@@ -91,13 +87,6 @@ export function EventCard({ event, instance, slot, startTime, endTime, onClick }
     : null;
   const pickUpColor = transportation?.pickUpPerson
     ? getMemberColor(transportation.pickUpPerson)
-    : null;
-
-  const dropOffName = transportation?.dropOffPerson
-    ? getFamilyMemberName(transportation.dropOffPerson).split(" ")[0]
-    : null;
-  const pickUpName = transportation?.pickUpPerson
-    ? getFamilyMemberName(transportation.pickUpPerson).split(" ")[0]
     : null;
 
   return (
