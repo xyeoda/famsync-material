@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/app-client";
 import { Plus, Copy, Trash2, Calendar, Download, Info, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { useHousehold } from "@/contexts/HouseholdContext";
-import { useFamilySettings } from "@/hooks/useFamilySettings";
+import { useFamilyMembersContext } from "@/contexts/FamilyMembersContext";
 import { formatDistanceToNow } from "date-fns";
 
 interface CalendarToken {
@@ -36,7 +36,8 @@ const SYNC_INTERVALS: Record<CalendarAppType, number | null> = {
 export function CalendarSyncCard() {
   const { toast } = useToast();
   const { householdId } = useHousehold();
-  const { settings } = useFamilySettings();
+  const { getAdults, getMemberName } = useFamilyMembersContext();
+  const adults = getAdults();
   const [tokens, setTokens] = useState<CalendarToken[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -180,10 +181,8 @@ export function CalendarSyncCard() {
 
   const getFilterLabel = (filter: string | null) => {
     if (!filter) return "All family events";
-    if (filter === "parent1") return settings?.parent1Name || "Parent 1";
-    if (filter === "parent2") return settings?.parent2Name || "Parent 2";
-    if (filter === "housekeeper") return settings?.housekeeperName || "Housekeeper";
-    return filter;
+    // Use getMemberName which handles UUIDs
+    return getMemberName(filter) || filter;
   };
 
   const getAppTypeLabel = (appType: string): string => {
@@ -272,16 +271,18 @@ export function CalendarSyncCard() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="filter">Filter Events</Label>
+                <Label htmlFor="filter">Filter Events (by drop-off/pick-up responsibility)</Label>
                 <Select value={filterPerson} onValueChange={setFilterPerson}>
                   <SelectTrigger id="filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All family events</SelectItem>
-                    <SelectItem value="parent1">{settings?.parent1Name || "Parent 1"} responsibilities</SelectItem>
-                    <SelectItem value="parent2">{settings?.parent2Name || "Parent 2"} responsibilities</SelectItem>
-                    <SelectItem value="housekeeper">{settings?.housekeeperName || "Housekeeper"} responsibilities</SelectItem>
+                    {adults.map((adult) => (
+                      <SelectItem key={adult.id} value={adult.id}>
+                        {adult.name} responsibilities
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
