@@ -55,7 +55,7 @@ const FamilyDashboard = () => {
   const {
     settings
   } = useFamilySettingsDB();
-  const { getMemberName, getKids } = useFamilyMembersContext();
+  const { getMemberName, getKids, members: familyMembers } = useFamilyMembersContext();
   const kids = getKids();
 
   // Load data when household ID is available
@@ -257,14 +257,14 @@ const FamilyDashboard = () => {
             </CardHeader>
             <CardContent>
               {(() => {
-              // Calculate events per family member for this week
-              const memberCounts = {
-                parent1: 0,
-                parent2: 0,
-                kid1: 0,
-                kid2: 0,
-                housekeeper: 0
-              };
+              // Calculate events per family member for this week using UUID-based members
+              const memberCounts: Record<string, number> = {};
+              
+              // Initialize counts for all family members
+              familyMembers.forEach(member => {
+                memberCounts[member.id] = 0;
+              });
+              
               events.forEach(event => {
                 if (!event.startDate) return;
                 const isThisWeek = isWithinInterval(new Date(event.startDate), {
@@ -272,40 +272,24 @@ const FamilyDashboard = () => {
                   end: weekEnd
                 });
                 if (isThisWeek) {
-                  event.participants.forEach(participant => {
-                    if (participant in memberCounts) {
-                      memberCounts[participant]++;
+                  event.participants.forEach(participantId => {
+                    if (participantId in memberCounts) {
+                      memberCounts[participantId]++;
                     }
                   });
                 }
               });
+              
               const maxCount = Math.max(...Object.values(memberCounts), 1);
-              const members = [{
-                key: 'parent1',
-                name: settings.parent1Name,
-                count: memberCounts.parent1,
-                color: settings.parent1Color
-              }, {
-                key: 'parent2',
-                name: settings.parent2Name,
-                count: memberCounts.parent2,
-                color: settings.parent2Color
-              }, {
-                key: 'kid1',
-                name: settings.kid1Name,
-                count: memberCounts.kid1,
-                color: settings.kid1Color
-              }, {
-                key: 'kid2',
-                name: settings.kid2Name,
-                count: memberCounts.kid2,
-                color: settings.kid2Color
-              }, {
-                key: 'housekeeper',
-                name: settings.housekeeperName,
-                count: memberCounts.housekeeper,
-                color: settings.housekeeperColor
-              }].filter(member => member.count > 0);
+              const members = familyMembers
+                .filter(member => memberCounts[member.id] > 0)
+                .map(member => ({
+                  key: member.id,
+                  name: member.name,
+                  count: memberCounts[member.id],
+                  color: member.color
+                }));
+              
               if (members.length === 0) {
                 return <p className="text-sm text-muted-foreground py-4">No events scheduled this week</p>;
               }
