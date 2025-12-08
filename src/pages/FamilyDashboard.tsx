@@ -69,14 +69,14 @@ const FamilyDashboard = () => {
   const weekStart = startOfWeek(today);
   const weekEnd = endOfWeek(today);
 
-  // Count events happening this week
-  const thisWeekEvents = events.filter(event => {
-    if (!event.startDate) return false;
-    return isWithinInterval(new Date(event.startDate), {
-      start: weekStart,
-      end: weekEnd
-    });
-  }).length;
+  // Count event occurrences happening this week (each recurrence day counts separately)
+  const thisWeekOccurrences = events.reduce((count, event) => {
+    if (!event.recurrenceSlots || event.recurrenceSlots.length === 0) return count;
+    
+    // Count how many recurrence slots fall within the current week
+    // Each slot's dayOfWeek (0-6) represents a day that occurs once per week
+    return count + event.recurrenceSlots.length;
+  }, 0);
 
   // Get today's events
   const todayEvents = events.filter(event => {
@@ -257,7 +257,8 @@ const FamilyDashboard = () => {
             </CardHeader>
             <CardContent>
               {(() => {
-              // Calculate events per family member for this week using UUID-based members
+              // Calculate event occurrences per family member for this week
+              // Each recurrence slot counts as one occurrence
               const memberCounts: Record<string, number> = {};
               
               // Initialize counts for all family members
@@ -266,18 +267,16 @@ const FamilyDashboard = () => {
               });
               
               events.forEach(event => {
-                if (!event.startDate) return;
-                const isThisWeek = isWithinInterval(new Date(event.startDate), {
-                  start: weekStart,
-                  end: weekEnd
+                if (!event.recurrenceSlots || event.recurrenceSlots.length === 0) return;
+                
+                // Count each recurrence slot as an occurrence for each participant
+                const occurrencesThisWeek = event.recurrenceSlots.length;
+                
+                event.participants.forEach(participantId => {
+                  if (participantId in memberCounts) {
+                    memberCounts[participantId] += occurrencesThisWeek;
+                  }
                 });
-                if (isThisWeek) {
-                  event.participants.forEach(participantId => {
-                    if (participantId in memberCounts) {
-                      memberCounts[participantId]++;
-                    }
-                  });
-                }
               });
               
               const maxCount = Math.max(...Object.values(memberCounts), 1);
@@ -325,11 +324,11 @@ const FamilyDashboard = () => {
           animationFillMode: 'backwards'
         }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Events This Week</CardTitle>
+              <CardTitle className="text-sm font-medium">Occurrences This Week</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{thisWeekEvents}</div>
+              <div className="text-2xl font-bold">{thisWeekOccurrences}</div>
               <p className="text-xs text-muted-foreground">
                 {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d")}
               </p>
