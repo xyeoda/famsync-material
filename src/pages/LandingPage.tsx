@@ -172,6 +172,14 @@ const LandingPage = () => {
                   Sign In
                   <ArrowRight className="h-5 w-5" />
                 </Button>
+                <Button
+                  size="lg"
+                  variant="outlined"
+                  onClick={() => navigate("/request-access")}
+                  className="gap-2 text-lg px-8"
+                >
+                  Request Access
+                </Button>
               </div>
               <p className="text-sm text-muted-foreground">
                 Invite-only platform • Secure family spaces

@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          household_name: string
+          id: string
+          message: string | null
+          requester_email: string
+          requester_name: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["access_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          household_name: string
+          id?: string
+          message?: string | null
+          requester_email: string
+          requester_name: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["access_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          household_name?: string
+          id?: string
+          message?: string | null
+          requester_email?: string
+          requester_name?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["access_request_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       activity_locations: {
         Row: {
           address: string | null
@@ -728,6 +770,7 @@ export type Database = {
       is_site_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      access_request_status: "pending" | "approved" | "rejected"
       activity_category:
         | "sports"
         | "education"
@@ -874,6 +917,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      access_request_status: ["pending", "approved", "rejected"],
       activity_category: [
         "sports",
         "education",
