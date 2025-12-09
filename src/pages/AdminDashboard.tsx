@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { EmailPreview } from "@/components/Admin/EmailPreview";
 import { EmailTracking } from "@/components/Admin/EmailTracking";
 import { InvitationAnalytics } from "@/components/Admin/InvitationAnalytics";
+import { AccessRequestsCard } from "@/components/Admin/AccessRequestsCard";
 import { Loader2, Users, Plus, KeyRound, Mail, Trash2, LogOut, Eye, Activity, TrendingUp, Database } from "lucide-react";
 
 interface Household {
@@ -341,6 +342,9 @@ export default function AdminDashboard() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Access Requests */}
+        <AccessRequestsCard />
 
         {/* Invitation Analytics */}
         <InvitationAnalytics />
