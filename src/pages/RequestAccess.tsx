@@ -58,12 +58,33 @@ export default function RequestAccess() {
 
     setLoading(true);
     try {
+      // Rate limiting: Check for recent requests from this email
+      const { data: recentRequests, error: checkError } = await supabase
+        .from('access_requests')
+        .select('id, created_at')
+        .eq('requester_email', formData.requesterEmail.toLowerCase())
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .limit(1);
+
+      if (checkError) {
+        console.error('Error checking rate limit:', checkError);
+        // Continue anyway - don't block legitimate users due to check failure
+      } else if (recentRequests && recentRequests.length > 0) {
+        toast({
+          title: "Request Already Submitted",
+          description: "You've already submitted a request in the last 24 hours. Please wait for our team to review it.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase
         .from('access_requests')
         .insert({
           household_name: formData.householdName,
           requester_name: formData.requesterName,
-          requester_email: formData.requesterEmail,
+          requester_email: formData.requesterEmail.toLowerCase(),
           message: formData.message || null,
         });
 

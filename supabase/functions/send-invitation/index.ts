@@ -7,6 +7,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Sanitize user input to prevent HTML injection
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 interface InvitationRequest {
   email: string;
   role: "parent" | "helper" | "kid";
@@ -196,11 +206,14 @@ const handler = async (req: Request): Promise<Response> => {
       kid: "Family Member",
     };
 
+    const safeHouseholdName = escapeHtml(householdName);
+    const safeRoleName = escapeHtml(roleNames[role]);
+
     try {
       await client.send({
         from: Deno.env.get("SMTP_FROM_EMAIL")!,
         to: email,
-        subject: `You're invited to join ${householdName}'s calendar`,
+        subject: `You're invited to join ${safeHouseholdName}'s calendar`,
         html: `<!DOCTYPE html>
 <html>
 <head>
@@ -228,7 +241,7 @@ const handler = async (req: Request): Promise<Response> => {
     <div class="content">
       <h1 class="title">You're Invited!</h1>
       <p>Hello!</p>
-      <p>You've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>${roleNames[role]}</strong>.</p>
+      <p>You've been invited to join <strong>${safeHouseholdName}</strong>'s family calendar as a <strong>${safeRoleName}</strong>.</p>
       <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
       <div style="text-align: center;">
         <a href="${inviteUrl}" class="button">Join Calendar</a>
@@ -238,7 +251,7 @@ const handler = async (req: Request): Promise<Response> => {
       <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
     </div>
     <div class="footer">
-      <p>This is an automated message from ${householdName}'s Family Calendar</p>
+      <p>This is an automated message from ${safeHouseholdName}'s Family Calendar</p>
     </div>
   </div>
 </body>
