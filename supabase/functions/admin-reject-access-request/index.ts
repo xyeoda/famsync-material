@@ -7,6 +7,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Sanitize user input to prevent HTML injection
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 interface RejectRequestBody {
   requestId: string;
   reason?: string;
@@ -41,8 +51,12 @@ async function sendRejectionEmail(
     },
   });
 
-  const reasonSection = reason 
-    ? `<p style="margin: 16px 0; padding: 12px; background-color: #f3f4f6; border-radius: 8px;"><strong>Reason:</strong> ${reason}</p>`
+  const safeRequesterName = escapeHtml(requesterName);
+  const safeHouseholdName = escapeHtml(householdName);
+  const safeReason = reason ? escapeHtml(reason) : null;
+
+  const reasonSection = safeReason 
+    ? `<p style="margin: 16px 0; padding: 12px; background-color: #f3f4f6; border-radius: 8px;"><strong>Reason:</strong> ${safeReason}</p>`
     : '';
 
   const htmlContent = `
@@ -58,8 +72,8 @@ async function sendRejectionEmail(
       </div>
       <div style="background-color: #ffffff; padding: 32px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
         <h2 style="color: #1f2937; margin-top: 0;">Access Request Update</h2>
-        <p>Hi ${requesterName},</p>
-        <p>Thank you for your interest in KinSynch. After reviewing your access request for the household "<strong>${householdName}</strong>", we regret to inform you that we are unable to approve your request at this time.</p>
+        <p>Hi ${safeRequesterName},</p>
+        <p>Thank you for your interest in KinSynch. After reviewing your access request for the household "<strong>${safeHouseholdName}</strong>", we regret to inform you that we are unable to approve your request at this time.</p>
         ${reasonSection}
         <p>If you believe this was a mistake or would like to provide additional information, please feel free to submit a new request or contact our support team.</p>
         <p style="margin-top: 24px;">Best regards,<br><strong>The KinSynch Team</strong></p>
