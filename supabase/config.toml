@@ -41,3 +41,12 @@ verify_jwt = false
 
 [functions.calendar-feed]
 verify_jwt = false
+
+[functions.admin-approve-access-request]
+verify_jwt = false
+
+[functions.admin-reject-access-request]
+verify_jwt = false
+
+[functions.notify-admin-access-request]
+verify_jwt = false
