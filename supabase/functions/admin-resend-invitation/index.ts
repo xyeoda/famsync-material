@@ -6,6 +6,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 interface ResendInvitationRequest {
   invitationId: string;
 }
@@ -145,7 +154,7 @@ Deno.serve(async (req) => {
       await smtpClient.send({
         from: Deno.env.get('SMTP_FROM_EMAIL')!,
         to: invitation.email,
-        subject: `Reminder: You're invited to join ${householdName}'s calendar`,
+        subject: `Reminder: You're invited to join ${escapeHtml(householdName)}'s calendar`,
         html: `<!DOCTYPE html>
 <html>
 <head>
@@ -177,7 +186,7 @@ Deno.serve(async (req) => {
     </div>
     <div class="content">
       <p>Hello!</p>
-      <p>This is a reminder that you've been invited to join <strong>${householdName}</strong>'s family calendar as a <strong>Parent</strong>.</p>
+      <p>This is a reminder that you've been invited to join <strong>${escapeHtml(householdName)}</strong>'s family calendar as a <strong>Parent</strong>.</p>
       <p>Click the button below to join - your account will be automatically created and you'll be signed in:</p>
       <div style="text-align: center;">
         <a href="${inviteUrl}" class="button">Join Calendar</a>
@@ -187,7 +196,7 @@ Deno.serve(async (req) => {
       <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">This invitation will expire in 7 days. You'll be asked to set your password after first sign-in.</p>
     </div>
     <div class="footer">
-      <p>This is an automated message from ${householdName}'s Family Calendar</p>
+      <p>This is an automated message from ${escapeHtml(householdName)}'s Family Calendar</p>
     </div>
   </div>
 </body>
