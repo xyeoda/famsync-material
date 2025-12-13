@@ -17,7 +17,7 @@ interface DayEvent {
 }
 
 export function WeekView({ currentDate, events, instances, onEventClick }: WeekViewProps) {
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const getInstanceForDate = (eventId: string, date: Date): EventInstance | undefined => {

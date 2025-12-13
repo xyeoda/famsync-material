@@ -93,11 +93,22 @@ export default function RequestAccess() {
       setSubmitted(true);
     } catch (error: any) {
       console.error('Error submitting access request:', error);
-      toast({
-        title: "Error",
-        description: "Failed to submit your request. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Check for rate limit error from database trigger
+      const errorMessage = error?.message || '';
+      if (errorMessage.includes('Rate limit exceeded')) {
+        toast({
+          title: "Request Already Submitted",
+          description: "You've already submitted a request in the last 24 hours. Please wait for our team to review it.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to submit your request. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

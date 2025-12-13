@@ -66,8 +66,8 @@ const FamilyDashboard = () => {
     }
   }, [urlHouseholdId]);
   const today = new Date();
-  const weekStart = startOfWeek(today);
-  const weekEnd = endOfWeek(today);
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
   // Count event occurrences happening this week (each recurrence day counts separately)
   const thisWeekOccurrences = events.reduce((count, event) => {
