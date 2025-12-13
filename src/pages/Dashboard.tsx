@@ -48,8 +48,8 @@ const Dashboard = () => {
   }, [householdId]);
 
   const today = new Date();
-  const weekStart = startOfWeek(today);
-  const weekEnd = endOfWeek(today);
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
   // Count events happening this week
   const thisWeekEvents = events.filter((event) => {
