@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import DOMPurify from "dompurify";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -260,7 +261,7 @@ export function EmailPreview({ open, onOpenChange, householdName }: EmailPreview
           <div className="border rounded-lg overflow-hidden bg-white">
             <div 
               className="email-preview" 
-              dangerouslySetInnerHTML={{ __html: getEmailHTML() }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getEmailHTML()) }}
               style={{ minHeight: '400px' }}
             />
           </div>
