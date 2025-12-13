@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminBulkEvents from "./pages/AdminBulkEvents";
 import NotFound from "./pages/NotFound";
 import RequestAccess from "./pages/RequestAccess";
+import Install from "./pages/Install";
 import { initializeSampleData } from "./lib/initSampleData";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => {
             <Route path="/accept-invite/:token" element={<AcceptInvite />} />
             <Route path="/invite-error" element={<InviteError />} />
             <Route path="/request-access" element={<RequestAccess />} />
+            <Route path="/install" element={<Install />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/bulk-events" element={<AdminBulkEvents />} />
             
